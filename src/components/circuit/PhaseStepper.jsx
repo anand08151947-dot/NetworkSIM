@@ -154,7 +154,7 @@ export default function PhaseStepper({ phases, activePhaseIdx, activeStepIdx, st
           display: 'flex', flexDirection: 'column', gap: 2,
         }}
       >
-        {allSteps.map(({ phase, pi, step, si }, globalIdx) => {
+        {allSteps.map(({ pi, step, si }, globalIdx) => {
           let status = 'pending';
           if (globalIdx < globalActive)  status = 'done';
           if (globalIdx === globalActive) status = 'active';

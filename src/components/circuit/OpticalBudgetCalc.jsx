@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { buildOpticalBudget, SITES } from '../../data/circuitPlans';
 
 function Row({ label, value, unit = '', highlight = false, separator = false, indent = false }) {
@@ -32,17 +32,10 @@ function Row({ label, value, unit = '', highlight = false, separator = false, in
 }
 
 export default function OpticalBudgetCalc({ aId, zId, bandwidth, visible }) {
-  const [budget, setBudget] = useState(null);
-  const [animated, setAnimated] = useState(false);
-
-  useEffect(() => {
-    if (!visible || !aId || !zId || aId === zId) { setBudget(null); setAnimated(false); return; }
-    setAnimated(false);
-    const b = buildOpticalBudget(aId, zId, bandwidth);
-    setBudget(b);
-    // Short delay → fade-in animation trigger
-    const t = setTimeout(() => setAnimated(true), 80);
-    return () => clearTimeout(t);
+  // Derive budget directly from props — no state or effects needed
+  const budget = useMemo(() => {
+    if (!visible || !aId || !zId || aId === zId) return null;
+    return buildOpticalBudget(aId, zId, bandwidth);
   }, [aId, zId, bandwidth, visible]);
 
   if (!visible || !budget) return null;
@@ -54,11 +47,14 @@ export default function OpticalBudgetCalc({ aId, zId, bandwidth, visible }) {
   const passLabel  = budget.pass ? '✅ PASS' : '❌ FAIL — augmentation required';
 
   return (
-    <div style={{
-      background: '#070d1a', border: `1px solid ${budget.pass ? '#1e3a5f' : '#7f1d1d'}`,
-      borderRadius: 10, padding: '14px 18px',
-      opacity: animated ? 1 : 0, transition: 'opacity 0.5s ease',
-    }}>
+    <div
+      key={`${aId}-${zId}-${bandwidth}`}
+      style={{
+        background: '#070d1a', border: `1px solid ${budget.pass ? '#1e3a5f' : '#7f1d1d'}`,
+        borderRadius: 10, padding: '14px 18px',
+        animation: 'budget-fadein 0.5s ease forwards',
+      }}>
+      <style>{`@keyframes budget-fadein { from { opacity:0 } to { opacity:1 } }`}</style>
       <div style={{ fontSize: 13, fontWeight: 700, color: '#a855f7', marginBottom: 2, letterSpacing: 0.5 }}>
         🌊 Optical Budget Calculator
       </div>
