@@ -171,6 +171,25 @@ NetworkSIM/
         └── exportUtils.js        ← XLSX/CSV export using SheetJS
 ```
 
+### Circuit Planner Tab (Phase 1 — feature/circuit-planner-tab)
+
+New self-contained tab added at `src/components/tabs/CircuitPlannerTab.jsx`:
+
+```
+src/
+├── data/
+│   └── circuitPlans.js              ← 6 circuit types, equipment stacks (7 vendors),
+│                                       8-phase simulation flow builder, optical budget calc
+└── components/
+    ├── circuit/                     ← Circuit Planner sub-components
+    │   ├── CircuitWizard.jsx        ← Service order form (type, A/Z sites, BW, protection, SLA)
+    │   ├── EquipmentChain.jsx       ← Animated A→Z device chain with vendor glow
+    │   ├── OpticalBudgetCalc.jsx    ← Real dB optical math (DWDM/Wave circuits only)
+    │   └── PhaseStepper.jsx         ← 8-phase strip + scrolling step log with timestamps
+    └── tabs/
+        └── CircuitPlannerTab.jsx    ← Main tab: simulation engine, state, layout
+```
+
 ---
 
 ## 🧠 Architecture & Key Patterns

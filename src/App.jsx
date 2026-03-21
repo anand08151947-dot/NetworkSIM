@@ -29,6 +29,7 @@ import SLATab from "./components/tabs/SLATab";
 import BGPSecurityTab from "./components/tabs/BGPSecurityTab";
 import IPAMTab from "./components/tabs/IPAMTab";
 import AuditTimelineTab from "./components/tabs/AuditTimelineTab";
+import CircuitPlannerTab from "./components/tabs/CircuitPlannerTab";
 import SimRecorder from "./components/SimRecorder";
 
 const nodeTypes = { networkNode: NetworkNode };
@@ -60,6 +61,7 @@ const TABS = [
   { id: "ipam", label: "📍 IPAM" },
   { id: "audit", label: "📅 Audit Log" },
   { id: "te", label: "🚦 Traffic Engineering" },
+  { id: "circuit", label: "📡 Circuit Planner" },
 ];
 
 export default function App() {
@@ -864,6 +866,13 @@ export default function App() {
       {activeTab === "te" && (
         <div style={{ flex: 1, overflow: "hidden", display: "flex" }}>
           <TrafficEngineeringTab nodes={nodes} />
+        </div>
+      )}
+
+      {/* ── CIRCUIT PLANNER TAB ── */}
+      {activeTab === "circuit" && (
+        <div style={{ flex: 1, overflow: "hidden", display: "flex" }}>
+          <CircuitPlannerTab />
         </div>
       )}
 
