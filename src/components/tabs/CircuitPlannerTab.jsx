@@ -12,6 +12,7 @@ import FeasibilityGates from '../circuit/FeasibilityGates';
 import PathMap from '../circuit/PathMap';
 import ActivationTestPanel from '../circuit/ActivationTestPanel';
 import DeviceConfigPanel from '../circuit/DeviceConfigPanel';
+import StepConfigViewer from '../circuit/StepConfigViewer';
 
 const DEFAULT_FORM = {
   circuitType: 'l3vpn',
@@ -58,6 +59,7 @@ export default function CircuitPlannerTab() {
   const [rightTab, setRightTab]       = useState('sim');
   const [simComplete, setSimComplete] = useState(false);
   const [invAnimKey, setInvAnimKey]   = useState(0);
+  const [activeStep, setActiveStep]   = useState(null);
 
   const cancelRef = useRef(false);
   const speedRef  = useRef(speed);
@@ -72,6 +74,7 @@ export default function CircuitPlannerTab() {
     setActiveStepIdx(-1);
     setStepTimestamps({});
     setSimComplete(false);
+    setActiveStep(null);
   }, []);
 
   const timestamp = () =>
@@ -101,6 +104,7 @@ export default function CircuitPlannerTab() {
       for (let si = 0; si < phase.steps.length; si++) {
         if (cancelRef.current) break;
         setActiveStepIdx(si);
+        setActiveStep(phase.steps[si]);
         await delay(microDelayMs());
         setStepTimestamps(prev => ({ ...prev, [`${pi}-${si}`]: timestamp() }));
         await delay(stepDelayMs());
@@ -383,11 +387,12 @@ export default function CircuitPlannerTab() {
                     )}
                   </div>
                   <div style={{ flex: 1, overflow: 'hidden' }}>
-                    <DeviceConfigPanel
+                    <StepConfigViewer
+                      activeStep={activeStep}
+                      activeDeviceIndex={activeDeviceIndex}
                       circuitType={form.circuitType}
                       form={form}
                       plan={plan}
-                      activeDeviceIndex={activeDeviceIndex}
                     />
                   </div>
                 </div>
