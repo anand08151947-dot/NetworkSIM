@@ -29,6 +29,7 @@ import SLATab from "./components/tabs/SLATab";
 import BGPSecurityTab from "./components/tabs/BGPSecurityTab";
 import IPAMTab from "./components/tabs/IPAMTab";
 import AuditTimelineTab from "./components/tabs/AuditTimelineTab";
+import TrafficEngineeringTab from "./components/tabs/TrafficEngineeringTab";
 import CircuitPlannerTab from "./components/tabs/CircuitPlannerTab";
 import SimRecorder from "./components/SimRecorder";
 
