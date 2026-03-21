@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { initialNodes } from '../../data/networkTopology';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const ALL_LAYERS = [
   { id: 'customer',      label: 'Customer Premises',       icon: '🏠', color: '#6366f1' },
   { id: 'access',        label: 'Access (XGS-PON)',         icon: '📡', color: '#0ea5e9' },

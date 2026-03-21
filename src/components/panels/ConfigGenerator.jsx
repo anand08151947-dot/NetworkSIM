@@ -42,8 +42,7 @@ export default function ConfigGenerator({ activeSimId, activeNodeId, events }) {
     if (!hasEvents) return null;
     return getNodeConfig(effectiveNodeId);
   }, [hasEvents, effectiveNodeId]);
-
-  const tabs = nodeCfg?.tabs || [];
+  const tabs = useMemo(() => nodeCfg?.tabs ?? [], [nodeCfg]);
 
   // Auto-select first tab when node changes
   const resolvedTabKey = activeTabKey && tabs.find(t => t.key === activeTabKey)

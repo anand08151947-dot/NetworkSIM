@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getTunnelConfigs } from "../../data/teConfigs";
 
 const POPS = ["SEA", "PDX", "BEL", "EVR", "OLY", "SPO"];
 
@@ -44,9 +45,43 @@ function matrixCellColor(val, max) {
   return "#1e3a5f";
 }
 
+const LANG_COLORS = {
+  'ios-xr': '#fde68a',
+  'junos':  '#86efac',
+  'sros':   '#93c5fd',
+};
+
+function TeCopyButton({ text }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      onClick={() => {
+        navigator.clipboard.writeText(text).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        });
+      }}
+      style={{
+        background: copied ? '#052e16' : '#0a1628',
+        border: `1px solid ${copied ? '#166534' : '#1e3a5f'}`,
+        color: copied ? '#4ade80' : '#64748b',
+        borderRadius: 5,
+        padding: '3px 10px',
+        fontSize: 11,
+        cursor: 'pointer',
+        fontWeight: 600,
+      }}
+    >
+      {copied ? '✅ Copied' : '📋 Copy'}
+    </button>
+  );
+}
+
 export default function TrafficEngineeringTab() {
   const [tunnels, setTunnels] = useState(TUNNELS_INIT);
   const [matrix, setMatrix] = useState(MATRIX_BASE);
+  const [selectedTunnel, setSelectedTunnel] = useState(null);
+  const [cfgVendor, setCfgVendor] = useState('iosxr');
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -77,6 +112,7 @@ export default function TrafficEngineeringTab() {
         <div style={{ padding: "10px 14px", borderBottom: "1px solid #1e293b", display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontSize: 12, fontWeight: 700, color: "#e2e8f0" }}>MPLS TE Tunnel Table</span>
           <span style={{ fontSize: 10, color: "#64748b" }}>RSVP-TE</span>
+          <span style={{ fontSize: 9, color: "#334155" }}>· click row for configs</span>
           <span style={{ marginLeft: "auto", fontSize: 9, color: "#22c55e" }}>● Live (updates 5s)</span>
         </div>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
@@ -88,9 +124,20 @@ export default function TrafficEngineeringTab() {
             </tr>
           </thead>
           <tbody>
-            {tunnels.map((t, i) => (
-              <tr key={t.id} style={{ background: i % 2 === 0 ? "#07111f" : "#020817", borderBottom: "1px solid #1e293b22" }}>
-                <td style={{ padding: "6px 12px", fontFamily: "monospace", color: "#60a5fa" }}>{t.id}</td>
+            {tunnels.map((t, i) => {
+              const isSelected = selectedTunnel?.id === t.id;
+              return (
+              <tr
+                key={t.id}
+                onClick={() => setSelectedTunnel(isSelected ? null : t)}
+                style={{
+                  background: isSelected ? "#0f3460" : i % 2 === 0 ? "#07111f" : "#020817",
+                  borderBottom: "1px solid #1e293b22",
+                  cursor: "pointer",
+                  outline: isSelected ? "1px solid #1e5f9f" : "none",
+                }}
+              >
+                <td style={{ padding: "6px 12px", fontFamily: "monospace", color: isSelected ? "#7dd3fc" : "#60a5fa" }}>{t.id}</td>
                 <td style={{ padding: "6px 12px", color: "#e2e8f0" }}>{t.src}</td>
                 <td style={{ padding: "6px 12px", color: "#e2e8f0" }}>{t.dst}</td>
                 <td style={{ padding: "6px 12px", color: "#94a3b8" }}>{t.bw}</td>
@@ -108,10 +155,69 @@ export default function TrafficEngineeringTab() {
                 </td>
                 <td style={{ padding: "6px 12px", color: "#475569", fontFamily: "monospace", fontSize: 10 }}>{t.path}</td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>
+
+      {/* Tunnel Config Panel */}
+      {selectedTunnel && (() => {
+        const cfgTabs = getTunnelConfigs(selectedTunnel);
+        const activeVendorTab = cfgTabs.find(t => t.key === cfgVendor) ?? cfgTabs[0];
+        return (
+          <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: 10, overflow: "hidden", flexShrink: 0 }}>
+            {/* Panel header */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 14px", borderBottom: "1px solid #1e293b", background: "#070d1a" }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "#e2e8f0" }}>⚙️ Tunnel Config — {selectedTunnel.id}</span>
+              <div style={{ display: "flex", gap: 4, marginLeft: 12 }}>
+                {cfgTabs.map(tab => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setCfgVendor(tab.key)}
+                    style={{
+                      background: cfgVendor === tab.key ? "#0f3460" : "transparent",
+                      border: cfgVendor === tab.key ? `1px solid ${LANG_COLORS[tab.lang]}44` : "1px solid #1e293b",
+                      color: cfgVendor === tab.key ? LANG_COLORS[tab.lang] : "#475569",
+                      borderRadius: 5,
+                      padding: "3px 10px",
+                      fontSize: 10,
+                      cursor: "pointer",
+                      fontWeight: cfgVendor === tab.key ? 700 : 400,
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
+                <TeCopyButton text={activeVendorTab?.config ?? ""} />
+                <button
+                  onClick={() => setSelectedTunnel(null)}
+                  style={{ background: "transparent", border: "none", color: "#475569", cursor: "pointer", fontSize: 16, lineHeight: 1, padding: "0 4px" }}
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+            {/* Config pre block */}
+            <div style={{ maxHeight: 360, overflowY: "auto" }}>
+              <pre style={{
+                margin: 0,
+                padding: "14px 16px",
+                fontSize: 11,
+                lineHeight: 1.6,
+                fontFamily: '"JetBrains Mono", "Fira Code", "Consolas", monospace',
+                color: LANG_COLORS[activeVendorTab?.lang] ?? "#94a3b8",
+                background: "transparent",
+                whiteSpace: "pre",
+              }}>
+                {activeVendorTab?.config}
+              </pre>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Traffic Matrix Heatmap */}
       <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: 10, padding: "12px 14px", flexShrink: 0 }}>

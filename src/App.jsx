@@ -29,6 +29,8 @@ import SLATab from "./components/tabs/SLATab";
 import BGPSecurityTab from "./components/tabs/BGPSecurityTab";
 import IPAMTab from "./components/tabs/IPAMTab";
 import AuditTimelineTab from "./components/tabs/AuditTimelineTab";
+import TrafficEngineeringTab from "./components/tabs/TrafficEngineeringTab";
+import CircuitPlannerTab from "./components/tabs/CircuitPlannerTab";
 import SimRecorder from "./components/SimRecorder";
 
 const nodeTypes = { networkNode: NetworkNode };
@@ -53,13 +55,14 @@ function applyCapacityStatuses(nodes) {
 const TABS = [
   { id: "topology", label: "🗺️ Network Topology" },
   { id: "geo", label: "🌐 Geographic Map" },
-  { id: "customers", label: "👥 Customer Database" },
-  { id: "revenue", label: "💰 Revenue & Analytics" },
-  { id: "sla", label: "📋 SLA Tracker" },
-  { id: "bgp", label: "🛡️ BGP & Security" },
-  { id: "ipam", label: "📍 IPAM" },
-  { id: "audit", label: "📅 Audit Log" },
-  { id: "te", label: "🚦 Traffic Engineering" },
+  // { id: "customers", label: "👥 Customer Database" },  // hidden
+  // { id: "revenue", label: "💰 Revenue & Analytics" },   // hidden
+  // { id: "sla", label: "📋 SLA Tracker" },               // hidden
+  // { id: "bgp", label: "🛡️ BGP & Security" },            // hidden
+  // { id: "ipam", label: "📍 IPAM" },                     // hidden
+  // { id: "audit", label: "📅 Audit Log" },               // hidden
+  // { id: "te", label: "🚦 Traffic Engineering" },        // hidden
+  { id: "circuit", label: "📡 Circuit Planner" },
 ];
 
 export default function App() {
@@ -106,7 +109,7 @@ export default function App() {
       );
     }, 3000);
     return () => clearInterval(interval);
-  }, [running]);
+  }, [running, setNodes]);
 
   // Toggle traffic mode edges
   useEffect(() => {
@@ -119,7 +122,7 @@ export default function App() {
           : undefined,
       }))
     );
-  }, [trafficMode]);
+  }, [trafficMode, setEdges]);
 
   const resetAllNodes = useCallback(() => {
     setNodes(
@@ -131,7 +134,7 @@ export default function App() {
       )
     );
     setEdges(initialEdges);
-  }, []);
+  }, [setNodes, setEdges]);
 
   const pushEvent = useCallback((step, simColor) => {
     const time = new Date().toTimeString().slice(0, 8);
@@ -153,7 +156,7 @@ export default function App() {
         },
       }))
     );
-  }, []);
+  }, [setEdges]);
 
   const activateNode = useCallback(
     (nodeId, actionLabel) => {
@@ -170,7 +173,7 @@ export default function App() {
       );
       highlightEdges(nodeId);
     },
-    [highlightEdges]
+    [highlightEdges, setNodes]
   );
 
   const completeNode = useCallback((nodeId, capDelta = 1.5) => {
@@ -195,7 +198,7 @@ export default function App() {
         })
       )
     );
-  }, []);
+  }, [setNodes]);
 
   const runSimulation = useCallback(
     async (simId) => {
@@ -245,7 +248,7 @@ export default function App() {
       setEdges(initialEdges);
       setRunning(false);
     },
-    [running, resetAllNodes, activateNode, completeNode, pushEvent, simSpeed]
+    [running, resetAllNodes, activateNode, completeNode, pushEvent, simSpeed, setNodes, setEdges]
   );
 
   const runFault = useCallback(
@@ -321,7 +324,7 @@ export default function App() {
         });
       }, 1000);
     },
-    [running, resetAllNodes, activateNode, completeNode, pushEvent, simSpeed]
+    [running, resetAllNodes, activateNode, completeNode, pushEvent, simSpeed, setNodes, setEdges]
   );
 
   const onNodeClick = useCallback((_, node) => {
@@ -375,7 +378,7 @@ export default function App() {
         prev.map((n) => ({ ...n, data: { ...n.data, isActive: false, actionLabel: null } }))
       )
     );
-  }, []);
+  }, [setNodes, setEdges]);
 
   return (
     <div
@@ -864,6 +867,13 @@ export default function App() {
       {activeTab === "te" && (
         <div style={{ flex: 1, overflow: "hidden", display: "flex" }}>
           <TrafficEngineeringTab nodes={nodes} />
+        </div>
+      )}
+
+      {/* ── CIRCUIT PLANNER TAB ── */}
+      {activeTab === "circuit" && (
+        <div style={{ flex: 1, overflow: "hidden", display: "flex" }}>
+          <CircuitPlannerTab />
         </div>
       )}
 

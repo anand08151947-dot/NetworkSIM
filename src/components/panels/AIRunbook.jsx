@@ -14,7 +14,7 @@ const RULES = [
 
   { condition: (nodes) => nodes.some(n => n.data.capacity >= 38 && n.data.layer === 'ip_services'), severity: 'info', icon: '📋',
     title: 'PLAN: BNG subscriber capacity at 40%',
-    getDetail: (nodes) => `BNG approaching 40% threshold. Pre-stage next OLT card and expand DHCP pool to avoid subscriber growth bottleneck.`,
+    getDetail: () => `BNG approaching 40% threshold. Pre-stage next OLT card and expand DHCP pool to avoid subscriber growth bottleneck.`,
     actions: ['Pre-order OLT expansion card', 'Expand DHCP pool', 'Review RADIUS policy templates'] },
 
   { condition: (nodes) => nodes.some(n => n.data.status === 'provisioning'), severity: 'active', icon: '⚡',
@@ -48,7 +48,6 @@ export default function AIRunbook({ nodes }) {
   if (!active) return null;
 
   const colors = SEV_COLORS[active.severity];
-  const badgeColor = colors.text;
 
   return (
     <CollapsiblePanel

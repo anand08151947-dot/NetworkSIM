@@ -8,7 +8,7 @@ function requestId() {
 
 // ── NetBox API ────────────────────────────────────────────────
 export const NetBoxAPI = {
-  async allocatePort(oltId, tier) {
+  async allocatePort(oltId) {
     await randomDelay(300, 700);
     const port = Math.floor(Math.random() * 14) + 35; // ports 35-48 (free)
     return { success: true, reqId: requestId(), oltId, port, assignedAt: new Date().toISOString() };
@@ -80,7 +80,7 @@ export const BNGAPI = {
 
 // ── CRM API (Salesforce) ──────────────────────────────────────
 export const CRMAPI = {
-  async createAccount(customer) {
+  async createAccount() {
     await randomDelay(300, 700);
     return { success: true, reqId: requestId(), accountId: `ACC-${Date.now()}`, status: 'active', createdAt: new Date().toISOString() };
   },

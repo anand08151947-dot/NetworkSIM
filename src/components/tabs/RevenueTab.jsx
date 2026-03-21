@@ -90,7 +90,7 @@ export default function RevenueTab({ customers, nodes, events, setNodes }) {
 
   const handleSaveScenario = () => {
     if (!scenarioName.trim()) return;
-    const s = saveScenario(scenarioName, nodes, customers, events);
+    saveScenario(scenarioName, nodes, customers, events);
     setScenarios(loadAllScenarios());
     setScenarioName('');
     setSaved(true);
@@ -145,7 +145,7 @@ export default function RevenueTab({ customers, nodes, events, setNodes }) {
             <Pie data={mrrByTier} dataKey="count" nameKey="tier" cx="50%" cy="50%" outerRadius={65} label={({ tier, pct }) => `${tier} ${Math.round(pct || 0)}%`} labelLine={false} fontSize={9}>
               {mrrByTier.map((entry, i) => <Cell key={i} fill={entry.color} />)}
             </Pie>
-            <Tooltip {...TOOLTIP_STYLE} formatter={(v, n) => [v, 'Customers']} />
+            <Tooltip {...TOOLTIP_STYLE} formatter={(v) => [v, 'Customers']} />
           </PieChart>
         </ResponsiveContainer>
         <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: 6 }}>
@@ -187,7 +187,7 @@ export default function RevenueTab({ customers, nodes, events, setNodes }) {
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
             <XAxis dataKey="month" tick={{ fontSize: 8, fill: '#475569' }} />
             <YAxis tick={{ fontSize: 8, fill: '#475569' }} domain={[0, 100]} unit="%" />
-            <Tooltip {...TOOLTIP_STYLE} formatter={(v, n) => [`${v}%`, 'BNG Capacity']} />
+            <Tooltip {...TOOLTIP_STYLE} formatter={(v) => [`${v}%`, 'BNG Capacity']} />
             <ReferenceLine y={40} stroke="#f59e0b" strokeDasharray="4 4" />
             <ReferenceLine y={80} stroke="#ef4444" strokeDasharray="4 4" />
             <Area type="monotone" dataKey="capacity" stroke="#60a5fa" fill="#60a5fa22" strokeWidth={2} dot={false} />
