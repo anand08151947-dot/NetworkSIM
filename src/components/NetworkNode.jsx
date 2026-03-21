@@ -69,7 +69,7 @@ function MiniGauge({ capacity, status, size = 44 }) {
   return <div ref={ref} />;
 }
 
-function NetworkNode({ data, selected }) {
+function NetworkNode({ data }) {
   const layerColor = LAYER_COLORS[data.layer] || '#64748b';
   const status = data.status || 'healthy';
   const statusColor = STATUS_COLORS[status];

@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { initialCustomers } from '../../data/customers';
 
 const SLA_TIERS = {
   Enterprise: { uptime: 99.99, creditPct: 25, label: '99.99%', color: '#a78bfa' },
@@ -12,7 +11,7 @@ function uptimeToMinutes(uptimePct, daysInMonth = 30) {
   return ((1 - uptimePct / 100) * daysInMonth * 24 * 60).toFixed(1);
 }
 
-function generateSLARecord(customer, faultEvents) {
+function generateSLARecord(customer) {
   const sla = SLA_TIERS[customer.tier] || SLA_TIERS.Residential;
   // Simulate some random downtime based on tier
   const baseDowntime = customer.tier === 'Enterprise' ? 0.5
@@ -48,7 +47,7 @@ function generateSLARecord(customer, faultEvents) {
 const TIER_FILTER_OPTIONS = ['All', 'Enterprise', 'Mid-Market', 'SMB', 'Residential'];
 const STATUS_FILTER_OPTIONS = ['All', 'BREACH', 'AT-RISK', 'OK'];
 
-export default function SLATab({ customers, nodes }) {
+export default function SLATab({ customers }) {
   const [tierFilter, setTierFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
   const [sortBy, setSortBy] = useState('actualDowntimeMin');

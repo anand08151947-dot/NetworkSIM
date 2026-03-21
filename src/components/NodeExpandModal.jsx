@@ -10,6 +10,14 @@ const STATUS_COLORS = { healthy: '#22c55e', warning: '#f59e0b', critical: '#ef44
 
 export default function NodeExpandModal({ node, edges, allNodes, onClose }) {
   const overlayRef = useRef(null);
+
+  useEffect(() => {
+    if (!node) return;
+    const handler = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [node, onClose]);
+
   if (!node) return null;
 
   const d = node.data;
@@ -39,12 +47,6 @@ export default function NodeExpandModal({ node, edges, allNodes, onClose }) {
     'Customer Count': d.count,
     'Mitigation Active': d.mitigationActive !== undefined ? (d.mitigationActive ? 'YES 🔴' : 'No') : undefined,
   }).filter(([, v]) => v !== undefined);
-
-  useEffect(() => {
-    const handler = (e) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [onClose]);
 
   return (
     <div

@@ -108,7 +108,7 @@ export default function App() {
       );
     }, 3000);
     return () => clearInterval(interval);
-  }, [running]);
+  }, [running, setNodes]);
 
   // Toggle traffic mode edges
   useEffect(() => {
@@ -121,7 +121,7 @@ export default function App() {
           : undefined,
       }))
     );
-  }, [trafficMode]);
+  }, [trafficMode, setEdges]);
 
   const resetAllNodes = useCallback(() => {
     setNodes(
@@ -133,7 +133,7 @@ export default function App() {
       )
     );
     setEdges(initialEdges);
-  }, []);
+  }, [setNodes, setEdges]);
 
   const pushEvent = useCallback((step, simColor) => {
     const time = new Date().toTimeString().slice(0, 8);
@@ -155,7 +155,7 @@ export default function App() {
         },
       }))
     );
-  }, []);
+  }, [setEdges]);
 
   const activateNode = useCallback(
     (nodeId, actionLabel) => {
@@ -172,7 +172,7 @@ export default function App() {
       );
       highlightEdges(nodeId);
     },
-    [highlightEdges]
+    [highlightEdges, setNodes]
   );
 
   const completeNode = useCallback((nodeId, capDelta = 1.5) => {
@@ -197,7 +197,7 @@ export default function App() {
         })
       )
     );
-  }, []);
+  }, [setNodes]);
 
   const runSimulation = useCallback(
     async (simId) => {
@@ -247,7 +247,7 @@ export default function App() {
       setEdges(initialEdges);
       setRunning(false);
     },
-    [running, resetAllNodes, activateNode, completeNode, pushEvent, simSpeed]
+    [running, resetAllNodes, activateNode, completeNode, pushEvent, simSpeed, setNodes, setEdges]
   );
 
   const runFault = useCallback(
@@ -323,7 +323,7 @@ export default function App() {
         });
       }, 1000);
     },
-    [running, resetAllNodes, activateNode, completeNode, pushEvent, simSpeed]
+    [running, resetAllNodes, activateNode, completeNode, pushEvent, simSpeed, setNodes, setEdges]
   );
 
   const onNodeClick = useCallback((_, node) => {
@@ -377,7 +377,7 @@ export default function App() {
         prev.map((n) => ({ ...n, data: { ...n.data, isActive: false, actionLabel: null } }))
       )
     );
-  }, []);
+  }, [setNodes, setEdges]);
 
   return (
     <div

@@ -34,7 +34,6 @@ export default function WhatIfPlanner({ nodes }) {
 
   const bngCap = bng?.data?.capacity || 38;
   const maxSubs = bng?.data?.maxSubscribers || 4000;
-  const currentSubs = bng?.data?.subscribers || 1469;
 
   const projectedCap = Math.min(99, bngCap + (addedSubs / maxSubs) * 100);
   const oltCap = Math.min(99, (olt1?.data?.capacity || 34) + (addedSubs / 48) * 1.2);

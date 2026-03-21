@@ -12,19 +12,12 @@ const routeWeight = (util, type) => {
   return base + (util / 100) * 3;
 };
 
-// Node radius: proportional to subscriber count at city zoom
-const subRadius = (subs, zoom) => {
-  if (zoom < 9) return 0;
-  const base = Math.max(6, Math.min(20, Math.sqrt(subs || 1) * 0.4));
-  return base;
-};
-
 const coordMap = Object.fromEntries(GEO_NODES.map(n => [n.id, [n.lat, n.lng]]));
 
 // Zoom tracker component
 function ZoomWatcher({ onZoom }) {
   const map = useMapEvents({ zoomend: () => onZoom(map.getZoom()) });
-  useEffect(() => { onZoom(map.getZoom()); }, []);
+  useEffect(() => { onZoom(map.getZoom()); }, [map, onZoom]);
   return null;
 }
 

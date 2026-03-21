@@ -11,7 +11,6 @@ const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 const randIP = (prefix) => `${prefix}.${randInt(1, 250)}`;
 const ontSN = () => `CXNK${hex(8)}`;
 const orderNum = () => `ORD-${Date.now().toString(36).toUpperCase()}`;
-const vlanBase = () => randInt(1001, 4090);
 const loopIP = () => `10.0.0.${randInt(1, 254)}`;
 const mplsLabel = () => randInt(16, 1048575);
 

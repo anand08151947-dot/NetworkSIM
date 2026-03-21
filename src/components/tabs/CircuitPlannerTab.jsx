@@ -1,11 +1,17 @@
-import { useState, useRef, useCallback } from 'react';
-import { SITES, CIRCUIT_TYPES, EQUIPMENT_STACKS, buildPhaseFlow } from '../../data/circuitPlans';
+import { useState, useRef, useCallback, useMemo } from 'react';
+import * as XLSX from 'xlsx';
+import { SITES, CIRCUIT_TYPES, EQUIPMENT_STACKS, buildPhaseFlow,
+  buildInventorySnapshot, buildFeasibilityGates, buildProtectionPaths, buildActivationTests }
+  from '../../data/circuitPlans';
 import CircuitWizard from '../circuit/CircuitWizard';
 import EquipmentChain from '../circuit/EquipmentChain';
 import OpticalBudgetCalc from '../circuit/OpticalBudgetCalc';
 import PhaseStepper from '../circuit/PhaseStepper';
+import InventoryScoreboard from '../circuit/InventoryScoreboard';
+import FeasibilityGates from '../circuit/FeasibilityGates';
+import PathMap from '../circuit/PathMap';
+import ActivationTestPanel from '../circuit/ActivationTestPanel';
 
-// ── Default form state ────────────────────────────────────────────────────────
 const DEFAULT_FORM = {
   circuitType: 'l3vpn',
   aSite:       'sea',
@@ -16,31 +22,40 @@ const DEFAULT_FORM = {
 };
 
 // Map: which device index to highlight during each phase (0-based)
-// Roughly: phase 1-2 → endpoints, phase 3-4 → middle transport, phase 5-6 → PE routers, etc.
 function deviceIndexForPhase(phaseIdx, stackLen) {
   if (stackLen === 0) return -1;
   const map = [
-    0,                               // phase 1 (intake) → A-site CE
-    Math.floor(stackLen / 2),        // phase 2 (feasibility) → mid device
-    1,                               // phase 3 (inventory) → A-side metro/agg
-    Math.floor(stackLen / 2),        // phase 4 (optical) → DWDM
-    Math.floor(stackLen / 2),        // phase 5 (path eng) → transport
-    Math.floor(stackLen / 2) - 1,   // phase 6 (packet config) → PE
-    0,                               // phase 7 (testing) → CE
-    stackLen - 1,                   // phase 8 (monitoring) → Z-site CE
+    0,
+    Math.floor(stackLen / 2),
+    1,
+    Math.floor(stackLen / 2),
+    Math.floor(stackLen / 2),
+    Math.floor(stackLen / 2) - 1,
+    0,
+    stackLen - 1,
   ];
   return map[phaseIdx] ?? Math.floor(stackLen / 2);
 }
 
+const INNER_TABS = [
+  { id: 'sim',       label: '📋 Simulation' },
+  { id: 'inventory', label: '🗄 Inventory' },
+  { id: 'pathmap',   label: '🗺 Path Map' },
+  { id: 'tests',     label: '✅ Tests' },
+];
+
 export default function CircuitPlannerTab() {
-  const [form, setForm]         = useState(DEFAULT_FORM);
-  const [running, setRunning]   = useState(false);
-  const [plan, setPlan]         = useState(null);          // built phase flow
+  const [form, setForm]               = useState(DEFAULT_FORM);
+  const [running, setRunning]         = useState(false);
+  const [plan, setPlan]               = useState(null);
   const [activePhaseIdx, setActivePhaseIdx] = useState(-1);
   const [activeStepIdx, setActiveStepIdx]   = useState(-1);
   const [stepTimestamps, setStepTimestamps] = useState({});
-  const [speed, setSpeed]       = useState(1);
-  const [history, setHistory]   = useState([]);            // completed circuits
+  const [speed, setSpeed]             = useState(1);
+  const [history, setHistory]         = useState([]);
+  const [rightTab, setRightTab]       = useState('sim');
+  const [simComplete, setSimComplete] = useState(false);
+  const [invAnimKey, setInvAnimKey]   = useState(0);
 
   const cancelRef = useRef(false);
   const speedRef  = useRef(speed);
@@ -50,11 +65,12 @@ export default function CircuitPlannerTab() {
     setForm(prev => ({ ...prev, [key]: val }));
   }, []);
 
-  const resetSim = () => {
+  const resetSim = useCallback(() => {
     setActivePhaseIdx(-1);
     setActiveStepIdx(-1);
     setStepTimestamps({});
-  };
+    setSimComplete(false);
+  }, []);
 
   const timestamp = () =>
     new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -68,9 +84,11 @@ export default function CircuitPlannerTab() {
     setPlan(built);
     resetSim();
     setRunning(true);
+    setRightTab('sim');
+    setInvAnimKey(k => k + 1);
 
     const delay = ms => new Promise(r => setTimeout(r, ms));
-    const stepDelayMs = () => Math.round(1200 / speedRef.current);
+    const stepDelayMs  = () => Math.round(1200 / speedRef.current);
     const microDelayMs = () => Math.round(250 / speedRef.current);
 
     for (let pi = 0; pi < built.phases.length; pi++) {
@@ -88,8 +106,9 @@ export default function CircuitPlannerTab() {
     }
 
     if (!cancelRef.current) {
-      setActivePhaseIdx(built.phases.length);  // triggers "complete" banner
+      setActivePhaseIdx(built.phases.length);
       setActiveStepIdx(-1);
+      setSimComplete(true);
       setHistory(prev => [{
         orderId: built.orderId,
         circuitType: form.circuitType,
@@ -102,23 +121,91 @@ export default function CircuitPlannerTab() {
       }, ...prev]);
     }
     setRunning(false);
-  }, [form]);
+  }, [form, resetSim]);
 
   const handleStop = () => { cancelRef.current = true; setRunning(false); };
 
-  const circType    = CIRCUIT_TYPES.find(c => c.id === form.circuitType);
-  const needsOptical = circType?.needsOptical ?? false;
-  const stackLen = (plan ? (EQUIPMENT_STACKS[form.circuitType] ?? []) : []).length;
+  // ── Derived data (useMemo — no setState in effects) ──────────────────────────
+  const inventoryItems = useMemo(() =>
+    form.aSite && form.zSite
+      ? buildInventorySnapshot(form.aSite, form.zSite, form.bandwidth)
+      : null,
+    [form.aSite, form.zSite, form.bandwidth]
+  );
+
+  const feasibilityGates = useMemo(() =>
+    plan
+      ? buildFeasibilityGates(form.circuitType, form.bandwidth, form.slaTier, form.aSite, form.zSite)
+      : null,
+    [plan, form.circuitType, form.bandwidth, form.slaTier, form.aSite, form.zSite]
+  );
+
+  const protectionPaths = useMemo(() =>
+    plan ? buildProtectionPaths(form.aSite, form.zSite, form.slaTier) : null,
+    [plan, form.aSite, form.zSite, form.slaTier]
+  );
+
+  const activationTestDefs = useMemo(() =>
+    buildActivationTests(form.bandwidth, form.slaTier),
+    [form.bandwidth, form.slaTier]
+  );
+
+  const circType         = CIRCUIT_TYPES.find(c => c.id === form.circuitType);
+  const needsOptical     = circType?.needsOptical ?? false;
+  const stackLen         = (plan ? (EQUIPMENT_STACKS[form.circuitType] ?? []) : []).length;
   const activeDeviceIndex = activePhaseIdx >= 0 && activePhaseIdx < (plan?.phases.length ?? 0)
     ? deviceIndexForPhase(activePhaseIdx, stackLen)
     : -1;
+
+  // ── Export ───────────────────────────────────────────────────────────────────
+  const handleExport = useCallback(() => {
+    if (!plan) return;
+    const wb = XLSX.utils.book_new();
+
+    const summaryData = [
+      ['Circuit Planner Report — NorthStar Fiber'],
+      ['Order ID', plan.orderId],
+      ['Circuit Type', form.circuitType.toUpperCase()],
+      ['A-Site', (SITES.find(s => s.id === form.aSite)?.label ?? form.aSite)],
+      ['Z-Site', (SITES.find(s => s.id === form.zSite)?.label ?? form.zSite)],
+      ['Bandwidth', form.bandwidth],
+      ['Protection', form.protection],
+      ['SLA Tier', form.slaTier.toUpperCase()],
+      ['Generated', new Date().toLocaleString()],
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryData), 'Circuit Summary');
+
+    if (inventoryItems) {
+      const invRows = inventoryItems.map(i => ({
+        Resource: i.label,
+        Available: i.avail,
+        Total: i.total,
+        Unit: i.unit || '',
+        Status: i.avail <= (i.critAt ?? 0) ? 'CRITICAL' : i.avail <= (i.warnAt ?? 0) ? 'WARNING' : 'OK',
+        Augmentation: i.augment || '',
+      }));
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(invRows), 'Inventory');
+    }
+
+    if (feasibilityGates) {
+      const gateRows = feasibilityGates.map(g => ({
+        Phase: g.phaseId ?? '',
+        Gate: g.name,
+        Status: g.status,
+        Detail: g.detail ?? '',
+        Augmentation: g.augment ?? '',
+      }));
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(gateRows), 'Feasibility Gates');
+    }
+
+    XLSX.writeFile(wb, `circuit-report-${plan.orderId}.xlsx`);
+  }, [plan, form, inventoryItems, feasibilityGates]);
 
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
       background: '#04080f', color: '#e2e8f0', overflow: 'hidden',
     }}>
-
       {/* ── Header bar ──────────────────────────────────────────────── */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 16,
@@ -142,7 +229,6 @@ export default function CircuitPlannerTab() {
           </button>
         )}
 
-        {/* Order ID badge when running */}
         {plan && (
           <div style={{
             marginLeft: running ? 8 : 'auto',
@@ -158,7 +244,7 @@ export default function CircuitPlannerTab() {
       {/* ── Main body: two columns ──────────────────────────────────── */}
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
 
-        {/* Left panel — wizard + chain + optical */}
+        {/* Left panel */}
         <div style={{
           width: 340, flexShrink: 0, display: 'flex', flexDirection: 'column',
           gap: 12, padding: '12px 10px 12px 14px', overflowY: 'auto',
@@ -186,7 +272,6 @@ export default function CircuitPlannerTab() {
             />
           )}
 
-          {/* Circuit history */}
           {history.length > 0 && (
             <div style={{
               background: '#070d1a', border: '1px solid #1e3a5f', borderRadius: 10,
@@ -216,20 +301,105 @@ export default function CircuitPlannerTab() {
           )}
         </div>
 
-        {/* Right panel — phase stepper + step log */}
+        {/* Right panel */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          {plan ? (
-            <PhaseStepper
-              phases={plan.phases}
-              activePhaseIdx={activePhaseIdx}
-              activeStepIdx={activeStepIdx}
-              stepTimestamps={stepTimestamps}
-              speed={speed}
-              onSpeedChange={s => setSpeed(s)}
-            />
-          ) : (
-            <EmptyState />
+          {/* Inner sub-tab bar */}
+          {plan && (
+            <div style={{
+              display: 'flex', gap: 2, padding: '6px 12px',
+              borderBottom: '1px solid #1e2a3a', background: '#070d1a', flexShrink: 0,
+            }}>
+              {INNER_TABS.map(t => {
+                const isDisabled = t.id === 'tests' && !simComplete;
+                const isActive   = rightTab === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    disabled={isDisabled}
+                    onClick={() => !isDisabled && setRightTab(t.id)}
+                    style={{
+                      background: isActive ? '#0f3460' : 'transparent',
+                      border: isActive ? '1px solid #1e5f9f' : '1px solid transparent',
+                      color: isDisabled ? '#334155' : isActive ? '#38bdf8' : '#64748b',
+                      borderRadius: 6, padding: '4px 12px', fontSize: 11,
+                      cursor: isDisabled ? 'not-allowed' : 'pointer', fontWeight: isActive ? 700 : 400,
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {t.label}
+                  </button>
+                );
+              })}
+              {simComplete && (
+                <button
+                  onClick={handleExport}
+                  style={{
+                    marginLeft: 'auto', background: '#052e16', border: '1px solid #166534',
+                    color: '#4ade80', borderRadius: 6, padding: '4px 12px', fontSize: 11,
+                    cursor: 'pointer', fontWeight: 600,
+                  }}
+                >
+                  📥 Export Report
+                </button>
+              )}
+            </div>
           )}
+
+          {/* Right panel content */}
+          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            {!plan && <EmptyState />}
+
+            {plan && rightTab === 'sim' && (
+              <PhaseStepper
+                phases={plan.phases}
+                activePhaseIdx={activePhaseIdx}
+                activeStepIdx={activeStepIdx}
+                stepTimestamps={stepTimestamps}
+                speed={speed}
+                onSpeedChange={s => setSpeed(s)}
+              />
+            )}
+
+            {plan && rightTab === 'inventory' && (
+              <div style={{
+                display: 'flex', flex: 1, overflow: 'hidden', gap: 12, padding: 12,
+              }}>
+                <div style={{ flex: 1, overflowY: 'auto' }}>
+                  {feasibilityGates && (
+                    <FeasibilityGates
+                      gates={feasibilityGates}
+                      activePhaseIdx={activePhaseIdx}
+                    />
+                  )}
+                </div>
+                <div style={{ flex: 1, overflowY: 'auto' }}>
+                  {inventoryItems && (
+                    <InventoryScoreboard
+                      items={inventoryItems}
+                      animKey={invAnimKey}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+
+            {plan && rightTab === 'pathmap' && protectionPaths && (
+              <PathMap
+                paths={protectionPaths}
+                aId={form.aSite}
+                zId={form.zSite}
+              />
+            )}
+
+            {plan && rightTab === 'tests' && (
+              <ActivationTestPanel
+                tests={activationTestDefs}
+                simComplete={simComplete}
+                speed={speed}
+                onExport={handleExport}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -316,3 +316,175 @@ function buildPacketSteps(circuitType, bandwidth, aLabel, zLabel) {
     default: return [];
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Phase 2 & 3 data builders
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Path routing table: working and protection paths per site pair ────────────
+export const PATH_ROUTES = {
+  'bel-evr': { working: ['bel','evr'],         protection: ['bel','sea','evr'],     wkLabel: 'BEL→EVR',         ptLabel: 'BEL→SEA→EVR'         },
+  'bel-oly': { working: ['bel','sea','oly'],   protection: ['bel','evr','oly'],     wkLabel: 'BEL→SEA→OLY',    ptLabel: 'BEL→EVR→OLY'         },
+  'bel-pdx': { working: ['bel','sea','pdx'],   protection: ['bel','oly','pdx'],     wkLabel: 'BEL→SEA→PDX',    ptLabel: 'BEL→OLY→PDX'         },
+  'bel-sea': { working: ['bel','sea'],          protection: ['bel','evr','sea'],     wkLabel: 'BEL→SEA',         ptLabel: 'BEL→EVR→SEA'         },
+  'bel-spo': { working: ['bel','evr','spo'],   protection: ['bel','sea','spo'],     wkLabel: 'BEL→EVR→SPO',    ptLabel: 'BEL→SEA→SPO'         },
+  'evr-oly': { working: ['evr','sea','oly'],   protection: ['evr','bel','oly'],     wkLabel: 'EVR→SEA→OLY',    ptLabel: 'EVR→BEL→OLY'         },
+  'evr-pdx': { working: ['evr','sea','pdx'],   protection: ['evr','bel','pdx'],     wkLabel: 'EVR→SEA→PDX',    ptLabel: 'EVR→BEL→PDX'         },
+  'evr-sea': { working: ['evr','sea'],          protection: ['evr','bel','sea'],     wkLabel: 'EVR→SEA',         ptLabel: 'EVR→BEL→SEA'         },
+  'evr-spo': { working: ['evr','spo'],          protection: ['evr','sea','spo'],     wkLabel: 'EVR→SPO',         ptLabel: 'EVR→SEA→SPO'         },
+  'oly-pdx': { working: ['oly','pdx'],          protection: ['oly','sea','pdx'],     wkLabel: 'OLY→PDX',         ptLabel: 'OLY→SEA→PDX'         },
+  'oly-sea': { working: ['oly','sea'],          protection: ['oly','bel','sea'],     wkLabel: 'OLY→SEA',         ptLabel: 'OLY→BEL→SEA'         },
+  'oly-spo': { working: ['oly','sea','spo'],   protection: ['oly','pdx','spo'],     wkLabel: 'OLY→SEA→SPO',    ptLabel: 'OLY→PDX→SPO'         },
+  'pdx-sea': { working: ['pdx','oly','sea'],   protection: ['pdx','evr','sea'],     wkLabel: 'PDX→OLY→SEA',    ptLabel: 'PDX→EVR→SEA'         },
+  'pdx-spo': { working: ['pdx','sea','spo'],   protection: ['pdx','oly','spo'],     wkLabel: 'PDX→SEA→SPO',    ptLabel: 'PDX→OLY→SPO'         },
+  'sea-spo': { working: ['sea','evr','spo'],   protection: ['sea','bel','spo'],     wkLabel: 'SEA→EVR→SPO',    ptLabel: 'SEA→BEL→SPO'         },
+};
+
+// Seeded deterministic "random" for reproducible but varied inventory data
+function seeded(aId, zId, n) {
+  return ((aId.charCodeAt(0) * 31 + zId.charCodeAt(0)) * 7919 + n * 1117) % 100;
+}
+
+// ── Inventory snapshot ────────────────────────────────────────────────────────
+export function buildInventorySnapshot(aId, zId, bandwidth) {
+  const bwLevel = { '1G': 1, '10G': 2, '100G': 3, '400G': 4, '800G': 5 }[bandwidth] ?? 2;
+  const s = (n) => seeded(aId, zId, n);
+
+  const fiberAvail  = Math.max(1, 15 - 3 - (s(1) % 5));
+  const portsAvail  = Math.max(0, 12 - bwLevel - (s(2) % 3));
+  const vlanUsed    = 3700 + (s(3) % 200);
+  const ipAvail     = Math.max(0, 20 - bwLevel * 2 - (s(4) % 4));
+  const xcvrStock   = Math.max(0, 10 - bwLevel * 2 - (s(5) % 3));
+  const rackFree    = Math.max(1, 42 - 14 - (s(6) % 10));
+  const powerUsed   = +(10 + (s(7) % 4) + (s(8) % 10) * 0.1).toFixed(1);
+
+  return [
+    { id: 'fiber',  label: 'Fiber Spans',           avail: fiberAvail,        total: 15,      unit: 'available',   critAt: 2, warnAt: 5,
+      augment: fiberAvail <= 2 ? 'Deploy new conduit or lease dark fiber on this span — contact outside plant team' : null },
+    { id: 'ports',  label: `Router Ports (${bandwidth})`, avail: portsAvail,  total: 12,      unit: 'free ports',  critAt: 1, warnAt: 3,
+      augment: portsAvail <= 1 ? `Install line card: Cisco ASR9000-${bwLevel >= 4 ? '4HH' : '8X100GE'}-SE — lead time 4 weeks` : null },
+    { id: 'vlan',   label: 'VLAN ID Pool',           avail: 4094 - vlanUsed,  total: 4094,    unit: 'IDs free',    critAt: 10, warnAt: 50,
+      augment: (4094 - vlanUsed) <= 10 ? 'Request VLAN range expansion — coordinate with network architects' : null },
+    { id: 'label',  label: 'MPLS Label Space',       avail: 1048576 - 18000,  total: 1048576, unit: 'labels free', critAt: 10000, warnAt: 100000, augment: null },
+    { id: 'ip',     label: 'IP /30 P2P Pools',       avail: ipAvail,          total: 20,      unit: '/30s free',   critAt: 2, warnAt: 5,
+      augment: ipAvail <= 2 ? 'Request additional /24 from IPAM — carve new /30 point-to-point pool' : null },
+    { id: 'xcvr',   label: `QSFP-DD ${bandwidth} Stock`, avail: xcvrStock,   total: 10,      unit: 'in stock',    critAt: 1, warnAt: 3,
+      augment: xcvrStock <= 1 ? `Order: QSFP-DD-${bandwidth}-ZR4 (P/N QSFP-DD-${bandwidth === '400G' ? '400G-FR4' : bandwidth + '-ZR'}) — 2–3 week lead time` : null },
+    { id: 'rack',   label: 'Rack Space',              avail: rackFree,         total: 42,      unit: 'U free',      critAt: 2, warnAt: 6, augment: rackFree <= 2 ? 'Deploy additional 7-foot rack in CO — coordinate with facilities' : null },
+    { id: 'power',  label: 'Power Capacity',          avail: +(16 - powerUsed).toFixed(1), total: 16, unit: 'A free', critAt: 1, warnAt: 3,
+      augment: (16 - powerUsed) <= 1 ? 'Upgrade -48V DC plant breaker panel — coordinate with CO power team' : null },
+  ];
+}
+
+// ── Feasibility gate results per phase ───────────────────────────────────────
+export function buildFeasibilityGates(circuitType, bandwidth, slaId, aId, zId) {
+  const bwLevel = { '1G': 1, '10G': 2, '100G': 3, '400G': 4, '800G': 5 }[bandwidth] ?? 2;
+  const needsOptical = CIRCUIT_TYPES.find(c => c.id === circuitType)?.needsOptical ?? false;
+  const s = (n) => seeded(aId, zId, n + bwLevel * 10);
+
+  const gate = (phaseId, name, passThreshold, passMsg, warnMsg, warnAugment) => {
+    const pct = s(phaseId);
+    const status = pct < passThreshold ? 'WARN' : 'PASS';
+    return {
+      phaseId, name, status,
+      detail:  status === 'PASS' ? passMsg : warnMsg,
+      augment: status === 'WARN' ? warnAugment : null,
+    };
+  };
+
+  return [
+    gate(1, 'Address & Site Validation',   90,
+      `${aId.toUpperCase()} and ${zId.toUpperCase()} addresses geocode verified — site survey on record`,
+      'Address validation partial match — field verification recommended',
+      'Schedule site survey: contact outside plant team'),
+
+    gate(2, 'Topology Reachability',        93,
+      `${aId.toUpperCase()}→${zId.toUpperCase()} fully reachable — all intermediate nodes UP`,
+      'One intermediate node flagged for scheduled maintenance this window',
+      'Verify maintenance window does not overlap with activation — reschedule if needed'),
+
+    gate(3, 'Physical Capacity',            bwLevel >= 4 ? 55 : 88,
+      `Fiber, ports, rack, and power sufficient for ${bandwidth} circuit`,
+      `${bandwidth} demand may exceed available resources — augmentation recommended`,
+      `Add line card: Cisco ASR9000-${bwLevel >= 4 ? '4HH-SE' : '8X100GE-SE'} and order additional fiber pair`),
+
+    gate(4, needsOptical ? 'Wavelength Availability' : 'L2/L3 Headroom', bwLevel >= 4 ? 45 : 85,
+      needsOptical
+        ? 'C47 (193.700 THz) available on all ROADM nodes — no wavelength conflicts'
+        : 'Packet layer headroom sufficient — no VLAN or label pool issues',
+      needsOptical
+        ? 'Wavelength conflict on C47 — alternate channel required'
+        : 'VLAN pool near capacity — range expansion recommended',
+      needsOptical
+        ? 'Re-plan on C43 (193.300 THz) — update ROADM channel plan'
+        : 'Request VLAN block 3800–3900 from network operations'),
+
+    gate(5, 'SRLG Diversity',               94,
+      'Working and protection paths share 0 SRLG groups — fully fiber-diverse',
+      'SRLG partial overlap on one segment — limited diversity',
+      'Apply SRLG exclusion rule set 42 in CSPF — re-run path computation'),
+
+    gate(6, 'Config Pre-validation',        95,
+      `PE config pre-checked on ${aId.toUpperCase()} and ${zId.toUpperCase()} — 0 policy conflicts`,
+      'Route-target overlap detected with existing VPN — reassignment needed',
+      'Assign unique RT from pool 65100:5000–5999 — update IPAM'),
+
+    gate(7, 'Activation Test Gate',         92,
+      'Y.1564 CIR conformance 100% — RFC 2544 wire-rate — all thresholds met',
+      'Y.1564 CIR conformance 99.1% — minor shaper mis-configuration',
+      'Adjust traffic policing burst parameters on BNG / PE egress shaper'),
+
+    gate(8, 'NMS Circuit Commit',           97,
+      `Circuit committed to NMS — SNMP reachable — status: IN-SERVICE`,
+      'SNMP unreachable on one PE interface — management path check required',
+      'Verify OOB management VLAN and routing to PE loopback'),
+  ];
+}
+
+// ── Protection path metrics ───────────────────────────────────────────────────
+export function buildProtectionPaths(aId, zId, slaId) {
+  const key = [aId, zId].sort().join('-');
+  const route = PATH_ROUTES[key] ?? {
+    working: [aId, zId], protection: [aId, zId],
+    wkLabel: `${aId.toUpperCase()}→${zId.toUpperCase()}`,
+    ptLabel: `${aId.toUpperCase()}→${zId.toUpperCase()} (backup)`,
+  };
+  const slaObj = SLA_TIERS.find(s => s.id === slaId) ?? SLA_TIERS[0];
+
+  return {
+    working: {
+      path:       route.working,
+      label:      route.wkLabel,
+      latencyMs:  slaObj.latencyMs - 1,
+      hops:       route.working.length - 1,
+      srlgShared: 0,
+      frrMs:      50,
+      status:     'ACTIVE',
+    },
+    protection: {
+      path:       route.protection,
+      label:      route.ptLabel,
+      latencyMs:  slaObj.latencyMs + 2,
+      hops:       route.protection.length - 1,
+      srlgShared: 0,
+      frrMs:      50,
+      status:     'STANDBY',
+    },
+    srlgDiverse: true,
+  };
+}
+
+// ── Activation test definitions (RFC 2544 / Y.1564) ──────────────────────────
+export function buildActivationTests(bandwidth, slaId) {
+  const slaObj = SLA_TIERS.find(s => s.id === slaId) ?? SLA_TIERS[0];
+  return [
+    { id: 'rfc_64',    name: 'RFC 2544 — 64 B',    standard: 'RFC 2544',      target: `${bandwidth} wire-rate`, result: bandwidth,                         unit: 'throughput', detail: '64-byte frames — wire-rate forwarding',         durationMs: 900  },
+    { id: 'rfc_512',   name: 'RFC 2544 — 512 B',   standard: 'RFC 2544',      target: `${bandwidth} (100%)`,    result: bandwidth,                         unit: 'throughput', detail: '512-byte — zero packet loss',                   durationMs: 700  },
+    { id: 'rfc_1518',  name: 'RFC 2544 — 1518 B',  standard: 'RFC 2544',      target: `${bandwidth} (100%)`,    result: bandwidth,                         unit: 'throughput', detail: 'Jumbo frame — PDU integrity verified',          durationMs: 700  },
+    { id: 'y1564_cir', name: 'Y.1564 CIR Step',    standard: 'Y.1564',        target: `${bandwidth} (100%)`,    result: `${bandwidth} ✓`,                  unit: 'CIR',        detail: '25%→50%→75%→100% CIR ramp — all passed',       durationMs: 1100 },
+    { id: 'latency',   name: 'Latency RTT',         standard: 'ITU-T Y.1731', target: `≤ ${slaObj.latencyMs} ms`,result: `${slaObj.latencyMs - 1} ms`,   unit: 'latency',    detail: `P50: ${slaObj.latencyMs-2} ms | P99: ${slaObj.latencyMs} ms`, durationMs: 800 },
+    { id: 'jitter',    name: 'Jitter / PDV',        standard: 'ITU-T Y.1731', target: `≤ ${slaObj.jitterMs} ms`, result: `${(slaObj.jitterMs*0.6).toFixed(2)} ms`, unit: 'jitter', detail: `MAPDV: ${(slaObj.jitterMs*0.8).toFixed(2)} ms`,   durationMs: 700  },
+    { id: 'loss',      name: 'Packet Loss',         standard: 'RFC 2544',      target: '0.000%',                 result: '0.000%',                          unit: 'loss',       detail: '10,000,000 frames — 0 lost',                    durationMs: 700  },
+    { id: 'ber',       name: 'BER (Optical)',        standard: 'ITU-T G.826',  target: '< 1×10⁻¹²',             result: '< 1×10⁻¹³',                      unit: 'BER',        detail: 'Pre-FEC: 2.1×10⁻³ | Post-FEC: < 10⁻¹³',       durationMs: 900  },
+  ];
+}
