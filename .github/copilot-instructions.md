@@ -1,8 +1,9 @@
 # GitHub Copilot – Workspace Instructions
-# NorthStar Fiber ISP Network Simulation Dashboard
+# NorthStar Fiber / NetworkSIM — ISP Network Simulation Dashboard
 
 > This file provides persistent context to GitHub Copilot for every session in
 > this repository. Keep it updated as the project evolves.
+> Last updated: 2026-03-21
 
 ---
 
@@ -12,7 +13,8 @@
 |-------|-------|
 | **Repo name** | `NetworkSIM` |
 | **GitHub** | https://github.com/anand08151947-dot/NetworkSIM |
-| **Branch** | `main` (default & only branch) |
+| **Default branch** | `main` |
+| **Active PR branch** | `feature/circuit-planner-tab` → PR #1 (open) |
 | **Author** | Anand Ranade (`anand08151947-dot`) |
 | **License** | Apache 2.0 |
 | **Status** | Active development |
@@ -21,21 +23,78 @@
 
 ## 🎯 What This Project Is
 
-A **NOC-grade, fully client-side ISP network simulation dashboard** that models
+A **NOC-grade, fully client-side ISP network simulation dashboard** modeling
 the complete network stack of a hypothetical fiber ISP called *NorthStar Fiber*.
 There is **no backend** — all data, simulations, and state are in-memory React
 state seeded from static JS data files.
 
-The app demonstrates:
+### Currently Visible Tabs (3 active, others hidden)
+
+| Tab | Description |
+|-----|-------------|
+| 🗺️ Network Topology | Interactive 30+ node React Flow canvas, 7 network layers, simulation engine |
+| 🌐 Geographic Map | React Leaflet PNW map of Central Offices and fiber routes |
+| 📡 Circuit Planner | Carrier-grade Telco circuit orchestration simulator (see below) |
+
+### Hidden Tabs (exist in codebase, commented out in TABS array in App.jsx)
+Revenue & Analytics · SLA Tracker · BGP & Security · IPAM · Audit Log · Traffic Engineering · Customer Database
+
+### Core Features
 - **Interactive 30+ node topology** (React Flow canvas) spanning 7 network layers
 - **8 provisioning simulation flows** with step-by-step animated highlighting
 - **5 fault injection scenarios** with auto-healing remediation events
 - **Geographic Leaflet map** of PNW Central Offices and fiber routes
-- **7 analytics tabs**: Customers, Revenue, SLA, BGP/Security, IPAM, Audit Log, Traffic Engineering
 - **Simulation recording** — exports WebM video or animated GIF of the topology
 - **Multi-role views** — NOC Engineer, Sales Engineer, Executive, Field Tech
 - **Config Generator** — produces real-device CLI/API configs (Calix OLT, Cisco IOS-XR, Ciena ROADM, NetBox, RADIUS, DHCP, BGP)
 - **AI Runbook** panel — auto-generates NOC runbook for the active simulation
+
+---
+
+## 📡 Circuit Planner Tab — Detailed Architecture
+
+The Circuit Planner is the primary active development area. It is a fully
+self-contained carrier-grade Telco circuit creation simulator.
+
+### Features
+- **Service order wizard** — circuit type, A/Z sites, bandwidth, protection, SLA tier
+- **8-phase simulation engine** — animates through all carrier planning phases
+- **Equipment chain visualizer** — animated A→Z vendor device chain (7 vendors)
+- **Optical budget calculator** — real dB math for DWDM/Wave circuits
+- **Step-level live config generator** — per-step vendor-accurate CLI/API configs
+- **Clickable completed steps** — pin any ✅ step to explore its config post-simulation
+- **Config / Payload / Log tabs** — per step: CLI config, HTTP/NETCONF/gNMI payload, syslog audit trail
+- **Inventory scoreboard** — animated capacity bars (fiber, ports, VLANs, labels, IPs, transceivers)
+- **Feasibility gates** — pass/fail gates with augmentation recommendations
+- **Path map** — Leaflet A-Z route map with working + protection paths
+- **Activation test panel** — RFC 2544 / Y.1564 animated test runner
+- **XLSX export** — 3-sheet circuit report (Summary, Inventory, Feasibility Gates)
+- **Session circuit registry** — history of all circuits planned in the session
+- **5 inner sub-tabs**: 📋 Simulation · 🗄 Inventory · 🗺 Path Map · ✅ Tests · ⚙️ Configs
+
+### Circuit Types Supported
+L3VPN · EVC/E-LINE · DIA Internet · Wave/DWDM · Mobile Backhaul · DCI
+
+### Equipment Stack (vendor-accurate)
+- **CE**: Cisco ISR 4331, Juniper SRX 345, Cisco Catalyst 8300
+- **Metro Agg**: Nokia 7210 SAS, Cisco ASR 920
+- **PE Router**: Cisco ASR 9001, Juniper MX960, Nokia 7750 SR
+- **Optical**: Ciena 6500 DWDM, Infinera DTN-X, Nokia 1830 PSS
+- **Access**: Nokia 7360 ISAM OLT, Calix E7 OLT
+- **DC/Spine**: Arista 7000, Cisco Nexus 9000
+
+### Simulation Inner Tab Layout (Simulation sub-tab)
+```
+┌─── Step Log (55%) ─────────────────┬─── Live Config (45%) ────────────────────┐
+│ [Phase 1✅][Phase 2✅][Phase 6🔄]   │  System badge | action | STEP CONFIG 🟢  │
+│                                    │  [⚙️ Config] [📤 Payload] [📋 Log]        │
+│ ✅ timestamp  System  action        │  ─────────────────────────────────────   │
+│    step detail (shown when done)   │  <vendor-accurate config / payload / log> │
+│                                    │                                  [Copy]   │
+│ ✅ (click any ✅ to pin) 📌 PINNED  │  📌 PINNED / 🔴 LIVE / ✅ DONE header     │
+│    ...                             │  [✕ Unpin] button when pinned            │
+└────────────────────────────────────┴──────────────────────────────────────────┘
+```
 
 ---
 
@@ -75,41 +134,33 @@ The app demonstrates:
 ### Key Scripts
 
 ```powershell
-# Install / update dependencies (verifies Node ≥ 18, confirms packages)
-.\install.ps1
-
-# Clean reinstall (removes node_modules first)
-.\install.ps1 -Clean
-
-# Start dev server (kills stale Node/Vite, frees port, auto-installs if needed)
-.\start.ps1
-
-# Start on a custom port
-.\start.ps1 -Port 3000
+.\install.ps1          # Install / update dependencies
+.\install.ps1 -Clean   # Clean reinstall (removes node_modules first)
+.\start.ps1            # Start dev server (kills stale Node/Vite, frees port)
+.\start.ps1 -Port 3000 # Start on a custom port
 ```
 
 ```bash
-# Cross-platform equivalents
-npm install          # install deps
-npm run dev          # start Vite dev server (port 5173)
-npm run build        # production build → dist/
-npm run preview      # preview production build
-npm run lint         # ESLint 9
+npm install     # install deps
+npm run dev     # start Vite dev server (port 5173)
+npm run build   # production build → dist/
+npm run preview # preview production build
+npm run lint    # ESLint 9
 ```
 
 ---
 
-## 📁 Source Tree & File Purposes
+## 📁 Full Source Tree
 
 ```
 NetworkSIM/
 ├── .github/
-│   └── copilot-instructions.md   ← YOU ARE HERE
+│   └── copilot-instructions.md   ← YOU ARE HERE (keep updated)
 ├── .gitignore                    ← ignores: node_modules, dist, .env, *.webm, *.gif
 ├── index.html                    ← Vite HTML entrypoint (mounts #root)
 ├── vite.config.js                ← Vite + React plugin, port 5173 strictPort
 ├── eslint.config.js              ← ESLint 9 flat config (react-hooks, react-refresh)
-├── package.json                  ← project manifest (all deps above)
+├── package.json                  ← name: "networksim" (renamed from northstar-network-sim)
 ├── install.ps1                   ← Windows install helper with Node version checks
 ├── start.ps1                     ← Windows dev-server launcher
 ├── LICENSE                       ← Apache 2.0
@@ -120,74 +171,84 @@ NetworkSIM/
 │   └── icons.svg                 ← SVG sprite sheet
 └── src/
     ├── main.jsx                  ← React DOM root render
-    ├── App.jsx                   ← MASTER FILE — all global state, simulation
-    │                               engine, tab routing, layout (~884 lines)
-    ├── App.css                   ← Global CSS, dark NOC theme, animations
+    ├── App.jsx                   ← MASTER FILE — all global state, simulation engine,
+    │                               tab routing, layout. TABS array controls visibility.
+    │                               3 tabs active; 7 hidden (commented out in TABS[]).
+    ├── App.css                   ← Global CSS, dark NOC theme (#04080f bg), animations
     ├── index.css                 ← CSS reset / base
     ├── assets/
-    │   ├── hero.png              ← Dashboard screenshot for README
+    │   ├── hero.png
     │   ├── react.svg
     │   └── vite.svg
     ├── components/
     │   ├── NetworkNode.jsx       ← Custom React Flow node (status, metrics, icons)
-    │   ├── TrafficEdge.jsx       ← Animated React Flow edge with utilization %
+    │   ├── TrafficEdge.jsx       ← Animated React Flow edge with utilization % badge
     │   ├── UIComponents.jsx      ← Shared: CollapsiblePanel, EventLog, StatsBar,
-    │   │                           RoleSelector, SimulationControls (~267 lines)
-    │   ├── SimRecorder.jsx       ← WebM (MediaRecorder/VP9) + GIF (gifshot)
-    │   │                           recording toolbar; auto-stops on sim complete
-    │   ├── NOCTicker.jsx         ← Scrolling live-alert feed at bottom of screen
-    │   ├── NodeExpandModal.jsx   ← Double-click node → full detail overlay with
-    │   │                           live metrics, 24h Recharts sparkline, config
+    │   │                           RoleSelector, SimulationControls
+    │   ├── SimRecorder.jsx       ← WebM (MediaRecorder/VP9) + GIF (gifshot) toolbar
+    │   ├── NOCTicker.jsx         ← Scrolling live-alert ticker at screen bottom
+    │   ├── NodeExpandModal.jsx   ← Double-click node → detail overlay (metrics, config)
     │   ├── charts/
     │   │   └── CapacityChart.jsx ← Recharts bar chart for capacity planning
     │   ├── panels/
     │   │   ├── AIRunbook.jsx     ← Auto-generated NOC runbook per simulation step
-    │   │   ├── ConfigGenerator.jsx ← Produces device-specific CLI/API configs
-    │   │   ├── FaultInjector.jsx ← UI to trigger one of 5 fault scenarios
+    │   │   ├── ConfigGenerator.jsx ← Device CLI/API config generator (topology tab)
+    │   │   ├── FaultInjector.jsx ← Triggers one of 5 fault scenarios
     │   │   ├── LayerFilter.jsx   ← Toggle layer visibility on topology canvas
-    │   │   └── WhatIfPlanner.jsx ← Drag-to-add customers, see saturation
-    │   └── tabs/
-    │       ├── AuditTimelineTab.jsx    ← Git-style event timeline
-    │       ├── BGPSecurityTab.jsx      ← BGP route table + DDoS/security log
-    │       ├── CustomerTab.jsx         ← Customer database table (@tanstack)
-    │       ├── GeoMapTab.jsx           ← React Leaflet PNW map (~438 lines)
-    │       ├── IPAMTab.jsx             ← IP/VLAN/subnet management
-    │       ├── RevenueTab.jsx          ← MRR, ARPU, churn, growth charts
-    │       ├── SLATab.jsx              ← Per-customer SLA compliance table
-    │       └── TrafficEngineeringTab.jsx ← MPLS TE tunnels + inter-POP heatmap
+    │   │   └── WhatIfPlanner.jsx ← Drag-to-add customers, saturation analysis
+    │   ├── tabs/
+    │   │   ├── AuditTimelineTab.jsx      ← Git-style event timeline [HIDDEN]
+    │   │   ├── BGPSecurityTab.jsx        ← BGP route table + DDoS log [HIDDEN]
+    │   │   ├── CustomerTab.jsx           ← Customer database (@tanstack) [HIDDEN]
+    │   │   ├── GeoMapTab.jsx             ← React Leaflet PNW map [VISIBLE]
+    │   │   ├── IPAMTab.jsx               ← IP/VLAN/subnet management [HIDDEN]
+    │   │   ├── RevenueTab.jsx            ← MRR, ARPU, churn charts [HIDDEN]
+    │   │   ├── SLATab.jsx                ← Per-customer SLA compliance [HIDDEN]
+    │   │   ├── TrafficEngineeringTab.jsx ← MPLS TE tunnels + heatmap [HIDDEN]
+    │   │   └── CircuitPlannerTab.jsx     ← 📡 Circuit Planner [VISIBLE] (main dev focus)
+    │   └── circuit/              ← Circuit Planner sub-components
+    │       ├── CircuitWizard.jsx         ← Service order form
+    │       ├── EquipmentChain.jsx        ← Animated A→Z vendor device chain
+    │       ├── OpticalBudgetCalc.jsx     ← Real dB optical math (DWDM/Wave only)
+    │       ├── PhaseStepper.jsx          ← 8-phase strip + clickable step log
+    │       │                               Props: pinnedStep, onStepClick (new)
+    │       ├── InventoryScoreboard.jsx   ← Animated capacity bars (8 resources)
+    │       ├── FeasibilityGates.jsx      ← Pass/fail gate cards + augmentation hints
+    │       ├── PathMap.jsx               ← Leaflet A-Z route map (working + protect)
+    │       ├── ActivationTestPanel.jsx   ← RFC 2544 / Y.1564 animated test runner
+    │       ├── DeviceConfigPanel.jsx     ← Device-level config viewer (⚙️ Configs tab)
+    │       └── StepConfigViewer.jsx      ← Step-level live config panel (Simulation tab)
+    │                                       Shows: Config / Payload / Log tabs per step
     ├── data/
-    │   ├── networkTopology.js    ← NODE DEFINITIONS (30+ nodes, 7 layers) +
-    │   │                           EDGE definitions + 8 SIMULATION FLOW arrays
-    │   ├── faultScenarios.js     ← 5 fault scenarios with affected-node lists
-    │   │                           and auto-healing remediation steps
-    │   ├── customers.js          ← ~50 simulated customers with tier, MRR, SLA
+    │   ├── networkTopology.js    ← 30+ node definitions (7 layers), edges,
+    │   │                           8 simulation flow arrays
+    │   ├── faultScenarios.js     ← 5 fault scenarios + auto-healing steps
+    │   ├── customers.js          ← ~50 simulated customers (tier, MRR, SLA)
     │   ├── geoData.js            ← PNW lat/lng for COs, fiber routes, regions
-    │   └── configTemplates.js    ← 20+ device config generators (template fns)
-    │                               for Calix, Cisco IOS-XR, Ciena, NetBox, etc.
+    │   ├── configTemplates.js    ← 20+ device config generators (topology tab)
+    │   ├── circuitPlans.js       ← Circuit Planner data: SITES, CIRCUIT_TYPES,
+    │   │                           EQUIPMENT_STACKS, BANDWIDTH_OPTIONS,
+    │   │                           PROTECTION_LEVELS, SLA_TIERS, PATH_ROUTES (15 pairs)
+    │   │                           Builder fns: buildPhaseFlow, buildOpticalBudget,
+    │   │                           buildInventorySnapshot, buildFeasibilityGates,
+    │   │                           buildProtectionPaths, buildActivationTests
+    │   ├── circuitConfigs.js     ← Device-level config generators for all 6 circuit
+    │   │                           types × all vendors. getDeviceConfigs(idx, type, form, plan)
+    │   ├── teConfigs.js          ← MPLS-TE tunnel configs (Cisco/Juniper/Nokia)
+    │   │                           getTunnelConfigs(tunnel) → 3 vendor tabs
+    │   ├── stepConfigs.js        ← Step-level config generator (30+ steps).
+    │   │                           getStepConfig(step, form, plan) → {label, lang,
+    │   │                           config, payload, payloadLang, log}
+    │   │                           Uses {varName} template placeholders (NOT JS template literals)
+    │   │                           buildCtx() derives all values from plan.orderId (base-36 seed)
+    │   └── stepPayloads.js       ← Per-step payload + syslog log generators.
+    │                               getStepPayload(step, form, plan) → {payload, payloadLang, log}
+    │                               Payload types: HTTP REST, NETCONF XML RPC, gNMI SetRequest,
+    │                               test instrument REST, SNMP trap config
     └── utils/
         ├── mockApi.js            ← Simulated async API calls (NetBox/RADIUS/DHCP)
-        │                           with artificial latency for realism
-        ├── scenarioManager.js    ← Helpers: load/save/export scenario state
+        ├── scenarioManager.js    ← load/save/export scenario state helpers
         └── exportUtils.js        ← XLSX/CSV export using SheetJS
-```
-
-### Circuit Planner Tab (Phase 1 — feature/circuit-planner-tab)
-
-New self-contained tab added at `src/components/tabs/CircuitPlannerTab.jsx`:
-
-```
-src/
-├── data/
-│   └── circuitPlans.js              ← 6 circuit types, equipment stacks (7 vendors),
-│                                       8-phase simulation flow builder, optical budget calc
-└── components/
-    ├── circuit/                     ← Circuit Planner sub-components
-    │   ├── CircuitWizard.jsx        ← Service order form (type, A/Z sites, BW, protection, SLA)
-    │   ├── EquipmentChain.jsx       ← Animated A→Z device chain with vendor glow
-    │   ├── OpticalBudgetCalc.jsx    ← Real dB optical math (DWDM/Wave circuits only)
-    │   └── PhaseStepper.jsx         ← 8-phase strip + scrolling step log with timestamps
-    └── tabs/
-        └── CircuitPlannerTab.jsx    ← Main tab: simulation engine, state, layout
 ```
 
 ---
@@ -195,40 +256,57 @@ src/
 ## 🧠 Architecture & Key Patterns
 
 ### State Management
-- **All state lives in `App.jsx`** — there is no Redux, Zustand, or Context.
-- State is passed down as props. `App.jsx` is intentionally the single source of truth (~884 lines).
-- Simulation engine runs via `setInterval` inside `App.jsx`, stepping through `currentSimulation.steps[]`.
+- **All global state lives in `App.jsx`** — no Redux, Zustand, or Context API.
+- State is passed down as props. `App.jsx` is the single source of truth.
+- Topology simulation engine runs via `setInterval` in `App.jsx`.
+- Circuit Planner simulation engine is **local state inside `CircuitPlannerTab.jsx`** using `async/await` with `setTimeout` — no setInterval.
 
-### Simulation System
-- Simulations are defined in `src/data/networkTopology.js` as arrays of step objects.
-- Each step has: `{ label, node, description, type }` — `node` is the React Flow node ID to highlight.
-- Speed is controlled by multiplying a base interval (e.g., 1000 ms / speedMultiplier).
-- The active simulation step highlights affected nodes yellow via a `highlightedNodes` Set in state.
+### Tab System
+- `TABS` array in `App.jsx` (around line 55) controls visible tabs.
+- Hidden tabs are commented out in the array but all components remain imported/rendered.
+- To re-enable a tab: uncomment its entry in the TABS array.
+- To add a new tab: add to TABS + add `{activeTab === "id" && <MyTab />}` in the render.
 
-### Fault Injection
-- Faults are defined in `src/data/faultScenarios.js`.
-- Each fault has `affectedNodes[]` (nodes go red) and `healingSteps[]` (auto-remediation log).
-- Faults are mutually exclusive with running simulations.
+### Circuit Planner Simulation Engine
+- `handlePlan()` in `CircuitPlannerTab.jsx` — `async` function with `await delay(ms)` loop.
+- `cancelRef.current = true` → `handleStop()` to abort mid-simulation.
+- `speedRef.current` is set at render time (not in effect) to avoid stale closure issues.
+- `pinnedStep` state overrides `activeStep` in `StepConfigViewer` — `pinnedStep ?? activeStep`.
+- `resetSim()` clears all sim state including `pinnedStep`.
+
+### Step Config System (stepConfigs.js + stepPayloads.js)
+- **Key**: `step.action.toLowerCase().trim()` — must match exactly.
+- **Template syntax**: `{varName}` placeholders replaced by `fill(template, ctx)`.
+- **NEVER use JS template literals** (`${...}`) in template strings — breaks the fill() system.
+- `buildCtx(form, plan)` — deterministic context from `plan.orderId` parsed as base-36 int.
+- `getStepConfig()` returns `{ label, lang, config, payload, payloadLang, log }`.
+- Falls back to device-level config (`getDeviceConfigs`) when no step config matches.
+
+### ESLint Critical Rules
+- **No `setState` in `useEffect` body** (synchronous) — use `useMemo` for derived state.
+- Exception: `setState` inside `setTimeout`/`setInterval` callbacks within effects IS allowed.
+- `speedRef.current = speed` at render top-level is allowed (ref mutation is not state).
+- All `useEffect` deps arrays must be complete.
+- No unused variables or imports.
 
 ### React Flow (Topology Canvas)
-- `NetworkNode.jsx` is the custom node renderer — handles 7+ node types with unique icons.
-- `TrafficEdge.jsx` is the custom edge renderer — shows animated dashes + utilization % badge.
-- `LayerFilter.jsx` controls which node groups (layers) are visible.
-- Nodes and edges are filtered before being passed to `<ReactFlow>` based on active layers.
+- `NetworkNode.jsx` — custom node renderer, 7+ node types.
+- `TrafficEdge.jsx` — animated dashes + utilization % badge.
+- `LayerFilter.jsx` — toggles which node groups are visible.
 
-### Config Templates
-- `src/data/configTemplates.js` exports template functions keyed by node type.
-- `ConfigGenerator.jsx` calls these with `(nodeId, simulationContext)` and renders the output.
-- 20+ device types: Calix OLT, Cisco IOS-XR, Ciena ROADM, NetBox REST, RADIUS, DHCP, BGP, etc.
+### Config Templates (Topology Tab)
+- `src/data/configTemplates.js` — template functions keyed by node type.
+- `ConfigGenerator.jsx` calls these with `(nodeId, simulationContext)`.
 
-### GIF/Video Recording
-- `SimRecorder.jsx` uses the browser `MediaRecorder` API for WebM.
-- GIF is built frame-by-frame using `html-to-image` (PNG snapshots) fed into `gifshot`.
-- Recording auto-stops when the simulation reaches its last step.
+### Leaflet Maps
+- `GeoMapTab.jsx` — full PNW map tab.
+- `PathMap.jsx` — embedded Leaflet in Circuit Planner (A-Z working + protection path).
+- Use `CircleMarker` only — no default Leaflet icons (avoids bundler icon path issues).
+- `import 'leaflet/dist/leaflet.css'` must be present.
 
 ### No Backend
-- `src/utils/mockApi.js` simulates all API calls (NetBox, RADIUS, DHCP) with `setTimeout` delays.
-- No `.env` file is required — there are no real endpoints.
+- `src/utils/mockApi.js` simulates all API calls with `setTimeout` delays.
+- No `.env` file required — no real endpoints.
 
 ---
 
@@ -238,21 +316,35 @@ src/
 |------|--------|
 | **Remote** | `origin` → https://github.com/anand08151947-dot/NetworkSIM.git |
 | **Default branch** | `main` |
-| **Tracking** | `main` → `origin/main` |
-| **HEAD commit** | `42f12cd` — "Initial commit: NorthStar Fiber ISP Network Simulation Dashboard" |
-| **Commit date** | Tue Mar 17 2026 |
-| **Total files** | 48 files, ~11 896 insertions |
-| **Working tree** | Clean (nothing to commit) |
+| **Active branch** | `feature/circuit-planner-tab` |
+| **PR** | #1 open — Circuit Planner tab (all phases complete) |
+| **HEAD commit** | `174fac8` — "feat: payload and provisioning log tabs in step config viewer" |
+| **HEAD date** | 2026-03-21 |
+| **Working tree** | Clean |
 
-### Git Author Config (local)
+### Recent Commits (feature/circuit-planner-tab)
+```
+174fac8  feat: payload and provisioning log tabs in step config viewer
+ec49635  feat: clickable step-pinning in Circuit Planner simulation
+15fe5c7  feat: step-level live config generator in Circuit Planner simulation
+3c79227  feat: show live config generator inline on Simulation tab
+c796038  chore: hide Customer Database tab from nav
+```
+
+### Git Author Config
 ```
 user.name  = Anand Ranade
 user.email = anand08151947-dot@users.noreply.github.com
 ```
 
+### Commit Trailer (always include)
+```
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+```
+
 ### .gitignore Summary
 Ignores: `node_modules/`, `dist/`, `.env*`, `*.log`, `*.webm`, `*.gif`,
-`.DS_Store`, `Thumbs.db`, `.vscode/*` (except `extensions.json` and `settings.json`),
+`.DS_Store`, `Thumbs.db`, `.vscode/*` (except `extensions.json`, `settings.json`),
 `.vite/`, `coverage/`.
 
 ---
@@ -261,24 +353,27 @@ Ignores: `node_modules/`, `dist/`, `.env*`, `*.log`, `*.webm`, `*.gif`,
 
 - **React functional components only** — no class components.
 - **ESLint 9 flat config** with `react-hooks` and `react-refresh` plugins.
-- **ES modules** (`"type": "module"` in package.json) — use `import`/`export`, never `require`.
-- **Inline styles + CSS classes** — no CSS-in-JS library; global styles in `App.css`.
-- **JSX** only (no TypeScript) — `.jsx` extension for all React files, `.js` for data/utils.
-- **No test framework** is set up — do not add one without explicit request.
-- **Comments** only where logic is non-obvious; avoid redundant comments.
-- When adding new tabs, follow the pattern of existing files in `src/components/tabs/`.
-- When adding new simulation flows, add to the `SIMULATIONS` array in `src/data/networkTopology.js`.
-- When adding new fault scenarios, add to `src/data/faultScenarios.js`.
+- **ES modules** (`"type": "module"`) — use `import`/`export`, never `require`.
+- **Inline styles only** — no CSS-in-JS library; global resets in `App.css`/`index.css`.
+- **JSX** only (no TypeScript) — `.jsx` for React files, `.js` for data/utils.
+- **No test framework** — do not add one without explicit request.
+- **Dark NOC theme colors**: bg `#04080f`, surface `#070d1a`, border `#1e2a3a`, accent `#38bdf8`.
+- Comments only where logic is non-obvious.
+- New tabs → `src/components/tabs/`; follow existing pattern.
+- New circuit sub-components → `src/components/circuit/`.
+- New data → `src/data/`; use `{varName}` template system if generating configs.
 
 ---
 
 ## ⚠️ Important Notes for Copilot
 
-1. **Do not add a backend** — this is intentionally a pure client-side simulation app.
-2. **Do not introduce a state management library** unless explicitly asked.
-3. **Do not change the port** (5173) — `start.ps1` and `vite.config.js` are tightly coupled to it.
-4. **`App.jsx` is large by design** — resist splitting state out without a clear request to do so.
-5. **All data is mock/simulated** — do not attempt real network API calls.
-6. **Windows-first development environment** — scripts are PowerShell (`.ps1`).
-7. The `dist/` folder exists locally but is `.gitignore`d — do not commit it.
-8. `node_modules/` is installed and fully resolved — run `npm install` only if `package.json` changes.
+1. **No backend** — pure client-side simulation. No real API calls.
+2. **No state management library** — `App.jsx` is the single source of truth by design.
+3. **Do not change port 5173** — `start.ps1` and `vite.config.js` are coupled to it.
+4. **`App.jsx` is large by design** — do not split without explicit request.
+5. **Windows-first dev environment** — scripts are PowerShell (`.ps1`).
+6. **`dist/` is .gitignore'd** — never commit it.
+7. **Template strings in data files** use `{varName}` syntax, NOT JS `${...}` template literals.
+8. **Pre-existing TanStack warning** (`react-hooks/incompatible-library` on `useReactTable`) — unfixable without rewrite; accepted permanently.
+9. **Hidden tabs** are imported and rendered in `App.jsx` — they just never become `activeTab`. To hide a tab: comment out its entry in the `TABS` array only.
+10. **Circuit Planner is on `feature/circuit-planner-tab`** — not yet merged to `main`.
