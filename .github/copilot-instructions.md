@@ -10,8 +10,8 @@
 
 | Field | Value |
 |-------|-------|
-| **Repo name** | `northstar-network-sim` |
-| **GitHub** | https://github.com/anand08151947-dot/northstar-network-sim |
+| **Repo name** | `NetworkSIM` |
+| **GitHub** | https://github.com/anand08151947-dot/NetworkSIM |
 | **Branch** | `main` (default & only branch) |
 | **Author** | Anand Ranade (`anand08151947-dot`) |
 | **License** | Apache 2.0 |
@@ -102,7 +102,7 @@ npm run lint         # ESLint 9
 ## 📁 Source Tree & File Purposes
 
 ```
-northstar-network-sim/
+NetworkSIM/
 ├── .github/
 │   └── copilot-instructions.md   ← YOU ARE HERE
 ├── .gitignore                    ← ignores: node_modules, dist, .env, *.webm, *.gif
@@ -217,7 +217,7 @@ northstar-network-sim/
 
 | Item | Detail |
 |------|--------|
-| **Remote** | `origin` → https://github.com/anand08151947-dot/northstar-network-sim.git |
+| **Remote** | `origin` → https://github.com/anand08151947-dot/NetworkSIM.git |
 | **Default branch** | `main` |
 | **Tracking** | `main` → `origin/main` |
 | **HEAD commit** | `42f12cd` — "Initial commit: NorthStar Fiber ISP Network Simulation Dashboard" |
