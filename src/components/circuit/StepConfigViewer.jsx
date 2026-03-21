@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { getStepConfig } from '../../data/stepConfigs';
 import { getDeviceConfigs } from '../../data/circuitConfigs';
 
@@ -63,6 +63,10 @@ function CopyButton({ text }) {
 }
 
 export default function StepConfigViewer({ activeStep, activeDeviceIndex, circuitType, form, plan }) {
+  const [viewTab, setViewTab] = useState('config');
+
+  useEffect(() => { setViewTab('config'); }, [activeStep]);
+
   const stepCfg   = getStepConfig(activeStep, form, plan);
   const deviceCfg = getDeviceConfigs(activeDeviceIndex, circuitType, form, plan);
   const deviceTab = deviceCfg?.tabs?.[0] ?? null;
@@ -190,9 +194,13 @@ export default function StepConfigViewer({ activeStep, activeDeviceIndex, circui
           fontFamily: 'monospace',
           whiteSpace: 'nowrap',
         }}>
-          {displayLang}
+          {viewTab === 'config' ? displayLang : viewTab === 'payload' ? (stepCfg?.payloadLang ?? 'json') : 'log'}
         </span>
-        <CopyButton text={displayConfig} />
+        <CopyButton text={
+          viewTab === 'payload' ? (stepCfg?.payload ?? '') :
+          viewTab === 'log'     ? (stepCfg?.log     ?? '') :
+          displayConfig
+        } />
       </div>
 
       {/* Label sub-bar */}
@@ -212,6 +220,32 @@ export default function StepConfigViewer({ activeStep, activeDeviceIndex, circui
         </span>
       </div>
 
+      {/* View tabs */}
+      <div style={{ display:'flex', gap:2, padding:'4px 10px', background:'#050a14', borderBottom:'1px solid #0f1e30', flexShrink:0 }}>
+        {[
+          { id:'config',  label:'⚙️ Config'  },
+          { id:'payload', label:'📤 Payload' },
+          { id:'log',     label:'📋 Log'     },
+        ].map(t => {
+          const hasData = t.id === 'config' ? true
+            : t.id === 'payload' ? !!(stepCfg?.payload)
+            : !!(stepCfg?.log);
+          const isActive = viewTab === t.id;
+          return (
+            <button key={t.id}
+              disabled={!hasData}
+              onClick={() => hasData && setViewTab(t.id)}
+              style={{
+                background: isActive ? '#0f2a4a' : 'transparent',
+                border: isActive ? '1px solid #1e4976' : '1px solid transparent',
+                color: !hasData ? '#1e2a3a' : isActive ? '#38bdf8' : '#475569',
+                borderRadius: 5, padding:'2px 10px', fontSize:10,
+                cursor: hasData ? 'pointer' : 'not-allowed', fontWeight: isActive ? 700 : 400,
+              }}>{t.label}</button>
+          );
+        })}
+      </div>
+
       {/* Config content */}
       <div style={{ flex: 1, overflow: 'auto' }}>
         <pre style={{
@@ -220,12 +254,16 @@ export default function StepConfigViewer({ activeStep, activeDeviceIndex, circui
           fontSize: 11,
           lineHeight: 1.6,
           fontFamily: '"JetBrains Mono", "Fira Code", "Consolas", monospace',
-          color: langColor,
+          color: viewTab === 'log' ? '#86efac'
+               : viewTab === 'payload' ? (LANG_COLORS[stepCfg?.payloadLang ?? 'json'] ?? '#c4b5fd')
+               : langColor,
           background: 'transparent',
           whiteSpace: 'pre',
           tabSize: 2,
         }}>
-          {displayConfig}
+          {viewTab === 'payload' ? (stepCfg?.payload ?? '')
+         : viewTab === 'log'    ? (stepCfg?.log     ?? '')
+         : displayConfig}
         </pre>
       </div>
     </div>

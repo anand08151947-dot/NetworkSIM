@@ -1,5 +1,6 @@
 // Step-level live config generator for Circuit Planner simulation
 // Returns a specific config snippet for each individual simulation step.
+import { getStepPayload } from './stepPayloads';
 
 function buildCtx(form, plan) {
   const seed    = plan?.orderId ? plan.orderId.replace('NNS-', '') : 'AABBCC';
@@ -972,9 +973,13 @@ export function getStepConfig(step, form, plan) {
   const def = STEP_CONFIGS[key];
   if (!def) return null;
   const ctx = buildCtx(form, plan);
+  const payloadData = getStepPayload(step, form, plan);
   return {
-    label:  def.label,
-    lang:   def.lang,
-    config: fill(def.template, ctx),
+    label:       def.label,
+    lang:        def.lang,
+    config:      fill(def.template, ctx),
+    payload:     payloadData?.payload     ?? null,
+    payloadLang: payloadData?.payloadLang ?? 'json',
+    log:         payloadData?.log         ?? null,
   };
 }
