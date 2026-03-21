@@ -56,12 +56,12 @@ const TABS = [
   { id: "topology", label: "🗺️ Network Topology" },
   { id: "geo", label: "🌐 Geographic Map" },
   { id: "customers", label: "👥 Customer Database" },
-  { id: "revenue", label: "💰 Revenue & Analytics" },
-  { id: "sla", label: "📋 SLA Tracker" },
-  { id: "bgp", label: "🛡️ BGP & Security" },
-  { id: "ipam", label: "📍 IPAM" },
-  { id: "audit", label: "📅 Audit Log" },
-  { id: "te", label: "🚦 Traffic Engineering" },
+  // { id: "revenue", label: "💰 Revenue & Analytics" },   // hidden
+  // { id: "sla", label: "📋 SLA Tracker" },               // hidden
+  // { id: "bgp", label: "🛡️ BGP & Security" },            // hidden
+  // { id: "ipam", label: "📍 IPAM" },                     // hidden
+  // { id: "audit", label: "📅 Audit Log" },               // hidden
+  // { id: "te", label: "🚦 Traffic Engineering" },        // hidden
   { id: "circuit", label: "📡 Circuit Planner" },
 ];
 
