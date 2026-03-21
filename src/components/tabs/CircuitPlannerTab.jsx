@@ -60,6 +60,7 @@ export default function CircuitPlannerTab() {
   const [simComplete, setSimComplete] = useState(false);
   const [invAnimKey, setInvAnimKey]   = useState(0);
   const [activeStep, setActiveStep]   = useState(null);
+  const [pinnedStep, setPinnedStep]   = useState(null);
 
   const cancelRef = useRef(false);
   const speedRef  = useRef(speed);
@@ -75,6 +76,7 @@ export default function CircuitPlannerTab() {
     setStepTimestamps({});
     setSimComplete(false);
     setActiveStep(null);
+    setPinnedStep(null);
   }, []);
 
   const timestamp = () =>
@@ -130,6 +132,10 @@ export default function CircuitPlannerTab() {
   }, [form, resetSim]);
 
   const handleStop = () => { cancelRef.current = true; setRunning(false); };
+
+  const handleStepClick = useCallback((step) => {
+    setPinnedStep(prev => prev === step ? null : step);
+  }, []);
 
   // ── Derived data (useMemo — no setState in effects) ──────────────────────────
   const inventoryItems = useMemo(() =>
@@ -367,6 +373,8 @@ export default function CircuitPlannerTab() {
                     stepTimestamps={stepTimestamps}
                     speed={speed}
                     onSpeedChange={s => setSpeed(s)}
+                    pinnedStep={pinnedStep}
+                    onStepClick={handleStepClick}
                   />
                 </div>
                 {/* Live config panel — right */}
@@ -374,21 +382,60 @@ export default function CircuitPlannerTab() {
                   <div style={{
                     padding: '6px 12px', background: '#070d1a',
                     borderBottom: '1px solid #1e2a3a', flexShrink: 0,
-                    display: 'flex', alignItems: 'center', gap: 8,
+                    display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
                   }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#38bdf8' }}>⚙️ Live Config</span>
-                    {activeDeviceIndex >= 0 && (
-                      <span style={{ fontSize: 10, color: '#475569' }}>
-                        — auto-follows active device
-                      </span>
-                    )}
-                    {activeDeviceIndex < 0 && (
-                      <span style={{ fontSize: 10, color: '#334155' }}>— start simulation to activate</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#38bdf8' }}>⚙️ Config</span>
+
+                    {pinnedStep ? (
+                      <>
+                        <span style={{
+                          fontSize: 9, fontWeight: 800, color: '#f59e0b',
+                          background: '#1a1000', border: '1px solid #78350f',
+                          borderRadius: 4, padding: '1px 6px', letterSpacing: 0.5, textTransform: 'uppercase',
+                        }}>
+                          📌 PINNED
+                        </span>
+                        <span style={{ fontSize: 10, color: '#78350f', flexShrink: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {pinnedStep.action}
+                        </span>
+                        <button
+                          onClick={() => setPinnedStep(null)}
+                          style={{
+                            marginLeft: 'auto', background: '#0a1628', border: '1px solid #1e3a5f',
+                            color: '#64748b', borderRadius: 5, padding: '2px 8px', fontSize: 10,
+                            cursor: 'pointer', fontWeight: 600,
+                          }}
+                        >
+                          ✕ Unpin
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <span style={{
+                          fontSize: 9, fontWeight: 800,
+                          color: running ? '#4ade80' : '#475569',
+                          background: running ? '#052e16' : '#0a1220',
+                          border: `1px solid ${running ? '#166534' : '#1e2a3a'}`,
+                          borderRadius: 4, padding: '1px 6px', letterSpacing: 0.5, textTransform: 'uppercase',
+                        }}>
+                          {running ? '🔴 LIVE' : simComplete ? '✅ DONE' : '○ IDLE'}
+                        </span>
+                        {simComplete && (
+                          <span style={{ fontSize: 10, color: '#475569' }}>
+                            — click any ✅ step to explore its config
+                          </span>
+                        )}
+                        {running && (
+                          <span style={{ fontSize: 10, color: '#334155' }}>
+                            — auto-follows active step
+                          </span>
+                        )}
+                      </>
                     )}
                   </div>
                   <div style={{ flex: 1, overflow: 'hidden' }}>
                     <StepConfigViewer
-                      activeStep={activeStep}
+                      activeStep={pinnedStep ?? activeStep}
                       activeDeviceIndex={activeDeviceIndex}
                       circuitType={form.circuitType}
                       form={form}

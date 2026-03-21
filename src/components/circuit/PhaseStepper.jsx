@@ -36,22 +36,38 @@ function PhaseTab({ phase, status }) {
   );
 }
 
-function StepRow({ step, status, ts }) {
+function StepRow({ step, status, ts, isPinned, onClick }) {
   const isActive = status === 'active';
   const isDone   = status === 'done';
   const isFailed = status === 'failed';
+  const isClickable = isDone || isFailed;
 
   const icon = isFailed ? '❌' : isDone ? '✅' : isActive ? '🔄' : '○';
   const textColor = isFailed ? '#ef4444' : isDone ? '#94a3b8' : isActive ? '#e2e8f0' : '#334155';
 
+  const bg =
+    isPinned ? '#1a1000' :
+    isActive  ? '#0c1f3f' :
+    'transparent';
+  const borderColor =
+    isPinned ? '#f59e0b' :
+    isActive  ? PHASE_COLOR :
+    'transparent';
+
   return (
-    <div style={{
-      display: 'flex', gap: 10, alignItems: 'flex-start',
-      padding: '6px 10px', borderRadius: 6,
-      background: isActive ? '#0c1f3f' : 'transparent',
-      borderLeft: isActive ? `3px solid ${PHASE_COLOR}` : '3px solid transparent',
-      transition: 'all 0.3s',
-    }}>
+    <div
+      onClick={isClickable ? onClick : undefined}
+      title={isClickable ? (isPinned ? 'Click to unpin' : 'Click to view config') : undefined}
+      style={{
+        display: 'flex', gap: 10, alignItems: 'flex-start',
+        padding: '6px 10px', borderRadius: 6,
+        background: bg,
+        borderLeft: `3px solid ${borderColor}`,
+        transition: 'all 0.2s',
+        cursor: isClickable ? 'pointer' : 'default',
+        ...(isClickable && !isPinned ? { ':hover': { background: '#0a1220' } } : {}),
+      }}
+    >
       {/* Icon + timestamp */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, minWidth: 28 }}>
         <span style={{ fontSize: 13 }}>{icon}</span>
@@ -70,6 +86,11 @@ function StepRow({ step, status, ts }) {
           <span style={{ fontSize: 12, fontWeight: isActive ? 700 : 400, color: textColor }}>
             {step.action}
           </span>
+          {isPinned && (
+            <span style={{ fontSize: 9, color: '#f59e0b', background: '#1a1000', border: '1px solid #78350f', borderRadius: 4, padding: '1px 5px', fontWeight: 700 }}>
+              📌 PINNED
+            </span>
+          )}
         </div>
         {(isActive || isDone || isFailed) && (
           <div style={{ fontSize: 11, color: '#475569', lineHeight: 1.5 }}>
@@ -81,7 +102,7 @@ function StepRow({ step, status, ts }) {
   );
 }
 
-export default function PhaseStepper({ phases, activePhaseIdx, activeStepIdx, stepTimestamps, speed, onSpeedChange }) {
+export default function PhaseStepper({ phases, activePhaseIdx, activeStepIdx, stepTimestamps, speed, onSpeedChange, pinnedStep, onStepClick }) {
   const logRef = useRef(null);
 
   // Auto-scroll log to active step
@@ -167,6 +188,8 @@ export default function PhaseStepper({ phases, activePhaseIdx, activeStepIdx, st
               step={step}
               status={status}
               ts={stepTimestamps[`${pi}-${si}`] ?? null}
+              isPinned={pinnedStep === step}
+              onClick={() => onStepClick && onStepClick(step)}
             />
           );
         })}
