@@ -353,14 +353,45 @@ export default function CircuitPlannerTab() {
             {!plan && <EmptyState />}
 
             {plan && rightTab === 'sim' && (
-              <PhaseStepper
-                phases={plan.phases}
-                activePhaseIdx={activePhaseIdx}
-                activeStepIdx={activeStepIdx}
-                stepTimestamps={stepTimestamps}
-                speed={speed}
-                onSpeedChange={s => setSpeed(s)}
-              />
+              <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+                {/* Step log — left */}
+                <div style={{ flex: '0 0 55%', display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRight: '1px solid #1e2a3a' }}>
+                  <PhaseStepper
+                    phases={plan.phases}
+                    activePhaseIdx={activePhaseIdx}
+                    activeStepIdx={activeStepIdx}
+                    stepTimestamps={stepTimestamps}
+                    speed={speed}
+                    onSpeedChange={s => setSpeed(s)}
+                  />
+                </div>
+                {/* Live config panel — right */}
+                <div style={{ flex: '0 0 45%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                  <div style={{
+                    padding: '6px 12px', background: '#070d1a',
+                    borderBottom: '1px solid #1e2a3a', flexShrink: 0,
+                    display: 'flex', alignItems: 'center', gap: 8,
+                  }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#38bdf8' }}>⚙️ Live Config</span>
+                    {activeDeviceIndex >= 0 && (
+                      <span style={{ fontSize: 10, color: '#475569' }}>
+                        — auto-follows active device
+                      </span>
+                    )}
+                    {activeDeviceIndex < 0 && (
+                      <span style={{ fontSize: 10, color: '#334155' }}>— start simulation to activate</span>
+                    )}
+                  </div>
+                  <div style={{ flex: 1, overflow: 'hidden' }}>
+                    <DeviceConfigPanel
+                      circuitType={form.circuitType}
+                      form={form}
+                      plan={plan}
+                      activeDeviceIndex={activeDeviceIndex}
+                    />
+                  </div>
+                </div>
+              </div>
             )}
 
             {plan && rightTab === 'inventory' && (
