@@ -11,6 +11,7 @@ import InventoryScoreboard from '../circuit/InventoryScoreboard';
 import FeasibilityGates from '../circuit/FeasibilityGates';
 import PathMap from '../circuit/PathMap';
 import ActivationTestPanel from '../circuit/ActivationTestPanel';
+import DeviceConfigPanel from '../circuit/DeviceConfigPanel';
 
 const DEFAULT_FORM = {
   circuitType: 'l3vpn',
@@ -42,6 +43,7 @@ const INNER_TABS = [
   { id: 'inventory', label: '🗄 Inventory' },
   { id: 'pathmap',   label: '🗺 Path Map' },
   { id: 'tests',     label: '✅ Tests' },
+  { id: 'configs',   label: '⚙️ Configs' },
 ];
 
 export default function CircuitPlannerTab() {
@@ -311,6 +313,7 @@ export default function CircuitPlannerTab() {
             }}>
               {INNER_TABS.map(t => {
                 const isDisabled = t.id === 'tests' && !simComplete;
+                // configs tab is always available once plan exists
                 const isActive   = rightTab === t.id;
                 return (
                   <button
@@ -397,6 +400,15 @@ export default function CircuitPlannerTab() {
                 simComplete={simComplete}
                 speed={speed}
                 onExport={handleExport}
+              />
+            )}
+
+            {plan && rightTab === 'configs' && (
+              <DeviceConfigPanel
+                circuitType={form.circuitType}
+                form={form}
+                plan={plan}
+                activeDeviceIndex={activeDeviceIndex}
               />
             )}
           </div>
