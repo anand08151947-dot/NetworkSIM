@@ -55,7 +55,7 @@ function applyCapacityStatuses(nodes) {
 const TABS = [
   { id: "topology", label: "🗺️ Network Topology" },
   { id: "geo", label: "🌐 Geographic Map" },
-  { id: "customers", label: "👥 Customer Database" },
+  // { id: "customers", label: "👥 Customer Database" },  // hidden
   // { id: "revenue", label: "💰 Revenue & Analytics" },   // hidden
   // { id: "sla", label: "📋 SLA Tracker" },               // hidden
   // { id: "bgp", label: "🛡️ BGP & Security" },            // hidden
