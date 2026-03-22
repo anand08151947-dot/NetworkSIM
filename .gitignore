@@ -6,6 +6,15 @@ node_modules/
 # ── Build output ─────────────────────────────────────────────────
 dist/
 dist-ssr/
+
+# ── Electron build output ────────────────────────────────────────
+dist-electron/
+out/
+
+# ── Electron wrapper source (generated; not committed) ───────────
+electron/
+
+# ── Electron builder resources (icons, installer scripts) ────────
 build/
 
 # ── Logs ──────────────────────────────────────────────────────────
