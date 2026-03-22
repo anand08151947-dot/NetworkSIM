@@ -22,6 +22,7 @@ import LayerFilter, { ALL_LAYERS } from "./components/panels/LayerFilter";
 import WhatIfPlanner from "./components/panels/WhatIfPlanner";
 import NOCTicker from "./components/NOCTicker";
 import NodeExpandModal from "./components/NodeExpandModal";
+import HelpModal from "./components/HelpModal";
 import GeoMapTab from "./components/tabs/GeoMapTab";
 import CustomerTab from "./components/tabs/CustomerTab";
 import RevenueTab from "./components/tabs/RevenueTab";
@@ -92,6 +93,7 @@ export default function App() {
   const [dimMode, setDimMode] = useState(false);
   const [expandedNode, setExpandedNode] = useState(null);
   const [dependencyNodeId, setDependencyNodeId] = useState(null);
+  const [helpTab, setHelpTab] = useState(null); // which tab's help modal is open
   const [simSpeed, setSimSpeed] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeRole, setActiveRole] = useState('noc');
@@ -475,23 +477,41 @@ export default function App() {
         }}
       >
         {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            style={{
-              background: activeTab === tab.id ? "#0f1f3d" : "transparent",
-              border: activeTab === tab.id ? "1px solid var(--border-accent)" : "1px solid transparent",
-              borderRadius: 6,
-              padding: "5px 14px",
-              cursor: "pointer",
-              fontSize: 11,
-              fontWeight: activeTab === tab.id ? 700 : 400,
-              color: activeTab === tab.id ? "#60a5fa" : "#64748b",
-              transition: "all 0.15s",
-            }}
-          >
-            {tab.label}
-          </button>
+          <div key={tab.id} style={{ display: "flex", alignItems: "center", gap: 0 }}>
+            <button
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                background: activeTab === tab.id ? "#0f1f3d" : "transparent",
+                border: activeTab === tab.id ? "1px solid var(--border-accent)" : "1px solid transparent",
+                borderRight: "none",
+                borderRadius: "6px 0 0 6px",
+                padding: "5px 14px",
+                cursor: "pointer",
+                fontSize: 11,
+                fontWeight: activeTab === tab.id ? 700 : 400,
+                color: activeTab === tab.id ? "#60a5fa" : "#64748b",
+                transition: "all 0.15s",
+              }}
+            >
+              {tab.label}
+            </button>
+            <button
+              title={`Help: ${tab.label}`}
+              onClick={() => setHelpTab(tab.id)}
+              style={{
+                background: activeTab === tab.id ? "#0f1f3d" : "transparent",
+                border: activeTab === tab.id ? "1px solid var(--border-accent)" : "1px solid transparent",
+                borderLeft: `1px solid ${activeTab === tab.id ? "#1e3a5f" : "transparent"}`,
+                borderRadius: "0 6px 6px 0",
+                padding: "5px 6px",
+                cursor: "pointer",
+                fontSize: 10,
+                color: activeTab === tab.id ? "#60a5fa88" : "#334155",
+                transition: "all 0.15s",
+                lineHeight: 1,
+              }}
+            >?</button>
+          </div>
         ))}
 
         <div style={{ flex: 1 }} />
@@ -966,6 +986,10 @@ export default function App() {
           allNodes={nodes}
           onClose={() => setExpandedNode(null)}
         />
+      )}
+      {/* ── HELP MODAL ── */}
+      {helpTab && (
+        <HelpModal tabId={helpTab} onClose={() => setHelpTab(null)} />
       )}
     </div>
   );
