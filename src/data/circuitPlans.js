@@ -21,6 +21,8 @@ export const CIRCUIT_TYPES = [
   { id: 'wave',     label: 'Wave / DWDM / OTN',         icon: '🌊', needsOptical: true  },
   { id: 'backhaul', label: 'Mobile Backhaul',            icon: '📡', needsOptical: false },
   { id: 'dci',      label: 'Data Center Interconnect',  icon: '🏙️', needsOptical: true  },
+  { id: 'evpn_vpws', label: 'EVPN-VPWS / L2VPN',        icon: '🔗', needsOptical: false },
+  { id: 'elan',      label: 'Carrier Ethernet E-LAN',    icon: '🕸️', needsOptical: false },
 ];
 
 // ── Bandwidth options (CIR) ───────────────────────────────────────────────────
@@ -36,6 +38,7 @@ export const PROTECTION_LEVELS = [
 
 // ── SLA tiers ─────────────────────────────────────────────────────────────────
 export const SLA_TIERS = [
+  { id: 'platinum', label: 'Platinum 99.9999%', latencyMs: 2, jitterMs: 0.1, downtime: '< 32 sec/yr' },
   { id: 'gold',   label: 'Gold   99.999%', latencyMs: 5,  jitterMs: 0.5, downtime: '< 5 min/yr'  },
   { id: 'silver', label: 'Silver 99.99%',  latencyMs: 10, jitterMs: 1.0, downtime: '< 53 min/yr' },
   { id: 'bronze', label: 'Bronze 99.9%',   latencyMs: 20, jitterMs: 5.0, downtime: '< 8.7 hr/yr' },
@@ -92,6 +95,22 @@ export const EQUIPMENT_STACKS = {
     { role: 'DWDM (Z)',         vendor: 'Infinera', model: 'ICE6 800G',    color: '#ff6b00', specs: '800G per wave, OpenLine' },
     { role: 'DCI GW (Z)',       vendor: 'Cisco',   model: 'Nexus 9336C',   color: '#1d6fa4', specs: '36× 400G QSFP-DD, MACsec' },
     { role: 'Spine (DC-Z)',     vendor: 'Arista',  model: '7800R3',        color: '#e4005c', specs: '128× 400GE, EVPN/VXLAN' },
+  ],
+  evpn_vpws: [
+    { role: 'CE (A-Site)',      vendor: 'Cisco',    model: 'Catalyst 9300',  color: '#1d6fa4', specs: '48× GE, 4× 10GE, LACP, 802.1ad QinQ' },
+    { role: 'UNI PE (A-Side)', vendor: 'Nokia',    model: '7750 SR-7s',     color: '#005AFF', specs: 'FP5 chipset, EVPN-VPWS, ESI-LAG, 400G' },
+    { role: 'DWDM Transport',  vendor: 'Ciena',    model: '6500 ROADM',     color: '#5c2d8e', specs: '96× C-band, 400G ZR+, Open ROADM 3.0' },
+    { role: 'UNI PE (Z-Side)', vendor: 'Nokia',    model: '7750 SR-7s',     color: '#005AFF', specs: 'FP5 chipset, EVPN-VPWS, ESI-LAG, 400G' },
+    { role: 'CE (Z-Site)',      vendor: 'Juniper',  model: 'EX4650',         color: '#84BD00', specs: '48× 25GE, 8× 100GE, EVPN/VXLAN' },
+  ],
+  elan: [
+    { role: 'CE (Site A)',      vendor: 'Arista',   model: '7050CX3',        color: '#e4005c', specs: '32× 100GE QSFP28, VXLAN, BGP EVPN' },
+    { role: 'NNI PE (A)',       vendor: 'Nokia',    model: '7750 SR-12e',    color: '#005AFF', specs: 'FP5, E-LAN/VPLS, 100G MDA, MEF CE 2.0' },
+    { role: 'P Core Router',    vendor: 'Cisco',    model: 'NCS 5504',       color: '#1d6fa4', specs: '4× 400GE LCs, segment routing, ISIS-SR' },
+    { role: 'NNI PE (B)',       vendor: 'Nokia',    model: '7750 SR-12e',    color: '#005AFF', specs: 'FP5, E-LAN/VPLS, 100G MDA, MEF CE 2.0' },
+    { role: 'CE (Site B)',      vendor: 'Arista',   model: '7050CX3',        color: '#e4005c', specs: '32× 100GE QSFP28, VXLAN, BGP EVPN' },
+    { role: 'CE (Site C)',      vendor: 'Cisco',    model: 'Catalyst 9500',  color: '#1d6fa4', specs: '48× 25GE, 8× 100GE, MACsec, EVPN' },
+    { role: 'NNI PE (C)',       vendor: 'Nokia',    model: '7750 SR-12e',    color: '#005AFF', specs: 'FP5, E-LAN/VPLS, 100G MDA, MEF CE 2.0' },
   ],
 };
 
@@ -312,6 +331,20 @@ function buildPacketSteps(circuitType, bandwidth, aLabel, zLabel) {
       { system: 'DCI GW',      action: 'Enable MACsec encryption',      detail: `MACsec GCM-AES-256 | SAK rekey: 3600 s | Replay window: 64 | Confidentiality: ON` },
       { system: 'DWDM',        action: 'Configure 800G coherent wave',  detail: `ICE6 modem: PM-16QAM | SD-FEC | Baud: 96 Gbaud | Tx power: 0 dBm` },
       { system: 'DC Switch',   action: 'Verify BUM traffic handling',   detail: `Ingress replication mode: EVPN | Head-end replication: enabled | BUM rate-limit: 1 Gbps` },
+    ];
+    case 'evpn_vpws': return [
+      { system: 'PE Router',   action: 'Create EVPN-VPWS epipe service', detail: `Epipe ${randomVlan()} | ESI: 00:11:22:33:44:55:66:77:88:99 | Single-active mode | EVI ${randomVlan()}` },
+      { system: 'PE Router',   action: 'Configure ESI-LAG toward CE',    detail: `ESI-LAG bundle — 802.3ad LACP | System MAC: 00:aa:bb:cc:dd:ee | All-active or single-active per EVI` },
+      { system: 'BGP EVPN',   action: 'Advertise EVPN Route Type 1/2',  detail: `RT-1 (ES route) + RT-2 (MAC/IP) | RT: ${randomVlan()}:${randomVlan()} | RD: ${randomIp(0)}:1` },
+      { system: 'QoS Engine',  action: 'Apply ingress/egress policy',    detail: `${bandwidth} CIR | EXP marking: CoS 5 (PW control) | 802.1p bits preserved through PW` },
+      { system: 'OAM',         action: 'Enable IEEE 802.3ah / Y.1731',  detail: `CFM MEP on UNI — CC interval: 1 s | Loss threshold: 3 | AIS enabled for fault propagation` },
+    ];
+    case 'elan': return [
+      { system: 'PE Router',   action: 'Provision VPLS / E-LAN service', detail: `VPLS instance ${randomVlan()} | Multipoint service | MEF E-LAN / EP-LAN type` },
+      { system: 'PE Router',   action: 'Add spoke-SDPs for each site',  detail: `Spoke-SDP ${randomVlan()}:${randomVlan()} (A) | ${randomVlan()}:${randomVlan()} (B) | ${randomVlan()}:${randomVlan()} (C)` },
+      { system: 'BGP EVPN',   action: 'Enable EVPN VPLS signaling',     detail: `BGP EVPN RT: ${randomVlan()}:${randomVlan()} | EVI ${randomVlan()} | VLAN-bundle mode | MAC learning: data-plane` },
+      { system: 'P Router',    action: 'Enable split-horizon group',     detail: `Split-horizon group applied on all spoke SDPs — BUM blocked back to ingress PE | MPLS LSP validated` },
+      { system: 'MEF Engine',  action: 'Define E-LAN CoS profile',      detail: `${bandwidth} total aggregate CIR | Per-site CBS: 64 MB | EIR: 0 | Color-blind metering: enabled` },
     ];
     default: return [];
   }

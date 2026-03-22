@@ -1310,13 +1310,572 @@ router bgp ${c.asn}
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
+// ─── EVPN-VPWS ───────────────────────────────────────────────────────────────
+
+function evpnVpwsConfigs(deviceIndex, form, plan) {
+  const c = buildCtx(form, plan);
+  const esi = `00:11:22:33:44:${c.serialHex.slice(0,2)}:${c.serialHex.slice(2,4)}:${c.serialHex.slice(4,6)}:${c.serialHex.slice(6,8)}:99`;
+  const eviId = 1000 + (c.vcId % 4000);
+  const routeTarget = `${c.asn}:${eviId}`;
+
+  const devices = [
+    {
+      device: { role: 'CE (A-Site)', vendor: 'Cisco', model: 'Catalyst 9300' },
+      tabs: [{
+        key: 'ios-xe-ce-a',
+        label: 'IOS-XE — CE (A-Site)',
+        lang: 'ios-xr',
+        config: `! === Cisco Catalyst 9300 — CE Config (${c.aSite}) ===
+! Order: ${c.orderId}   Circuit: EVPN-VPWS ${c.bandwidth}
+!
+hostname ${c.aSite}-CE-CAT9300
+!
+interface GigabitEthernet1/0/1
+ description *** UNI — Nokia 7750 SR-7s ***
+ switchport mode trunk
+ switchport trunk allowed vlan ${c.vlanId}
+ channel-group 1 mode active
+ no shutdown
+!
+interface Port-channel1
+ description *** ESI-LAG to PE ***
+ switchport mode trunk
+ switchport trunk allowed vlan ${c.vlanId}
+ no shutdown
+!
+interface Vlan${c.vlanId}
+ description *** EVPN-VPWS service VLAN ***
+ ip address ${c.ceAIp} 255.255.255.252
+ no shutdown
+!
+end`,
+      }],
+    },
+    {
+      device: { role: 'UNI PE (A-Side)', vendor: 'Nokia', model: '7750 SR-7s' },
+      tabs: [
+        {
+          key: 'sros-epipe-a',
+          label: 'SR OS — Epipe (A-Side)',
+          lang: 'sros',
+          config: `# === Nokia 7750 SR-7s — UNI PE-A EVPN-VPWS Config (${c.aSite}) ===
+# Order: ${c.orderId}   EVI: ${eviId}   RT: ${routeTarget}
+#
+configure
+  router Base
+    bgp
+      group "EVPN-CORE"
+        family evpn
+        peer-as ${c.asn}
+        neighbor ${c.peZLoopback}
+          description "EVPN-VPWS iBGP to PE-Z"
+        exit
+      exit
+    exit
+  exit
+
+  service
+    system
+      bgp-auto-rd-range community-based
+    exit
+
+    epipe ${c.vcId} customer 1 create
+      description "${c.orderId}-EVPN-VPWS-${c.aSite}-${c.zSite}"
+      endpoint "SAP-TO-CE" create
+        exit
+      exit
+
+      sap 1/1/1:${c.vlanId} create
+        description "UNI — Cisco Catalyst 9300 (${c.aSite})"
+        eth-cfm
+          mep 1 domain 1 association 1
+            direction down
+            ccm-enable
+          exit
+        exit
+      exit
+
+      bgp-evpn
+        evi ${eviId}
+        local-attachment-circuit-id ${c.vcId}
+        remote-attachment-circuit-id ${c.vcId}
+        route-distinguisher ${c.peALoopback}:${eviId}
+        route-target export "${routeTarget}"
+        route-target import "${routeTarget}"
+        esi ${esi}
+        no shutdown
+      exit
+
+      no shutdown
+    exit
+  exit
+exit`,
+        },
+        {
+          key: 'sros-lag-esi',
+          label: 'SR OS — ESI-LAG',
+          lang: 'sros',
+          config: `# === Nokia 7750 SR-7s — ESI-LAG Config (${c.aSite}) ===
+#
+configure
+  lag 1 create
+    description "ESI-LAG to ${c.aSite} CE"
+    mode hybrid
+    encap-type dot1q
+    lacp
+      mode active
+      admin-key 1
+      system-id 00:aa:bb:cc:dd:ee
+      system-priority 32768
+    exit
+    ethernet-segment
+      esi ${esi}
+      multi-homing single-active
+      df-election
+        algorithm preference
+        preference 100
+      exit
+    exit
+    port 1/1/1 create
+    exit
+    no shutdown
+  exit
+exit`,
+        },
+      ],
+    },
+    {
+      device: { role: 'DWDM Transport', vendor: 'Ciena', model: '6500 ROADM' },
+      tabs: [{
+        key: 'ciena-roadm-vpws',
+        label: 'Ciena MCP REST',
+        lang: 'json',
+        config: `// POST https://mcp.northstarfiber.net/api/v1/services/optical
+{
+  "serviceId": "${c.orderId}-VPWS-OPTICAL",
+  "serviceClass": "EVPN-VPWS-TRANSPORT",
+  "bandwidth": "${c.bandwidth}",
+  "modulation": "DP-16QAM",
+  "fec": "oFEC-HD",
+  "channel": {
+    "ituChannel": "C47",
+    "frequency": "193.700 THz",
+    "gridSpacing": "50GHz"
+  },
+  "endpoints": {
+    "aEnd": { "nodeId": "${c.aSite}-ROADM-6500", "degree": 2, "port": "OCH-1-3-C47" },
+    "zEnd": { "nodeId": "${c.zSite}-ROADM-6500", "degree": 2, "port": "OCH-1-3-C47" }
+  },
+  "protection": "${c.protectionMode}"
+}`,
+      }],
+    },
+    {
+      device: { role: 'UNI PE (Z-Side)', vendor: 'Nokia', model: '7750 SR-7s' },
+      tabs: [{
+        key: 'sros-epipe-z',
+        label: 'SR OS — Epipe (Z-Side)',
+        lang: 'sros',
+        config: `# === Nokia 7750 SR-7s — UNI PE-Z EVPN-VPWS Config (${c.zSite}) ===
+# Order: ${c.orderId}   EVI: ${eviId}   RT: ${routeTarget}
+#
+configure
+  service
+    epipe ${c.vcId} customer 1 create
+      description "${c.orderId}-EVPN-VPWS-${c.zSite}"
+
+      sap 1/1/1:${c.vlanId} create
+        description "UNI — Juniper EX4650 (${c.zSite})"
+      exit
+
+      bgp-evpn
+        evi ${eviId}
+        local-attachment-circuit-id ${c.vcId}
+        remote-attachment-circuit-id ${c.vcId}
+        route-distinguisher ${c.peZLoopback}:${eviId}
+        route-target export "${routeTarget}"
+        route-target import "${routeTarget}"
+        no shutdown
+      exit
+
+      no shutdown
+    exit
+  exit
+exit`,
+      }],
+    },
+    {
+      device: { role: 'CE (Z-Site)', vendor: 'Juniper', model: 'EX4650' },
+      tabs: [{
+        key: 'junos-ce-z',
+        label: 'JunOS — CE (Z-Site)',
+        lang: 'junos',
+        config: `# === Juniper EX4650 — CE Config (${c.zSite}) ===
+# Order: ${c.orderId}   EVPN-VPWS ${c.bandwidth}
+#
+set interfaces ae0 description "ESI-LAG to Nokia 7750 PE-Z"
+set interfaces ae0 aggregated-ether-options lacp active
+set interfaces ae0 aggregated-ether-options lacp system-id 00:bb:cc:dd:ee:ff
+set interfaces ae0 unit 0 family ethernet-switching interface-mode trunk
+set interfaces ae0 unit 0 family ethernet-switching vlan members ${c.vlanId}
+#
+set interfaces ge-0/0/0 ether-options 802.3ad ae0
+set interfaces ge-0/0/1 ether-options 802.3ad ae0
+#
+set vlans ${c.orderId}-VPWS vlan-id ${c.vlanId}
+set vlans ${c.orderId}-VPWS l3-interface irb.${c.vlanId}
+#
+set interfaces irb unit ${c.vlanId} description "EVPN-VPWS service VLAN"
+set interfaces irb unit ${c.vlanId} family inet address ${c.ceZIp}/30
+#
+set routing-options static route 0.0.0.0/0 next-hop ${c.peZIp}`,
+      }],
+    },
+  ];
+
+  return devices[deviceIndex] ?? devices[0];
+}
+
+// ─── E-LAN ────────────────────────────────────────────────────────────────────
+
+function elanConfigs(deviceIndex, form, plan) {
+  const c = buildCtx(form, plan);
+  const eviId = 2000 + (c.vcId % 3000);
+  const routeTarget = `${c.asn}:${eviId}`;
+  const vsiId = c.vxlanVni;
+  const meshSdpA = c.sdpId;
+  const meshSdpB = c.sdpId + 1;
+  const meshSdpC = c.sdpId + 2;
+
+  const devices = [
+    {
+      device: { role: 'CE (Site A)', vendor: 'Arista', model: '7050CX3' },
+      tabs: [{
+        key: 'eos-ce-a',
+        label: 'EOS — CE Site A',
+        lang: 'eos',
+        config: `! === Arista 7050CX3 — CE Site A (${c.aSite}) ===
+! Order: ${c.orderId}   Circuit: E-LAN ${c.bandwidth}
+!
+hostname ${c.aSite}-CE-7050CX3
+!
+vlan ${c.vlanId}
+   name ${c.orderId}-ELAN-SITE-A
+!
+interface Ethernet1
+   description *** UNI — Nokia 7750 SR-12e PE-A ***
+   switchport mode trunk
+   switchport trunk allowed vlan ${c.vlanId}
+   no shutdown
+!
+interface Vlan${c.vlanId}
+   description *** E-LAN service SVI ***
+   ip address ${c.ceAIp}/30
+   no shutdown
+!
+ip routing
+ip route 0.0.0.0/0 ${c.peAIp}
+!
+end`,
+      }],
+    },
+    {
+      device: { role: 'NNI PE (A)', vendor: 'Nokia', model: '7750 SR-12e' },
+      tabs: [
+        {
+          key: 'sros-vpls-a',
+          label: 'SR OS — VPLS E-LAN (PE-A)',
+          lang: 'sros',
+          config: `# === Nokia 7750 SR-12e — NNI PE-A E-LAN Config (${c.aSite}) ===
+# Order: ${c.orderId}   EVI: ${eviId}   RT: ${routeTarget}
+#
+configure
+  router Base
+    bgp
+      group "EVPN-CORE"
+        family evpn
+        peer-as ${c.asn}
+        neighbor ${c.peZLoopback}
+          description "EVPN iBGP E-LAN"
+        exit
+      exit
+    exit
+  exit
+
+  service
+    vpls ${vsiId} customer 1 create
+      description "${c.orderId}-ELAN-${c.aSite}"
+      service-mtu 9000
+
+      sap 1/1/1:${c.vlanId} create
+        description "UNI — Arista 7050CX3 (${c.aSite})"
+        ingress
+          qos 10
+        exit
+        egress
+          qos 10
+        exit
+      exit
+
+      mesh-sdp ${meshSdpA}:${vsiId} create
+        description "Mesh-SDP to PE-B"
+      exit
+      mesh-sdp ${meshSdpB}:${vsiId} create
+        description "Mesh-SDP to PE-C"
+      exit
+
+      bgp-evpn
+        evi ${eviId}
+        route-distinguisher ${c.peALoopback}:${eviId}
+        route-target export "${routeTarget}"
+        route-target import "${routeTarget}"
+        mac-advertisement
+        no shutdown
+      exit
+
+      split-horizon-group "NNI-MESH" create
+      exit
+
+      no shutdown
+    exit
+  exit
+exit`,
+        },
+        {
+          key: 'sros-mef-pe-a',
+          label: 'SR OS — MEF CE 2.0 CoS',
+          lang: 'sros',
+          config: `# === Nokia 7750 SR-12e — MEF CE 2.0 E-LAN CoS (PE-A) ===
+#
+configure
+  qos
+    sap-ingress 10 create
+      description "${c.orderId} ELAN MEF CIR/EIR"
+      meter 1 create
+        mode trTCM
+        cir ${c.bwMbps}000
+        cbs 125000000
+        pir ${c.peakBwMbps}000
+        pbs 256000000
+      exit
+      dot1p 0 fc be meter 1
+      dot1p 4 fc af meter 1
+      dot1p 5 fc ef meter 1
+    exit
+    sap-egress 10 create
+      description "${c.orderId} ELAN egress shaper"
+      rate ${c.bwMbps}
+    exit
+  exit
+exit`,
+        },
+      ],
+    },
+    {
+      device: { role: 'P Core Router', vendor: 'Cisco', model: 'NCS 5504' },
+      tabs: [{
+        key: 'iosxr-ncs-core',
+        label: 'IOS-XR — NCS 5504 Core',
+        lang: 'ios-xr',
+        config: `!! === Cisco NCS 5504 — P Core Router (E-LAN transport) ===
+!! Order: ${c.orderId}   Segment Routing ISIS-SR
+!!
+router isis CORE
+ is-type level-2-only
+ net 49.0001.0000.0000.000${c.vlanMod % 9 + 1}.00
+ address-family ipv4 unicast
+  metric-style wide
+  segment-routing mpls
+ !
+!
+interface Loopback0
+ ipv4 address ${c.peALoopback} 255.255.255.255
+ isis enable CORE
+ isis circuit-type level-2-only
+!
+interface HundredGigE0/0/0/0
+ description *** UPLINK to PE-A Nokia 7750 SR-12e ***
+ ipv4 address ${c.peAIp} 255.255.255.252
+ isis enable CORE
+ isis circuit-type level-2-only
+ isis metric 10
+ no shutdown
+!
+interface HundredGigE0/0/0/1
+ description *** UPLINK to PE-B Nokia 7750 SR-12e ***
+ ipv4 address ${c.peZIp} 255.255.255.252
+ isis enable CORE
+ isis circuit-type level-2-only
+ isis metric 10
+ no shutdown
+!
+mpls ldp
+ router-id Loopback0
+ address-family ipv4
+ !
+!`,
+      }],
+    },
+    {
+      device: { role: 'NNI PE (B)', vendor: 'Nokia', model: '7750 SR-12e' },
+      tabs: [{
+        key: 'sros-vpls-b',
+        label: 'SR OS — VPLS E-LAN (PE-B)',
+        lang: 'sros',
+        config: `# === Nokia 7750 SR-12e — NNI PE-B E-LAN Config (${c.zSite}) ===
+# Order: ${c.orderId}   EVI: ${eviId}   RT: ${routeTarget}
+#
+configure
+  service
+    vpls ${vsiId} customer 1 create
+      description "${c.orderId}-ELAN-${c.zSite}"
+      service-mtu 9000
+
+      sap 1/1/1:${c.vlanId} create
+        description "UNI — Arista 7050CX3 (${c.zSite})"
+      exit
+
+      mesh-sdp ${meshSdpA}:${vsiId} create
+        description "Mesh-SDP to PE-A"
+      exit
+      mesh-sdp ${meshSdpC}:${vsiId} create
+        description "Mesh-SDP to PE-C"
+      exit
+
+      bgp-evpn
+        evi ${eviId}
+        route-distinguisher ${c.peZLoopback}:${eviId}
+        route-target export "${routeTarget}"
+        route-target import "${routeTarget}"
+        mac-advertisement
+        no shutdown
+      exit
+
+      no shutdown
+    exit
+  exit
+exit`,
+      }],
+    },
+    {
+      device: { role: 'CE (Site B)', vendor: 'Arista', model: '7050CX3' },
+      tabs: [{
+        key: 'eos-ce-b',
+        label: 'EOS — CE Site B',
+        lang: 'eos',
+        config: `! === Arista 7050CX3 — CE Site B (${c.zSite}) ===
+! Order: ${c.orderId}   Circuit: E-LAN ${c.bandwidth}
+!
+hostname ${c.zSite}-CE-7050CX3
+!
+vlan ${c.vlanId}
+   name ${c.orderId}-ELAN-SITE-B
+!
+interface Ethernet1
+   description *** UNI — Nokia 7750 SR-12e PE-B ***
+   switchport mode trunk
+   switchport trunk allowed vlan ${c.vlanId}
+   no shutdown
+!
+interface Vlan${c.vlanId}
+   ip address ${c.ceZIp}/30
+   no shutdown
+!
+ip routing
+ip route 0.0.0.0/0 ${c.peZIp}
+!
+end`,
+      }],
+    },
+    {
+      device: { role: 'CE (Site C)', vendor: 'Cisco', model: 'Catalyst 9500' },
+      tabs: [{
+        key: 'ios-xe-ce-c',
+        label: 'IOS-XE — CE Site C',
+        lang: 'ios-xr',
+        config: `! === Cisco Catalyst 9500 — CE Site C (E-LAN third leg) ===
+! Order: ${c.orderId}   Circuit: E-LAN ${c.bandwidth}
+!
+hostname SITE-C-CE-CAT9500
+!
+interface TenGigabitEthernet1/0/1
+ description *** UNI — Nokia 7750 SR-12e PE-C ***
+ switchport mode trunk
+ switchport trunk allowed vlan ${c.vlanId}
+ mka policy MACsec-Policy
+ macsec network-link
+ no shutdown
+!
+interface Vlan${c.vlanId}
+ description *** E-LAN Site C SVI ***
+ ip address 10.10.${c.vlanMod + 2}.1 255.255.255.252
+ no shutdown
+!
+ip route 0.0.0.0 0.0.0.0 10.10.${c.vlanMod + 2}.2
+!
+end`,
+      }],
+    },
+    {
+      device: { role: 'NNI PE (C)', vendor: 'Nokia', model: '7750 SR-12e' },
+      tabs: [{
+        key: 'sros-vpls-c',
+        label: 'SR OS — VPLS E-LAN (PE-C)',
+        lang: 'sros',
+        config: `# === Nokia 7750 SR-12e — NNI PE-C E-LAN Config (Site C) ===
+# Order: ${c.orderId}   EVI: ${eviId}   RT: ${routeTarget}
+#
+configure
+  service
+    vpls ${vsiId} customer 1 create
+      description "${c.orderId}-ELAN-SITE-C"
+      service-mtu 9000
+
+      sap 1/1/1:${c.vlanId} create
+        description "UNI — Cisco Catalyst 9500 (Site C)"
+      exit
+
+      mesh-sdp ${meshSdpA}:${vsiId} create
+        description "Mesh-SDP to PE-A"
+      exit
+      mesh-sdp ${meshSdpB}:${vsiId} create
+        description "Mesh-SDP to PE-B"
+      exit
+
+      bgp-evpn
+        evi ${eviId}
+        route-distinguisher 10.0.0.${50 + (c.vcId % 10)}:${eviId}
+        route-target export "${routeTarget}"
+        route-target import "${routeTarget}"
+        mac-advertisement
+        no shutdown
+      exit
+
+      split-horizon-group "NNI-MESH" create
+      exit
+
+      no shutdown
+    exit
+  exit
+exit`,
+      }],
+    },
+  ];
+
+  return devices[deviceIndex] ?? devices[0];
+}
+
+// ─── Public API ───────────────────────────────────────────────────────────────
+
 const GENERATORS = {
-  l3vpn:    l3vpnConfigs,
-  evc:      evcConfigs,
-  dia:      diaConfigs,
-  wave:     waveConfigs,
-  backhaul: backhaulConfigs,
-  dci:      dciConfigs,
+  l3vpn:     l3vpnConfigs,
+  evc:       evcConfigs,
+  dia:       diaConfigs,
+  wave:      waveConfigs,
+  backhaul:  backhaulConfigs,
+  dci:       dciConfigs,
+  evpn_vpws: evpnVpwsConfigs,
+  elan:      elanConfigs,
 };
 
 export function getDeviceConfigs(deviceIndex, circuitType, form, plan) {

@@ -181,7 +181,7 @@ export const initialNodes = [
     id: 'metro_ciena',
     type: 'networkNode',
     position: { x: 420, y: 110 },
-    data: { label: 'Metro Transport', sublabel: 'Ciena 6500 | OTN/DWDM', layer: LAYERS.METRO, nodeType: 'dwdm', ...cap(29), icon: '💡' },
+    data: { label: 'Metro Transport', sublabel: 'Ciena 6500 | OTN/DWDM', layer: LAYERS.METRO, nodeType: 'dwdm', ...cap(29), icon: '💡', ringId: 'BLSR-RING-1', tributarySlots: 80, tributarySlotsUsed: 64, oduCapacity: 'ODU4×8' },
   },
 
   // ─── CORE / BACKBONE ───────────────────────────────────────
@@ -189,13 +189,13 @@ export const initialNodes = [
     id: 'core_router_1',
     type: 'networkNode',
     position: { x: 160, y: 20 },
-    data: { label: 'Core Router — Primary', sublabel: 'Ciena WL6e | OTN Backbone', layer: LAYERS.CORE, nodeType: 'core_router', ...cap(31), icon: '🔷' },
+    data: { label: 'Core Router — Primary', sublabel: 'Ciena WL6e | OTN Backbone', layer: LAYERS.CORE, nodeType: 'core_router', ...cap(31), icon: '🔷', ringId: 'BLSR-RING-1', otnRole: 'working', rrCluster: 'RR-1', rrClientCount: 42 },
   },
   {
     id: 'core_router_2',
     type: 'networkNode',
     position: { x: 420, y: 20 },
-    data: { label: 'Core Router — Secondary', sublabel: 'Ciena WL6e | Redundant Path', layer: LAYERS.CORE, nodeType: 'core_router', ...cap(18), icon: '🔷' },
+    data: { label: 'Core Router — Secondary', sublabel: 'Ciena WL6e | Redundant Path', layer: LAYERS.CORE, nodeType: 'core_router', ...cap(18), icon: '🔷', ringId: 'BLSR-RING-1', otnRole: 'protection', rrCluster: 'RR-2', rrClientCount: 42 },
   },
   {
     id: 'border_router',
