@@ -1,7 +1,7 @@
 import { SITES, CIRCUIT_TYPES, BANDWIDTH_OPTIONS, PROTECTION_LEVELS, SLA_TIERS } from '../../data/circuitPlans';
 
 const SELECT_STYLE = {
-  background: '#0b1629', color: '#e2e8f0', border: '1px solid #1e3a5f',
+  background: 'var(--bg-tertiary)', color: 'var(--text-primary)', border: '1px solid var(--border-accent)',
   borderRadius: 6, padding: '6px 10px', fontSize: 13, width: '100%', cursor: 'pointer',
 };
 const LABEL_STYLE = { fontSize: 11, color: '#64748b', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 1 };
@@ -34,7 +34,7 @@ export default function CircuitWizard({ form, onChange, onSubmit, running }) {
 
   return (
     <div style={{
-      background: '#070d1a', border: '1px solid #1e3a5f', borderRadius: 10,
+      background: 'var(--bg-primary)', border: '1px solid var(--border-accent)', borderRadius: 10,
       padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 14, minWidth: 240,
     }}>
       <div style={{ fontSize: 13, fontWeight: 700, color: '#38bdf8', letterSpacing: 0.5 }}>
@@ -99,8 +99,8 @@ export default function CircuitWizard({ form, onChange, onSubmit, running }) {
       {form.aSite && form.zSite && form.aSite !== form.zSite && (
         <div style={{
           background: '#0a1628', borderRadius: 6, padding: '8px 10px',
-          fontSize: 11, color: '#94a3b8', lineHeight: 1.8,
-          borderLeft: '3px solid #1e3a5f',
+          fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.8,
+          borderLeft: '3px solid var(--border-accent)',
         }}>
           <span style={{ color: '#38bdf8' }}>Type:</span> {circType?.icon} {circType?.label}<br />
           <span style={{ color: '#38bdf8' }}>SLA:</span>{' '}
@@ -117,8 +117,8 @@ export default function CircuitWizard({ form, onChange, onSubmit, running }) {
         onClick={onSubmit}
         disabled={!canSubmit}
         style={{
-          background: canSubmit ? 'linear-gradient(135deg,#1d4ed8,#0ea5e9)' : '#1e3a5f',
-          color: canSubmit ? '#fff' : '#475569',
+          background: canSubmit ? 'linear-gradient(135deg,#1d4ed8,#0ea5e9)' : 'var(--bg-accent)',
+          color: canSubmit ? '#fff' : 'var(--text-muted)',
           border: 'none', borderRadius: 7, padding: '10px 0',
           fontWeight: 700, fontSize: 13, cursor: canSubmit ? 'pointer' : 'not-allowed',
           transition: 'all 0.2s', letterSpacing: 0.5,

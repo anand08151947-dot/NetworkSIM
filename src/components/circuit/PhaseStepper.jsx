@@ -6,7 +6,7 @@ function PhaseTab({ phase, status }) {
   const bg =
     status === 'done'    ? '#052e16' :
     status === 'active'  ? '#0c1f3f' :
-    '#070d1a';
+    'var(--bg-primary)';
   const border =
     status === 'done'    ? '#22c55e' :
     status === 'active'  ? PHASE_COLOR :
@@ -14,7 +14,7 @@ function PhaseTab({ phase, status }) {
   const textColor =
     status === 'done'    ? '#22c55e' :
     status === 'active'  ? '#fff' :
-    '#334155';
+    'var(--border-subtle)';
   const icon =
     status === 'done'    ? '✅' :
     status === 'active'  ? '🔄' :
@@ -43,7 +43,7 @@ function StepRow({ step, status, ts, isPinned, onClick }) {
   const isClickable = isDone || isFailed;
 
   const icon = isFailed ? '❌' : isDone ? '✅' : isActive ? '🔄' : '○';
-  const textColor = isFailed ? '#ef4444' : isDone ? '#94a3b8' : isActive ? '#e2e8f0' : '#334155';
+  const textColor = isFailed ? '#ef4444' : isDone ? 'var(--text-secondary)' : isActive ? 'var(--text-primary)' : 'var(--border-subtle)';
 
   const bg =
     isPinned ? '#1a1000' :
@@ -71,13 +71,13 @@ function StepRow({ step, status, ts, isPinned, onClick }) {
       {/* Icon + timestamp */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, minWidth: 28 }}>
         <span style={{ fontSize: 13 }}>{icon}</span>
-        {ts && <span style={{ fontSize: 9, color: '#334155', fontFamily: 'monospace' }}>{ts}</span>}
+        {ts && <span style={{ fontSize: 9, color: 'var(--border-subtle)', fontFamily: 'monospace' }}>{ts}</span>}
       </div>
       {/* Content */}
       <div style={{ flex: 1 }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 2 }}>
           <span style={{
-            fontSize: 9, background: '#0b1629', border: '1px solid #1e3a5f',
+            fontSize: 9, background: 'var(--bg-tertiary)', border: '1px solid var(--border-accent)',
             borderRadius: 4, padding: '1px 5px', color: '#64748b',
             fontFamily: 'monospace', whiteSpace: 'nowrap',
           }}>
@@ -93,7 +93,7 @@ function StepRow({ step, status, ts, isPinned, onClick }) {
           )}
         </div>
         {(isActive || isDone || isFailed) && (
-          <div style={{ fontSize: 11, color: '#475569', lineHeight: 1.5 }}>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5 }}>
             {step.detail}
           </div>
         )}
@@ -135,16 +135,16 @@ export default function PhaseStepper({ phases, activePhaseIdx, activeStepIdx, st
 
       {/* Phase strip + speed control */}
       <div style={{
-        background: '#070d1a', borderBottom: '1px solid #1e2a3a',
+        background: 'var(--bg-primary)', borderBottom: '1px solid #1e2a3a',
         padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 10,
       }}>
         {/* Speed control */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6, alignItems: 'center' }}>
-          <span style={{ fontSize: 11, color: '#475569' }}>Speed:</span>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Speed:</span>
           {SPEEDS.map(s => (
             <button key={s} onClick={() => onSpeedChange(s)} style={{
-              background: speed === s ? '#1d4ed8' : '#0b1629',
-              border: '1px solid #1e3a5f', borderRadius: 5,
+              background: speed === s ? '#1d4ed8' : 'var(--bg-tertiary)',
+              border: '1px solid var(--border-accent)', borderRadius: 5,
               color: speed === s ? '#fff' : '#64748b',
               fontSize: 11, padding: '2px 8px', cursor: 'pointer',
               fontWeight: speed === s ? 700 : 400,
@@ -171,7 +171,7 @@ export default function PhaseStepper({ phases, activePhaseIdx, activeStepIdx, st
         ref={logRef}
         style={{
           flex: 1, overflowY: 'auto', padding: '8px 8px',
-          background: '#04080f',
+          background: 'var(--bg-card)',
           display: 'flex', flexDirection: 'column', gap: 2,
         }}
       >

@@ -26,7 +26,7 @@ function ComparisonTable({ working, protection }) {
 
   const cell = (val, isHeader) => ({
     padding: '5px 10px', fontSize: isHeader ? 11 : 12,
-    color: isHeader ? '#64748b' : '#e2e8f0',
+    color: isHeader ? '#64748b' : 'var(--text-primary)',
     borderBottom: '1px solid #1e2a3a', textAlign: 'center',
     fontWeight: isHeader ? 600 : 400,
   });
@@ -66,7 +66,7 @@ function ComparisonTable({ working, protection }) {
 export default function PathMap({ paths, aId, zId }) {
   if (!paths || !aId || !zId) {
     return (
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1e3a5f', fontSize: 14 }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--bg-accent)', fontSize: 14 }}>
         Run a simulation to view A-Z path map
       </div>
     );
@@ -89,7 +89,7 @@ export default function PathMap({ paths, aId, zId }) {
       {/* Header */}
       <div style={{
         display: 'flex', gap: 12, padding: '10px 14px',
-        borderBottom: '1px solid #1e2a3a', background: '#070d1a', flexShrink: 0, alignItems: 'center',
+        borderBottom: '1px solid #1e2a3a', background: 'var(--bg-primary)', flexShrink: 0, alignItems: 'center',
       }}>
         <span style={{ fontSize: 13, fontWeight: 700, color: '#38bdf8' }}>🗺️ A→Z Path Map</span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 12, fontSize: 11 }}>
@@ -129,7 +129,7 @@ export default function PathMap({ paths, aId, zId }) {
                 center={[site.lat, site.lng]}
                 radius={isEndpoint ? 9 : 6}
                 fillColor={isEndpoint ? '#38bdf8' : '#64748b'}
-                color="#0f172a"
+                color="var(--bg-secondary)"
                 weight={2}
                 fillOpacity={0.9}
               >

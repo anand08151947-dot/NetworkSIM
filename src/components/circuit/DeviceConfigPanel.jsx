@@ -19,8 +19,8 @@ const LANG_COLORS = {
   'sros':   '#93c5fd',
   'json':   '#c4b5fd',
   'eos':    '#f9a8d4',
-  'cli':    '#94a3b8',
-  'shell':  '#94a3b8',
+  'cli':    'var(--text-secondary)',
+  'shell':  'var(--text-secondary)',
 };
 
 function CopyButton({ text }) {
@@ -38,7 +38,7 @@ function CopyButton({ text }) {
       onClick={handleCopy}
       style={{
         background: copied ? '#052e16' : '#0a1628',
-        border: `1px solid ${copied ? '#166534' : '#1e3a5f'}`,
+        border: `1px solid ${copied ? '#166534' : 'var(--bg-accent)'}`,
         color: copied ? '#4ade80' : '#64748b',
         borderRadius: 5,
         padding: '3px 10px',
@@ -84,7 +84,7 @@ export default function DeviceConfigPanel({ circuitType, form, plan, activeDevic
       display: 'flex',
       height: '100%',
       overflow: 'hidden',
-      background: '#04080f',
+      background: 'var(--bg-card)',
     }}>
       {/* Left device list */}
       <div style={{
@@ -97,7 +97,7 @@ export default function DeviceConfigPanel({ circuitType, form, plan, activeDevic
         <div style={{
           fontSize: 10,
           fontWeight: 700,
-          color: '#334155',
+          color: 'var(--border-subtle)',
           textTransform: 'uppercase',
           letterSpacing: 1,
           padding: '2px 12px 8px',
@@ -107,7 +107,7 @@ export default function DeviceConfigPanel({ circuitType, form, plan, activeDevic
         {stack.map((device, idx) => {
           const isActive = idx === selectedDevice;
           const isHighlighted = idx === activeDeviceIndex;
-          const vendorColor = VENDOR_COLORS[device.vendor] ?? '#94a3b8';
+          const vendorColor = VENDOR_COLORS[device.vendor] ?? 'var(--text-secondary)';
           return (
             <button
               key={idx}
@@ -129,7 +129,7 @@ export default function DeviceConfigPanel({ circuitType, form, plan, activeDevic
               <div style={{
                 fontSize: 10,
                 fontWeight: 700,
-                color: isActive ? '#e2e8f0' : '#64748b',
+                color: isActive ? 'var(--text-primary)' : '#64748b',
                 marginBottom: 2,
                 lineHeight: 1.3,
               }}>
@@ -147,7 +147,7 @@ export default function DeviceConfigPanel({ circuitType, form, plan, activeDevic
               }}>
                 {device.vendor}
               </div>
-              <div style={{ fontSize: 9, color: '#334155' }}>
+              <div style={{ fontSize: 9, color: 'var(--border-subtle)' }}>
                 {device.model}
               </div>
               {isHighlighted && !isActive && (
@@ -169,19 +169,19 @@ export default function DeviceConfigPanel({ circuitType, form, plan, activeDevic
         <div style={{
           padding: '8px 14px',
           borderBottom: '1px solid #1e2a3a',
-          background: '#070d1a',
+          background: 'var(--bg-primary)',
           flexShrink: 0,
           display: 'flex',
           alignItems: 'center',
           gap: 10,
         }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#e2e8f0' }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>
             {configData?.device?.role}
           </span>
           <span style={{
             fontSize: 10,
             fontWeight: 700,
-            color: VENDOR_COLORS[configData?.device?.vendor] ?? '#94a3b8',
+            color: VENDOR_COLORS[configData?.device?.vendor] ?? 'var(--text-secondary)',
             background: '#0a1220',
             borderRadius: 4,
             padding: '1px 7px',
@@ -189,7 +189,7 @@ export default function DeviceConfigPanel({ circuitType, form, plan, activeDevic
             {configData?.device?.vendor} {configData?.device?.model}
           </span>
           {plan?.orderId && (
-            <span style={{ fontSize: 10, color: '#475569', fontFamily: 'monospace', marginLeft: 'auto' }}>
+            <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'monospace', marginLeft: 'auto' }}>
               {plan.orderId}
             </span>
           )}
@@ -208,7 +208,7 @@ export default function DeviceConfigPanel({ circuitType, form, plan, activeDevic
           }}>
             {tabs.map((tab, idx) => {
               const isActive = idx === selectedTab;
-              const langColor = LANG_COLORS[tab.lang] ?? '#94a3b8';
+              const langColor = LANG_COLORS[tab.lang] ?? 'var(--text-secondary)';
               return (
                 <button
                   key={tab.key}
@@ -216,7 +216,7 @@ export default function DeviceConfigPanel({ circuitType, form, plan, activeDevic
                   style={{
                     background: isActive ? '#0f3460' : 'transparent',
                     border: isActive ? `1px solid ${langColor}44` : '1px solid transparent',
-                    color: isActive ? langColor : '#475569',
+                    color: isActive ? langColor : 'var(--text-muted)',
                     borderRadius: 5,
                     padding: '3px 10px',
                     fontSize: 10,
@@ -245,7 +245,7 @@ export default function DeviceConfigPanel({ circuitType, form, plan, activeDevic
             }}>
               <span style={{
                 fontSize: 10,
-                color: LANG_COLORS[activeTab.lang] ?? '#94a3b8',
+                color: LANG_COLORS[activeTab.lang] ?? 'var(--text-secondary)',
                 fontWeight: 600,
                 fontFamily: 'monospace',
               }}>
@@ -262,7 +262,7 @@ export default function DeviceConfigPanel({ circuitType, form, plan, activeDevic
                 fontSize: 11,
                 lineHeight: 1.6,
                 fontFamily: '"JetBrains Mono", "Fira Code", "Consolas", monospace',
-                color: LANG_COLORS[activeTab.lang] ?? '#94a3b8',
+                color: LANG_COLORS[activeTab.lang] ?? 'var(--text-secondary)',
                 background: 'transparent',
                 whiteSpace: 'pre',
                 tabSize: 2,
@@ -279,7 +279,7 @@ export default function DeviceConfigPanel({ circuitType, form, plan, activeDevic
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#1e3a5f',
+            color: 'var(--bg-accent)',
             fontSize: 13,
           }}>
             Select a device to view its configuration

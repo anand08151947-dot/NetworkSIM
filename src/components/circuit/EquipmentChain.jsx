@@ -14,8 +14,8 @@ const VENDOR_COLORS = {
 };
 
 function DeviceCard({ device, active, phaseActive, onClick }) {
-  const bg      = active ? device.color : '#0b1629';
-  const border  = active ? device.color : phaseActive ? '#334155' : '#1e2a3a';
+  const bg      = active ? device.color : 'var(--bg-tertiary)';
+  const border  = active ? device.color : phaseActive ? 'var(--border-subtle)' : '#1e2a3a';
   const glow    = active ? `0 0 18px ${device.color}99, 0 0 6px ${device.color}66` : 'none';
 
   return (
@@ -51,7 +51,7 @@ function DeviceCard({ device, active, phaseActive, onClick }) {
       </div>
       {/* Role label */}
       <div style={{
-        fontSize: 10, color: active ? 'rgba(255,255,255,0.85)' : '#475569',
+        fontSize: 10, color: active ? 'rgba(255,255,255,0.85)' : 'var(--text-muted)',
         lineHeight: 1.3,
       }}>
         {device.role}
@@ -73,7 +73,7 @@ function DeviceCard({ device, active, phaseActive, onClick }) {
 function Arrow({ active }) {
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', color: active ? '#38bdf8' : '#1e3a5f',
+      display: 'flex', alignItems: 'center', color: active ? '#38bdf8' : 'var(--bg-accent)',
       fontSize: 18, transition: 'color 0.3s', flexShrink: 0, userSelect: 'none',
     }}>
       →
@@ -89,7 +89,7 @@ export default function EquipmentChain({ circuitType, activeDeviceIndex, phaseIn
 
   return (
     <div style={{
-      background: '#070d1a', border: '1px solid #1e3a5f', borderRadius: 10,
+      background: 'var(--bg-primary)', border: '1px solid var(--border-accent)', borderRadius: 10,
       padding: '14px 18px', position: 'relative',
     }}>
       <div style={{ fontSize: 13, fontWeight: 700, color: '#38bdf8', marginBottom: 12, letterSpacing: 0.5 }}>
@@ -117,12 +117,12 @@ export default function EquipmentChain({ circuitType, activeDeviceIndex, phaseIn
       {/* Inline tooltip / spec card */}
       {tooltip && (
         <div style={{
-          marginTop: 12, background: '#0b1629', border: `1px solid ${VENDOR_COLORS[tooltip.vendor] ?? '#1e3a5f'}`,
-          borderRadius: 8, padding: '10px 14px', fontSize: 12, color: '#94a3b8',
+          marginTop: 12, background: 'var(--bg-tertiary)', border: `1px solid ${VENDOR_COLORS[tooltip.vendor] ?? 'var(--bg-accent)'}`,
+          borderRadius: 8, padding: '10px 14px', fontSize: 12, color: 'var(--text-secondary)',
           display: 'flex', gap: 16, alignItems: 'flex-start',
         }}>
           <div>
-            <div style={{ fontWeight: 700, color: '#e2e8f0', marginBottom: 4 }}>
+            <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
               {tooltip.vendor} {tooltip.model}
             </div>
             <div style={{ color: '#64748b', fontSize: 11, marginBottom: 6 }}>{tooltip.role}</div>
@@ -130,7 +130,7 @@ export default function EquipmentChain({ circuitType, activeDeviceIndex, phaseIn
           </div>
           <button
             onClick={() => setTooltip(null)}
-            style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 16 }}
+            style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 16 }}
           >×</button>
         </div>
       )}

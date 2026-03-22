@@ -10,16 +10,16 @@ function TestRow({ test, state }) {
   const badgeStyle = {
     fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 4,
     background: isComplete ? '#052e16' : '#0a1628',
-    color:      isComplete ? '#22c55e' : '#334155',
+    color:      isComplete ? '#22c55e' : 'var(--border-subtle)',
     border:     `1px solid ${isComplete ? '#166534' : '#1e2a3a'}`,
   };
 
   return (
-    <tr style={{ borderBottom: '1px solid #0f172a' }}>
+    <tr style={{ borderBottom: '1px solid var(--bg-secondary)' }}>
       {/* Test name */}
-      <td style={{ padding: '8px 10px', fontSize: 11, color: isComplete ? '#e2e8f0' : isPending ? '#334155' : '#94a3b8', whiteSpace: 'nowrap' }}>
+      <td style={{ padding: '8px 10px', fontSize: 11, color: isComplete ? 'var(--text-primary)' : isPending ? 'var(--border-subtle)' : 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
         <div style={{ fontWeight: 600 }}>{test.name}</div>
-        <div style={{ fontSize: 9, color: '#475569', marginTop: 2 }}>{test.standard}</div>
+        <div style={{ fontSize: 9, color: 'var(--text-muted)', marginTop: 2 }}>{test.standard}</div>
       </td>
       {/* Target */}
       <td style={{ padding: '8px 10px', fontSize: 11, color: '#64748b', textAlign: 'right', whiteSpace: 'nowrap' }}>
@@ -42,7 +42,7 @@ function TestRow({ test, state }) {
       <td style={{ padding: '8px 10px', fontSize: 11, textAlign: 'right', whiteSpace: 'nowrap' }}>
         {isComplete
           ? <span style={{ color: '#22c55e', fontFamily: 'monospace' }}>{test.result}</span>
-          : <span style={{ color: '#334155' }}>—</span>}
+          : <span style={{ color: 'var(--border-subtle)' }}>—</span>}
       </td>
       {/* PASS/FAIL */}
       <td style={{ padding: '8px 10px', textAlign: 'center' }}>
@@ -115,7 +115,7 @@ export default function ActivationTestPanel({ tests, simComplete, speed, onExpor
       {/* Header toolbar */}
       <div style={{
         display: 'flex', gap: 10, padding: '10px 14px', flexShrink: 0,
-        borderBottom: '1px solid #1e2a3a', background: '#070d1a', alignItems: 'center',
+        borderBottom: '1px solid #1e2a3a', background: 'var(--bg-primary)', alignItems: 'center',
       }}>
         <span style={{ fontSize: 13, fontWeight: 700, color: '#38bdf8' }}>✅ Service Activation Testing</span>
 
@@ -127,7 +127,7 @@ export default function ActivationTestPanel({ tests, simComplete, speed, onExpor
           )}
 
           {!simComplete && !running && !done && (
-            <span style={{ fontSize: 11, color: '#475569' }}>
+            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
               Complete simulation to run activation tests
             </span>
           )}
@@ -167,11 +167,11 @@ export default function ActivationTestPanel({ tests, simComplete, speed, onExpor
       {/* Test table */}
       <div style={{ flex: 1, overflowY: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead style={{ position: 'sticky', top: 0, background: '#070d1a', zIndex: 1 }}>
+          <thead style={{ position: 'sticky', top: 0, background: 'var(--bg-primary)', zIndex: 1 }}>
             <tr style={{ borderBottom: '1px solid #1e2a3a' }}>
               {['Test', 'Target', 'Progress', 'Result', 'Status'].map(h => (
                 <th key={h} style={{
-                  padding: '7px 10px', fontSize: 10, color: '#475569',
+                  padding: '7px 10px', fontSize: 10, color: 'var(--text-muted)',
                   textAlign: h === 'Target' || h === 'Result' ? 'right' : h === 'Status' ? 'center' : 'left',
                   fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1,
                 }}>

@@ -6,7 +6,7 @@ function Row({ label, value, unit = '', highlight = false, separator = false, in
     return (
       <tr>
         <td colSpan={3} style={{ padding: '2px 0' }}>
-          <div style={{ borderTop: '1px solid #1e3a5f', margin: '4px 0' }} />
+          <div style={{ borderTop: '1px solid var(--border-accent)', margin: '4px 0' }} />
         </td>
       </tr>
     );
@@ -14,17 +14,17 @@ function Row({ label, value, unit = '', highlight = false, separator = false, in
   return (
     <tr>
       <td style={{
-        padding: '3px 0', color: indent ? '#64748b' : '#94a3b8',
+        padding: '3px 0', color: indent ? '#64748b' : 'var(--text-secondary)',
         fontSize: 12, paddingLeft: indent ? 16 : 0, whiteSpace: 'nowrap',
       }}>
         {label}
       </td>
       <td style={{ padding: '3px 8px', textAlign: 'right', fontFamily: 'monospace', fontSize: 12 }}>
-        <span style={{ color: highlight ? '#f59e0b' : '#e2e8f0', fontWeight: highlight ? 700 : 400 }}>
+        <span style={{ color: highlight ? '#f59e0b' : 'var(--text-primary)', fontWeight: highlight ? 700 : 400 }}>
           {value}
         </span>
       </td>
-      <td style={{ padding: '3px 0', fontSize: 11, color: '#475569', whiteSpace: 'nowrap' }}>
+      <td style={{ padding: '3px 0', fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
         {unit}
       </td>
     </tr>
@@ -50,7 +50,7 @@ export default function OpticalBudgetCalc({ aId, zId, bandwidth, visible }) {
     <div
       key={`${aId}-${zId}-${bandwidth}`}
       style={{
-        background: '#070d1a', border: `1px solid ${budget.pass ? '#1e3a5f' : '#7f1d1d'}`,
+        background: 'var(--bg-primary)', border: `1px solid ${budget.pass ? 'var(--bg-accent)' : '#7f1d1d'}`,
         borderRadius: 10, padding: '14px 18px',
         animation: 'budget-fadein 0.5s ease forwards',
       }}>
@@ -58,7 +58,7 @@ export default function OpticalBudgetCalc({ aId, zId, bandwidth, visible }) {
       <div style={{ fontSize: 13, fontWeight: 700, color: '#a855f7', marginBottom: 2, letterSpacing: 0.5 }}>
         🌊 Optical Budget Calculator
       </div>
-      <div style={{ fontSize: 10, color: '#475569', marginBottom: 12 }}>
+      <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 12 }}>
         {aLabel} → {zLabel} · {budget.channel} · {budget.fecMode}
       </div>
 
@@ -97,13 +97,13 @@ export default function OpticalBudgetCalc({ aId, zId, bandwidth, visible }) {
 
           {/* Verdict */}
           <tr>
-            <td style={{ padding: '5px 0', fontSize: 13, fontWeight: 700, color: '#94a3b8' }}>
+            <td style={{ padding: '5px 0', fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)' }}>
               Available Margin
             </td>
             <td style={{ textAlign: 'right', fontFamily: 'monospace', fontSize: 13, fontWeight: 700 }}>
               <span style={{ color: passColor }}>{budget.availableMargin}</span>
             </td>
-            <td style={{ fontSize: 11, color: '#475569' }}>dB</td>
+            <td style={{ fontSize: 11, color: 'var(--text-muted)' }}>dB</td>
           </tr>
           <tr>
             <td colSpan={3} style={{ paddingTop: 6 }}>

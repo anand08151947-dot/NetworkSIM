@@ -216,18 +216,18 @@ export default function CircuitPlannerTab() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      background: '#04080f', color: '#e2e8f0', overflow: 'hidden',
+      background: 'var(--bg-card)', color: 'var(--text-primary)', overflow: 'hidden',
     }}>
       {/* ── Header bar ──────────────────────────────────────────────── */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 16,
         padding: '10px 16px', borderBottom: '1px solid #1e2a3a',
-        background: '#070d1a', flexShrink: 0,
+        background: 'var(--bg-primary)', flexShrink: 0,
       }}>
         <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: 0.5, color: '#38bdf8' }}>
           📡 Telco Circuit Creation Planner
         </div>
-        <div style={{ fontSize: 11, color: '#475569' }}>
+        <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
           Carrier-Grade End-to-End Circuit Orchestration Simulation
         </div>
 
@@ -245,7 +245,7 @@ export default function CircuitPlannerTab() {
           <div style={{
             marginLeft: running ? 8 : 'auto',
             fontSize: 11, fontFamily: 'monospace',
-            background: '#0b1629', border: '1px solid #1e3a5f',
+            background: 'var(--bg-tertiary)', border: '1px solid var(--border-accent)',
             borderRadius: 5, padding: '3px 8px', color: '#f59e0b',
           }}>
             Order: {plan.orderId}
@@ -286,7 +286,7 @@ export default function CircuitPlannerTab() {
 
           {history.length > 0 && (
             <div style={{
-              background: '#070d1a', border: '1px solid #1e3a5f', borderRadius: 10,
+              background: 'var(--bg-primary)', border: '1px solid var(--border-accent)', borderRadius: 10,
               padding: '12px 14px',
             }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#38bdf8', marginBottom: 10 }}>
@@ -296,7 +296,7 @@ export default function CircuitPlannerTab() {
                 {history.map((h, i) => (
                   <div key={i} style={{
                     fontSize: 11, background: '#0a1628', borderRadius: 6,
-                    padding: '6px 8px', lineHeight: 1.7, color: '#94a3b8',
+                    padding: '6px 8px', lineHeight: 1.7, color: 'var(--text-secondary)',
                   }}>
                     <span style={{ color: '#f59e0b', fontFamily: 'monospace' }}>{h.orderId}</span>
                     {' · '}
@@ -305,7 +305,7 @@ export default function CircuitPlannerTab() {
                     </span>
                     {' · '}
                     {h.aSite.toUpperCase()}→{h.zSite.toUpperCase()}
-                    <div style={{ color: '#475569', fontSize: 10 }}>{h.ts}</div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: 10 }}>{h.ts}</div>
                   </div>
                 ))}
               </div>
@@ -319,7 +319,7 @@ export default function CircuitPlannerTab() {
           {plan && (
             <div style={{
               display: 'flex', gap: 2, padding: '6px 12px',
-              borderBottom: '1px solid #1e2a3a', background: '#070d1a', flexShrink: 0,
+              borderBottom: '1px solid #1e2a3a', background: 'var(--bg-primary)', flexShrink: 0,
             }}>
               {INNER_TABS.map(t => {
                 const isDisabled = t.id === 'tests' && !simComplete;
@@ -333,7 +333,7 @@ export default function CircuitPlannerTab() {
                     style={{
                       background: isActive ? '#0f3460' : 'transparent',
                       border: isActive ? '1px solid #1e5f9f' : '1px solid transparent',
-                      color: isDisabled ? '#334155' : isActive ? '#38bdf8' : '#64748b',
+                      color: isDisabled ? 'var(--border-subtle)' : isActive ? '#38bdf8' : '#64748b',
                       borderRadius: 6, padding: '4px 12px', fontSize: 11,
                       cursor: isDisabled ? 'not-allowed' : 'pointer', fontWeight: isActive ? 700 : 400,
                       transition: 'all 0.15s',
@@ -380,7 +380,7 @@ export default function CircuitPlannerTab() {
                 {/* Live config panel — right */}
                 <div style={{ flex: '0 0 45%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                   <div style={{
-                    padding: '6px 12px', background: '#070d1a',
+                    padding: '6px 12px', background: 'var(--bg-primary)',
                     borderBottom: '1px solid #1e2a3a', flexShrink: 0,
                     display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
                   }}>
@@ -401,7 +401,7 @@ export default function CircuitPlannerTab() {
                         <button
                           onClick={() => setPinnedStep(null)}
                           style={{
-                            marginLeft: 'auto', background: '#0a1628', border: '1px solid #1e3a5f',
+                            marginLeft: 'auto', background: '#0a1628', border: '1px solid var(--border-accent)',
                             color: '#64748b', borderRadius: 5, padding: '2px 8px', fontSize: 10,
                             cursor: 'pointer', fontWeight: 600,
                           }}
@@ -413,7 +413,7 @@ export default function CircuitPlannerTab() {
                       <>
                         <span style={{
                           fontSize: 9, fontWeight: 800,
-                          color: running ? '#4ade80' : '#475569',
+                          color: running ? '#4ade80' : 'var(--text-muted)',
                           background: running ? '#052e16' : '#0a1220',
                           border: `1px solid ${running ? '#166534' : '#1e2a3a'}`,
                           borderRadius: 4, padding: '1px 6px', letterSpacing: 0.5, textTransform: 'uppercase',
@@ -421,12 +421,12 @@ export default function CircuitPlannerTab() {
                           {running ? '🔴 LIVE' : simComplete ? '✅ DONE' : '○ IDLE'}
                         </span>
                         {simComplete && (
-                          <span style={{ fontSize: 10, color: '#475569' }}>
+                          <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
                             — click any ✅ step to explore its config
                           </span>
                         )}
                         {running && (
-                          <span style={{ fontSize: 10, color: '#334155' }}>
+                          <span style={{ fontSize: 10, color: 'var(--border-subtle)' }}>
                             — auto-follows active step
                           </span>
                         )}
@@ -506,10 +506,10 @@ function EmptyState() {
     <div style={{
       flex: 1, display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center', gap: 16,
-      color: '#1e3a5f', userSelect: 'none',
+      color: 'var(--bg-accent)', userSelect: 'none',
     }}>
       <div style={{ fontSize: 56 }}>📡</div>
-      <div style={{ fontSize: 20, fontWeight: 700, color: '#1e3a5f' }}>
+      <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--bg-accent)' }}>
         Configure a circuit order and click Plan Circuit
       </div>
       <div style={{ fontSize: 13, color: '#0f2340', maxWidth: 420, textAlign: 'center', lineHeight: 1.7 }}>
@@ -520,8 +520,8 @@ function EmptyState() {
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 480 }}>
         {['L3VPN','EVC/E-LINE','DIA Internet','Wave/DWDM','Mobile Backhaul','DCI'].map(t => (
           <span key={t} style={{
-            fontSize: 11, background: '#070d1a', border: '1px solid #1e2a3a',
-            borderRadius: 5, padding: '3px 8px', color: '#334155',
+            fontSize: 11, background: 'var(--bg-primary)', border: '1px solid #1e2a3a',
+            borderRadius: 5, padding: '3px 8px', color: 'var(--border-subtle)',
           }}>{t}</span>
         ))}
       </div>

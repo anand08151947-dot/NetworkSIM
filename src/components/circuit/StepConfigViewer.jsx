@@ -8,8 +8,8 @@ const LANG_COLORS = {
   'sros':   '#93c5fd',
   'json':   '#c4b5fd',
   'eos':    '#f9a8d4',
-  'cli':    '#94a3b8',
-  'shell':  '#94a3b8',
+  'cli':    'var(--text-secondary)',
+  'shell':  'var(--text-secondary)',
 };
 
 const SYSTEM_COLORS = {
@@ -47,7 +47,7 @@ function CopyButton({ text }) {
       onClick={handleCopy}
       style={{
         background:   copied ? '#052e16' : '#0a1628',
-        border:       `1px solid ${copied ? '#166534' : '#1e3a5f'}`,
+        border:       `1px solid ${copied ? '#166534' : 'var(--bg-accent)'}`,
         color:        copied ? '#4ade80' : '#64748b',
         borderRadius: 5,
         padding:      '3px 10px',
@@ -79,7 +79,7 @@ export default function StepConfigViewer({ activeStep, activeDeviceIndex, circui
   const displayLabel  = isStepMode ? stepCfg.label  : (deviceTab?.label ?? '');
   const displayLang   = isStepMode ? stepCfg.lang   : (deviceTab?.lang  ?? 'cli');
   const displayConfig = isStepMode ? stepCfg.config : (deviceTab?.config ?? '');
-  const langColor     = LANG_COLORS[displayLang] ?? '#94a3b8';
+  const langColor     = LANG_COLORS[displayLang] ?? 'var(--text-secondary)';
 
   const systemLabel = activeStep?.system ?? '';
   const actionLabel = activeStep?.action ?? '';
@@ -89,7 +89,7 @@ export default function StepConfigViewer({ activeStep, activeDeviceIndex, circui
     return (
       <div style={{
         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: '#334155', fontSize: 13, padding: 24, textAlign: 'center',
+        color: 'var(--border-subtle)', fontSize: 13, padding: 24, textAlign: 'center',
       }}>
         ▶ Start simulation to see live configs
       </div>
@@ -100,7 +100,7 @@ export default function StepConfigViewer({ activeStep, activeDeviceIndex, circui
     return (
       <div style={{
         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: '#334155', fontSize: 13, padding: 24, textAlign: 'center',
+        color: 'var(--border-subtle)', fontSize: 13, padding: 24, textAlign: 'center',
       }}>
         ▶ Start simulation to see live configs
       </div>
@@ -111,7 +111,7 @@ export default function StepConfigViewer({ activeStep, activeDeviceIndex, circui
     return (
       <div style={{
         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: '#334155', fontSize: 13, padding: 24, textAlign: 'center',
+        color: 'var(--border-subtle)', fontSize: 13, padding: 24, textAlign: 'center',
       }}>
         No config available for this step
       </div>
@@ -119,12 +119,12 @@ export default function StepConfigViewer({ activeStep, activeDeviceIndex, circui
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', background: '#04080f' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', background: 'var(--bg-card)' }}>
       {/* Header */}
       <div style={{
         padding: '7px 12px',
         borderBottom: '1px solid #1e2a3a',
-        background: '#070d1a',
+        background: 'var(--bg-primary)',
         flexShrink: 0,
         display: 'flex',
         alignItems: 'center',
@@ -145,18 +145,18 @@ export default function StepConfigViewer({ activeStep, activeDeviceIndex, circui
           </span>
         )}
         {isStepMode && actionLabel && (
-          <span style={{ fontSize: 11, fontWeight: 600, color: '#e2e8f0', flexShrink: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-primary)', flexShrink: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {actionLabel}
           </span>
         )}
         {isFallback && deviceCfg?.device && (
           <>
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#e2e8f0' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)' }}>
               {deviceCfg.device.role}
             </span>
             <span style={{
               fontSize: 10, fontWeight: 700,
-              color: '#94a3b8',
+              color: 'var(--text-secondary)',
               background: '#0a1220',
               borderRadius: 4,
               padding: '1px 7px',
@@ -238,7 +238,7 @@ export default function StepConfigViewer({ activeStep, activeDeviceIndex, circui
               style={{
                 background: isActive ? '#0f2a4a' : 'transparent',
                 border: isActive ? '1px solid #1e4976' : '1px solid transparent',
-                color: !hasData ? '#1e2a3a' : isActive ? '#38bdf8' : '#475569',
+                color: !hasData ? '#1e2a3a' : isActive ? '#38bdf8' : 'var(--text-muted)',
                 borderRadius: 5, padding:'2px 10px', fontSize:10,
                 cursor: hasData ? 'pointer' : 'not-allowed', fontWeight: isActive ? 700 : 400,
               }}>{t.label}</button>

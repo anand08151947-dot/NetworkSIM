@@ -19,12 +19,12 @@ function InventoryBar({ item, animKey }) {
 
   return (
     <div style={{
-      background: '#070d1a', border: `1px solid ${badge.text === 'OK' ? '#1e2a3a' : color + '55'}`,
+      background: 'var(--bg-primary)', border: `1px solid ${badge.text === 'OK' ? '#1e2a3a' : color + '55'}`,
       borderRadius: 8, padding: '10px 12px',
     }}>
       {/* Header row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-        <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>{item.label}</span>
+        <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 600 }}>{item.label}</span>
         <span style={{
           fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 4,
           background: badge.bg, color: badge.fg,
@@ -49,9 +49,9 @@ function InventoryBar({ item, animKey }) {
           {typeof item.avail === 'number' && item.avail % 1 !== 0
             ? item.avail.toFixed(1)
             : item.avail.toLocaleString()}{' '}
-          <span style={{ color: '#475569', fontWeight: 400 }}>{item.unit}</span>
+          <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>{item.unit}</span>
         </span>
-        <span style={{ color: '#334155', fontSize: 10 }}>
+        <span style={{ color: 'var(--border-subtle)', fontSize: 10 }}>
           of {item.total.toLocaleString()} · {pct}%
         </span>
       </div>
@@ -73,7 +73,7 @@ function InventoryBar({ item, animKey }) {
 export default function InventoryScoreboard({ items, animKey }) {
   if (!items || items.length === 0) {
     return (
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1e3a5f', fontSize: 14 }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--bg-accent)', fontSize: 14 }}>
         Configure a circuit order to view inventory status
       </div>
     );
@@ -94,7 +94,7 @@ export default function InventoryScoreboard({ items, animKey }) {
       {/* Summary bar */}
       <div style={{
         display: 'flex', gap: 12, padding: '10px 14px',
-        borderBottom: '1px solid #1e2a3a', background: '#070d1a', flexShrink: 0,
+        borderBottom: '1px solid #1e2a3a', background: 'var(--bg-primary)', flexShrink: 0,
         alignItems: 'center',
       }}>
         <span style={{ fontSize: 13, fontWeight: 700, color: '#38bdf8' }}>🗄️ Inventory & Capacity</span>

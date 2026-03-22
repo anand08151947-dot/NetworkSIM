@@ -23,13 +23,13 @@ function GateCard({ gate, phase, checked }) {
   if (!checked) {
     return (
       <div style={{
-        background: '#070d1a', border: '1px solid #1e2a3a', borderRadius: 8,
+        background: 'var(--bg-primary)', border: '1px solid #1e2a3a', borderRadius: 8,
         padding: '10px 12px', opacity: 0.35,
       }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <span style={{ fontSize: 14 }}>{phase.icon}</span>
-          <span style={{ fontSize: 11, color: '#334155', fontWeight: 600 }}>{phase.label}</span>
-          <span style={{ marginLeft: 'auto', fontSize: 10, color: '#1e3a5f' }}>○ Pending</span>
+          <span style={{ fontSize: 11, color: 'var(--border-subtle)', fontWeight: 600 }}>{phase.label}</span>
+          <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--bg-accent)' }}>○ Pending</span>
         </div>
       </div>
     );
@@ -42,7 +42,7 @@ function GateCard({ gate, phase, checked }) {
     }}>
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: gate?.augment ? 8 : 0 }}>
         <span style={{ fontSize: 14 }}>{phase.icon}</span>
-        <span style={{ fontSize: 11, color: '#e2e8f0', fontWeight: 700 }}>{gate?.name ?? phase.label}</span>
+        <span style={{ fontSize: 11, color: 'var(--text-primary)', fontWeight: 700 }}>{gate?.name ?? phase.label}</span>
         <span style={{
           marginLeft: 'auto', fontSize: 10, fontWeight: 700,
           background: s.bg, color: s.fg, border: `1px solid ${s.border}`,
@@ -53,7 +53,7 @@ function GateCard({ gate, phase, checked }) {
       </div>
 
       {gate?.detail && (
-        <div style={{ fontSize: 10, color: '#94a3b8', lineHeight: 1.5, paddingLeft: 22 }}>
+        <div style={{ fontSize: 10, color: 'var(--text-secondary)', lineHeight: 1.5, paddingLeft: 22 }}>
           {gate.detail}
         </div>
       )}
@@ -61,7 +61,7 @@ function GateCard({ gate, phase, checked }) {
       {gate?.augment && (
         <div style={{
           marginTop: 7, padding: '6px 8px', borderRadius: 5,
-          background: '#0f172a', border: '1px solid #92400e',
+          background: 'var(--bg-secondary)', border: '1px solid #92400e',
           fontSize: 10, color: '#fbbf24', lineHeight: 1.6,
         }}>
           🔧 <strong>Augmentation:</strong> {gate.augment}
@@ -86,7 +86,7 @@ export default function FeasibilityGates({ gates, activePhaseIdx }) {
       {/* Header */}
       <div style={{
         display: 'flex', gap: 12, padding: '10px 14px',
-        borderBottom: '1px solid #1e2a3a', background: '#070d1a', flexShrink: 0, alignItems: 'center',
+        borderBottom: '1px solid #1e2a3a', background: 'var(--bg-primary)', flexShrink: 0, alignItems: 'center',
       }}>
         <span style={{ fontSize: 13, fontWeight: 700, color: '#38bdf8' }}>🔍 Feasibility Gates</span>
         {gates && (
@@ -95,7 +95,7 @@ export default function FeasibilityGates({ gates, activePhaseIdx }) {
             {critCount > 0 && <span style={{ fontSize: 11, color: '#f59e0b' }}>{critCount} WARN</span>}
           </>
         )}
-        {!gates && <span style={{ marginLeft: 'auto', fontSize: 11, color: '#334155' }}>Run a simulation to see results</span>}
+        {!gates && <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--border-subtle)' }}>Run a simulation to see results</span>}
       </div>
 
       {/* Gate cards */}
