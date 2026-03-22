@@ -64,3 +64,15 @@ desktop.ini
 # ── Test output ───────────────────────────────────────────────────
 coverage/
 
+# ── Temp / backup files ───────────────────────────────────────────
+*.tmp
+*.bak
+*.orig
+
+# ── Vite / rollup cache ───────────────────────────────────────────
+.cache/
+.rollup.cache/
+
+# ── Copilot session state (local workspace only) ──────────────────
+.copilot/
+

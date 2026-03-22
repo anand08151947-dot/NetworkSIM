@@ -6,7 +6,7 @@ optic ISP. Built with **React 19 + Vite + React Flow + D3.js + Leaflet**.
 > Simulates the end-to-end network stack of a real fiber ISP — from ONT at the
 > customer premises, through OLTs, aggregation switches, BNG, MPLS core, and
 > border routers — with live provisioning flows, fault injection, geographic
-> maps, and analytics.
+> maps, analytics, and a full **4G/5G RAN Planning module**.
 
 **Architected by [Anand Ranade](https://github.com/anand08151947-dot) · Co-Built using [GitHub Copilot](https://github.com/features/copilot)**
 
@@ -56,6 +56,42 @@ Auto-healing events fire after each fault resolves (green remediation steps).
 - NorthStar Leaflet map with CO locations, fiber routes, and customer density
 - Zoom-reactive: fiber paths, CO markers, and region overlays appear as you zoom
 - Bandwidth heatmap overlay showing demand by region
+
+### 📡 RAN Planning (4G / 5G NSA / 5G SA)
+
+A NOC-grade RAN Planning module covering the full 4G→5G NSA→SA dual-stack lifecycle:
+
+**13 Function Sub-Tabs:**
+| Tab | Description |
+|-----|-------------|
+| 🗺️ Zones | Zone health map — SINR, QoE, load, anchor dependency per zone |
+| 📊 Capacity | Demand model + Super Bowl peak event simulator (4-phase animated) |
+| 📡 Interference | Emergent interference detector — co-channel, adjacent, pilot pollution |
+| 🔧 MIMO | Massive MIMO beam config — 64T64R, null-steering, MU-MIMO |
+| 😊 QoE | Per-zone QoE scoring with anchor flip root cause diagnosis |
+| 🤖 SON | SON policy envelope — MLB, MRO, CCO, Self-Healing toggles |
+| ♻️ Lifecycle | Future-resilience scorecard — 9 technology/regulatory/market scenarios |
+| 🔢 Spectrum | Band inventory, PCI assignment validator, interference matrix |
+| 🏙️ HetNet | Small cell parent-child dependency with interference constraint |
+| 🔄 Handover | A1–B2 event threshold table with live apply + NSA→SA cutover simulator |
+| 🍰 Slicing | Progressive eMBB/URLLC/mMTC activation map (design once, activate zone by zone) |
+| 🏗️ Acquisition | 4-gate feasibility validator (Physical/Structural/Legal/Commercial) with gate re-evaluation |
+| 🚗 Drive Test | Model vs. field Δ routing: archive / auto-calibrate / escalate with investigate flow |
+
+**9 Animated Scenario Simulations:**
+| Scenario | Visualization |
+|----------|---------------|
+| 🔧 Massive MIMO & 3D Beamforming | Animated beam fan — null-steering, MU-MIMO rank |
+| 🍰 Network Slicing & SLA Stress-Test | Slice bar chart — eMBB/URLLC/mMTC SLA breach/recovery |
+| 🤖 AI-RAN Training & Model Validation | Neural net node graph — shadow mode → live deploy |
+| 🌐 Edge-Compute & Tromboning Analysis | Traffic flow diagram — trombone detection + breakout |
+| 📍 Indoor Positioning (Industrial 5G) | Anchor + UE grid — PRS multilateration accuracy |
+| 🏙️ Beamforming Ray Tracing | Urban geometry + 50K ray traces → SINR heat map |
+| 🚆 Handover Storm — High-Speed Rail | Animated UE on rail corridor — ping-pong storm → MRO fix |
+| 📉 Cell Failure & SON Self-Healing | Radial bloom expansion — neighbor CCO recovery in 38.5s |
+| 📻 Dynamic Spectrum Sharing (DSS) | Animated PRB grid — LTE/NR coexistence + CRS-IC |
+
+Each scenario has: step-by-step engine, SVG visualization, live metrics, and before/after comparison table.
 
 ### 📊 Analytics Tabs
 | Tab | Contents |
@@ -167,7 +203,10 @@ src/
 │   ├── NodeExpandModal.jsx      # Double-click node detail overlay
 │   ├── charts/CapacityChart.jsx
 │   ├── panels/                  # AIRunbook, ConfigGenerator, FaultInjector…
-│   └── tabs/                    # GeoMap, Customer, Revenue, SLA, BGP, IPAM…
+│   └── tabs/
+│       ├── RANPlanningTab.jsx   # 4G/5G RAN Planning — 13 function sub-tabs
+│       ├── RANScenariosPanel.jsx # 9 animated RAN scenario simulations
+│       └── …                   # GeoMap, Customer, Revenue, SLA, BGP, IPAM…
 ├── data/
 │   ├── networkTopology.js       # Nodes, edges, 8 simulation flows
 │   ├── faultScenarios.js        # 5 fault scenarios

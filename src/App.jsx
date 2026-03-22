@@ -31,6 +31,7 @@ import IPAMTab from "./components/tabs/IPAMTab";
 import AuditTimelineTab from "./components/tabs/AuditTimelineTab";
 import TrafficEngineeringTab from "./components/tabs/TrafficEngineeringTab";
 import CircuitPlannerTab from "./components/tabs/CircuitPlannerTab";
+import RANPlanningTab from "./components/tabs/RANPlanningTab";
 import SimRecorder from "./components/SimRecorder";
 import { simEngine, SimEngine } from "./simulation/engine";
 import { SimEvents, SIM_EVENT } from "./simulation/events";
@@ -67,6 +68,7 @@ const TABS = [
   // { id: "audit", label: "📅 Audit Log" },               // hidden
   // { id: "te", label: "🚦 Traffic Engineering" },        // hidden
   { id: "circuit", label: "📡 Circuit Planner" },
+  { id: "ran", label: "📡 RAN Planning" },
 ];
 
 export default function App() {
@@ -943,6 +945,13 @@ export default function App() {
       {activeTab === "circuit" && (
         <div style={{ flex: 1, overflow: "hidden", display: "flex" }}>
           <CircuitPlannerTab />
+        </div>
+      )}
+
+      {/* ── RAN PLANNING TAB ── */}
+      {activeTab === "ran" && (
+        <div style={{ flex: 1, overflow: "hidden", display: "flex" }}>
+          <RANPlanningTab />
         </div>
       )}
 
