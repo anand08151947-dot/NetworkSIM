@@ -30,7 +30,7 @@ export default function CapacityChart({ nodeData, height = 160 }) {
   return (
     <div style={{ padding: '10px 0 0' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, paddingInline: 4 }}>
-        <span style={{ fontSize: 10, color: '#94a3b8' }}>24h Capacity History</span>
+        <span style={{ fontSize: 10, color: 'var(--text-secondary)' }}>24h Capacity History</span>
         <div style={{ display: 'flex', gap: 10 }}>
           <span style={{ fontSize: 9, color: '#22c55e' }}>Min: {min.toFixed(1)}%</span>
           <span style={{ fontSize: 9, color: '#f59e0b' }}>Avg: {avg}%</span>
@@ -45,12 +45,12 @@ export default function CapacityChart({ nodeData, height = 160 }) {
               <stop offset="95%" stopColor={color} stopOpacity={0.05} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-          <XAxis dataKey="time" tick={{ fontSize: 8, fill: '#475569' }} interval={5} />
-          <YAxis domain={[0, 100]} tick={{ fontSize: 8, fill: '#475569' }} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-elevated)" />
+          <XAxis dataKey="time" tick={{ fontSize: 8, fill: 'var(--text-muted)' }} interval={5} />
+          <YAxis domain={[0, 100]} tick={{ fontSize: 8, fill: 'var(--text-muted)' }} />
           <Tooltip
-            contentStyle={{ background: '#0f172a', border: `1px solid ${color}`, borderRadius: 6, fontSize: 10 }}
-            labelStyle={{ color: '#94a3b8' }}
+            contentStyle={{ background: 'var(--tooltip-bg)', border: `1px solid ${color}`, borderRadius: 6, fontSize: 10 }}
+            labelStyle={{ color: 'var(--text-secondary)' }}
             itemStyle={{ color }}
             formatter={(v) => [`${v}%`, 'Capacity']}
           />

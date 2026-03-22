@@ -180,7 +180,7 @@ export default function SimRecorder({ targetRef, running, activeSimId }) {
   const isReady     = status === "ready";
 
   const btnBg     = isRecording ? "#1a0000" : isArmed ? "#1a0d00" : isEncoding ? "#1a1000" : isReady ? "#002210" : "transparent";
-  const btnBorder = isRecording ? "#ef4444" : isArmed ? "#f97316" : isEncoding ? "#f59e0b" : isReady ? "#22c55e" : "#334155";
+  const btnBorder = isRecording ? "#ef4444" : isArmed ? "#f97316" : isEncoding ? "#f59e0b" : isReady ? "#22c55e" : "var(--border-subtle)";
   const btnColor  = isRecording ? "#ef4444" : isArmed ? "#fb923c" : isEncoding ? "#f59e0b" : isReady ? "#22c55e" : "#64748b";
 
   const btnLabel = isRecording
@@ -235,7 +235,7 @@ export default function SimRecorder({ targetRef, running, activeSimId }) {
           <button
             onClick={() => { clearDl(); setStatus(null); }}
             title="Discard"
-            style={{ background: "transparent", border: "1px solid #334155", borderRadius: 6, padding: "4px 6px", cursor: "pointer", fontSize: 10, color: "#475569" }}
+            style={{ background: "transparent", border: "1px solid var(--border-subtle)", borderRadius: 6, padding: "4px 6px", cursor: "pointer", fontSize: 10, color: "var(--text-muted)" }}
           >✕</button>
         </>
       )}
@@ -244,12 +244,12 @@ export default function SimRecorder({ targetRef, running, activeSimId }) {
       {showMenu && !isRecording && !isEncoding && (
         <div style={{
           position: "absolute", top: "110%", right: 0, zIndex: 200,
-          background: "#0f172a", border: "1px solid #1e3a5f",
+          background: "var(--bg-secondary)", border: "1px solid var(--border-accent)",
           borderRadius: 10, overflow: "hidden",
           boxShadow: "0 8px 28px #00000090", minWidth: 220,
         }}>
           {/* ── Start Now section ── */}
-          <div style={{ padding: "6px 12px 4px", fontSize: 9, color: "#475569", letterSpacing: 0.5, fontWeight: 700 }}>
+          <div style={{ padding: "6px 12px 4px", fontSize: 9, color: "var(--text-muted)", letterSpacing: 0.5, fontWeight: 700 }}>
             START RECORDING NOW
           </div>
           {[
@@ -258,25 +258,25 @@ export default function SimRecorder({ targetRef, running, activeSimId }) {
           ].map(({ f, icon, label, sub }) => (
             <button key={f} onClick={() => startRecording(f)}
               style={{ width: "100%", background: "transparent", border: "none", padding: "7px 12px", cursor: "pointer", display: "flex", alignItems: "center", gap: 10, textAlign: "left" }}
-              onMouseEnter={e => e.currentTarget.style.background = "#1e293b"}
+              onMouseEnter={e => e.currentTarget.style.background = "var(--bg-elevated)"}
               onMouseLeave={e => e.currentTarget.style.background = "transparent"}
             >
               <span style={{ fontSize: 18, flexShrink: 0 }}>{icon}</span>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#e2e8f0" }}>{label}</div>
-                <div style={{ fontSize: 9, color: "#475569" }}>{sub}</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-primary)" }}>{label}</div>
+                <div style={{ fontSize: 9, color: "var(--text-muted)" }}>{sub}</div>
               </div>
             </button>
           ))}
 
           {/* ── Divider ── */}
-          <div style={{ borderTop: "1px solid #1e293b", margin: "4px 0" }} />
+          <div style={{ borderTop: "1px solid var(--border-primary)", margin: "4px 0" }} />
 
           {/* ── ARM section ── */}
           <div style={{ padding: "4px 12px 4px", fontSize: 9, color: "#f97316", letterSpacing: 0.5, fontWeight: 700 }}>
             🎯 AUTO-START WITH SIMULATION
           </div>
-          <div style={{ padding: "2px 12px 6px", fontSize: 9, color: "#475569", lineHeight: 1.5 }}>
+          <div style={{ padding: "2px 12px 6px", fontSize: 9, color: "var(--text-muted)", lineHeight: 1.5 }}>
             Pick a format below, then click a simulation. Recording starts <em style={{ color: "#fb923c" }}>automatically</em> the moment the sim begins — no lag.
           </div>
           {[
@@ -291,12 +291,12 @@ export default function SimRecorder({ targetRef, running, activeSimId }) {
               <span style={{ fontSize: 18, flexShrink: 0 }}>{icon}</span>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 700, color }}>{label}</div>
-                <div style={{ fontSize: 9, color: "#475569" }}>Click sim → recording fires instantly</div>
+                <div style={{ fontSize: 9, color: "var(--text-muted)" }}>Click sim → recording fires instantly</div>
               </div>
             </button>
           ))}
 
-          <div style={{ padding: "6px 12px", fontSize: 8, color: "#334155", borderTop: "1px solid #1e293b" }}>
+          <div style={{ padding: "6px 12px", fontSize: 8, color: "var(--border-subtle)", borderTop: "1px solid var(--border-primary)" }}>
             Captures full dashboard · all panels · auto-stops when sim ends
           </div>
         </div>

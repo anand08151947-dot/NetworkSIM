@@ -61,8 +61,8 @@ export default function NOCTicker({ nodes }) {
 
   return (
     <div style={{
-      background: '#020817',
-      borderTop: '1px solid #1e3a5f',
+      background: 'var(--bg-root)',
+      borderTop: '1px solid var(--border-accent)',
       height: 34,
       display: 'flex',
       alignItems: 'center',
@@ -72,11 +72,11 @@ export default function NOCTicker({ nodes }) {
     }}>
       {/* Label */}
       <div style={{
-        background: '#0f1f3d', borderRight: '1px solid #1e3a5f',
+        background: '#0f1f3d', borderRight: '1px solid var(--border-accent)',
         padding: '0 10px', height: '100%', display: 'flex', alignItems: 'center',
         gap: 5, flexShrink: 0,
       }}>
-        <div style={{ width: 6, height: 6, borderRadius: '50%', background: paused ? '#475569' : '#22c55e', animation: paused ? 'none' : 'pulse 1.5s infinite' }} />
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: paused ? 'var(--text-muted)' : '#22c55e', animation: paused ? 'none' : 'pulse 1.5s infinite' }} />
         <span style={{ fontSize: 9, fontWeight: 700, color: '#60a5fa', letterSpacing: 1 }}>NOC</span>
       </div>
 
@@ -101,9 +101,9 @@ export default function NOCTicker({ nodes }) {
         }}>
           {[...visible, ...visible].map((a, i) => (
             <span key={`${a.id}-${i}`} style={{ fontSize: 10, color: getColor(a.msg), flexShrink: 0 }}>
-              <span style={{ color: '#334155', marginRight: 6, fontFamily: 'monospace' }}>[{a.time}]</span>
+              <span style={{ color: 'var(--border-subtle)', marginRight: 6, fontFamily: 'monospace' }}>[{a.time}]</span>
               {a.msg}
-              <span style={{ color: '#1e293b', margin: '0 16px' }}>│</span>
+              <span style={{ color: 'var(--bg-elevated)', margin: '0 16px' }}>│</span>
             </span>
           ))}
         </div>

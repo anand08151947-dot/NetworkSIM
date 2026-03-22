@@ -52,7 +52,7 @@ function MiniGauge({ capacity, status, size = 44 }) {
 
     const g = svg.append('g').attr('transform', `translate(${r},${r})`);
 
-    g.append('path').datum({}).attr('d', bg).attr('fill', '#1e293b');
+    g.append('path').datum({}).attr('d', bg).attr('fill', 'var(--bg-elevated)');
 
     const color = STATUS_COLORS[status] || STATUS_COLORS.healthy;
     g.append('path').datum({}).attr('d', arc).attr('fill', color);
@@ -89,7 +89,7 @@ function NetworkNode({ data }) {
   if (declutter) {
     return (
       <div style={{
-        background: isActive ? '#1a1400' : '#0f172a',
+        background: isActive ? '#1a1400' : 'var(--bg-secondary)',
         border: `1.5px solid ${borderColor}`,
         borderRadius: 7,
         padding: '4px 7px',
@@ -122,7 +122,7 @@ function NetworkNode({ data }) {
   return (
     <div
       style={{
-        background: isActive ? '#1a1400' : '#0f172a',
+        background: isActive ? '#1a1400' : 'var(--bg-secondary)',
         border: `2px solid ${borderColor}`,
         borderRadius: 10,
         padding: '8px 10px',
@@ -153,7 +153,7 @@ function NetworkNode({ data }) {
           }}>
             {data.label}
           </div>
-          <div style={{ fontSize: 9, color: '#94a3b8', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ fontSize: 9, color: 'var(--text-secondary)', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {data.sublabel}
           </div>
         </div>

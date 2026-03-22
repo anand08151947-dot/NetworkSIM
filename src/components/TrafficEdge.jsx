@@ -45,7 +45,7 @@ export default function TrafficEdge({
           <div style={{
             position: 'absolute',
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-            background: '#0f172a',
+            background: 'var(--bg-secondary)',
             border: `1px solid ${color}`,
             borderRadius: 4,
             padding: '1px 5px',

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 export function CollapsiblePanel({ title, icon, badge, badgeColor = '#22c55e', badgeBg = '#052e16', defaultOpen = true, children, headerExtra }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 10, overflow: 'hidden', flexShrink: 0 }}>
+    <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 10, overflow: 'hidden', flexShrink: 0 }}>
       <button
         onClick={() => setOpen(o => !o)}
         style={{
@@ -14,14 +14,14 @@ export function CollapsiblePanel({ title, icon, badge, badgeColor = '#22c55e', b
         }}
       >
         {icon && <span style={{ fontSize: 12 }}>{icon}</span>}
-        <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: 1, flex: 1 }}>{title}</span>
+        <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: 1, flex: 1 }}>{title}</span>
         {headerExtra}
         {badge !== undefined && (
           <span style={{ fontSize: 8, color: badgeColor, background: badgeBg, border: `1px solid ${badgeColor}44`, borderRadius: 3, padding: '1px 5px', marginRight: 2 }}>
             {badge}
           </span>
         )}
-        <span style={{ color: '#334155', fontSize: 11, lineHeight: 1 }}>{open ? '▲' : '▼'}</span>
+        <span style={{ color: 'var(--border-subtle)', fontSize: 11, lineHeight: 1 }}>{open ? '▲' : '▼'}</span>
       </button>
       {open && <div>{children}</div>}
     </div>
@@ -63,7 +63,7 @@ export function EventLog({ events }) {
   }, [events]);
 
   const dot = (
-    <span style={{ width: 8, height: 8, borderRadius: '50%', background: events.length > 0 ? '#22c55e' : '#334155',
+    <span style={{ width: 8, height: 8, borderRadius: '50%', background: events.length > 0 ? '#22c55e' : 'var(--border-subtle)',
       display: 'inline-block', animation: events.length > 0 ? 'pulse 1s infinite' : 'none', flexShrink: 0 }} />
   );
 
@@ -88,28 +88,28 @@ export function EventLog({ events }) {
         background: '#0a0f1e',
       }}>
         {events.length === 0 && (
-          <div style={{ color: '#334155', fontSize: 11, textAlign: 'center', marginTop: 20 }}>
+          <div style={{ color: 'var(--border-subtle)', fontSize: 11, textAlign: 'center', marginTop: 20 }}>
             Run a simulation to see events...
           </div>
         )}
         {events.map((ev, i) => (
           <div key={i} style={{
-            background: '#0f172a',
-            border: `1px solid ${ev.color || '#1e293b'}44`,
+            background: 'var(--bg-secondary)',
+            border: `1px solid ${ev.color || 'var(--bg-elevated)'}44`,
             borderLeft: `3px solid ${ev.color || '#3b82f6'}`,
             borderRadius: 6,
             padding: '5px 8px',
             animation: i === events.length - 1 ? 'fadeIn 0.4s ease' : 'none',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-              <span style={{ fontSize: 9, color: '#475569', fontFamily: 'monospace', flexShrink: 0 }}>
+              <span style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: 'monospace', flexShrink: 0 }}>
                 {ev.time}
               </span>
               <span style={{ fontSize: 10, fontWeight: 700, color: ev.color || '#60a5fa' }}>
                 [{ev.system}]
               </span>
             </div>
-            <div style={{ fontSize: 10, color: '#e2e8f0', marginBottom: 1 }}>{ev.action}</div>
+            <div style={{ fontSize: 10, color: 'var(--text-primary)', marginBottom: 1 }}>{ev.action}</div>
             <div style={{ fontSize: 9, color: '#64748b', fontFamily: 'monospace' }}>{ev.detail}</div>
           </div>
         ))}
@@ -130,8 +130,8 @@ export function SimulationPanel({ simulations, activeSimId, onRun, running }) {
               onClick={() => onRun(id)}
               disabled={running}
               style={{
-                background: isActive ? `${sim.color}22` : '#1e293b',
-                border: `1.5px solid ${isActive ? sim.color : '#334155'}`,
+                background: isActive ? `${sim.color}22` : 'var(--bg-elevated)',
+                border: `1.5px solid ${isActive ? sim.color : 'var(--border-subtle)'}`,
                 borderRadius: 8,
                 padding: '8px 10px',
                 cursor: running ? 'not-allowed' : 'pointer',
@@ -175,7 +175,7 @@ export function StatsBar({ nodes }) {
       gap: 10,
       padding: '8px 14px',
       background: '#0a0f1e',
-      borderBottom: '1px solid #1e3a5f',
+      borderBottom: '1px solid var(--border-accent)',
       flexShrink: 0,
       flexWrap: 'wrap',
       alignItems: 'center',
@@ -187,13 +187,13 @@ export function StatsBar({ nodes }) {
         { label: 'COMPONENTS', value: totalNodes, color: '#60a5fa' },
         { label: 'AVG CAPACITY', value: `${avgCapacity}%`, color: avgCapacity > 70 ? '#ef4444' : avgCapacity > 40 ? '#f59e0b' : '#22c55e' },
         { label: 'CUSTOMERS', value: totalCustomers.toLocaleString(), color: '#a78bfa' },
-        { label: 'CRITICAL', value: criticalCount, color: criticalCount > 0 ? '#ef4444' : '#334155' },
-        { label: 'WARNING', value: warningCount, color: warningCount > 0 ? '#f59e0b' : '#334155' },
-        { label: 'PROVISIONING', value: provisioningCount, color: provisioningCount > 0 ? '#facc15' : '#334155' },
+        { label: 'CRITICAL', value: criticalCount, color: criticalCount > 0 ? '#ef4444' : 'var(--border-subtle)' },
+        { label: 'WARNING', value: warningCount, color: warningCount > 0 ? '#f59e0b' : 'var(--border-subtle)' },
+        { label: 'PROVISIONING', value: provisioningCount, color: provisioningCount > 0 ? '#facc15' : 'var(--border-subtle)' },
       ].map(stat => (
         <div key={stat.label} style={{
-          background: '#0f172a',
-          border: '1px solid #1e293b',
+          background: 'var(--bg-secondary)',
+          border: '1px solid var(--border-primary)',
           borderRadius: 6,
           padding: '4px 10px',
           display: 'flex',
@@ -202,7 +202,7 @@ export function StatsBar({ nodes }) {
           minWidth: 70,
         }}>
           <span style={{ fontSize: 14, fontWeight: 800, color: stat.color }}>{stat.value}</span>
-          <span style={{ fontSize: 8, color: '#475569', letterSpacing: 0.5 }}>{stat.label}</span>
+          <span style={{ fontSize: 8, color: 'var(--text-muted)', letterSpacing: 0.5 }}>{stat.label}</span>
         </div>
       ))}
     </div>
@@ -238,7 +238,7 @@ export function NodeDetailPanel({ node, onClose }) {
       badgeBg={statusColor + '22'}
       defaultOpen={true}
       headerExtra={
-        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 14, padding: '0 4px' }}>×</button>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 14, padding: '0 4px' }}>×</button>
       }
     >
       <div style={{ padding: '10px 12px' }}>
@@ -247,10 +247,10 @@ export function NodeDetailPanel({ node, onClose }) {
         {/* Capacity bar */}
         <div style={{ marginBottom: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-            <span style={{ fontSize: 10, color: '#94a3b8' }}>Capacity Utilization</span>
+            <span style={{ fontSize: 10, color: 'var(--text-secondary)' }}>Capacity Utilization</span>
             <span style={{ fontSize: 10, fontWeight: 700, color: statusColor }}>{d.capacity}%</span>
           </div>
-          <div style={{ background: '#1e293b', borderRadius: 4, height: 6 }}>
+          <div style={{ background: 'var(--bg-elevated)', borderRadius: 4, height: 6 }}>
             <div style={{ width: `${d.capacity}%`, height: '100%', background: statusColor, borderRadius: 4, transition: 'width 0.5s ease' }} />
           </div>
         </div>
@@ -258,7 +258,7 @@ export function NodeDetailPanel({ node, onClose }) {
         {extras.map(([k, v]) => (
           <div key={k} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
             <span style={{ fontSize: 10, color: '#64748b' }}>{k}</span>
-            <span style={{ fontSize: 10, color: '#e2e8f0', fontWeight: 600 }}>{String(v)}</span>
+            <span style={{ fontSize: 10, color: 'var(--text-primary)', fontWeight: 600 }}>{String(v)}</span>
           </div>
         ))}
       </div>
