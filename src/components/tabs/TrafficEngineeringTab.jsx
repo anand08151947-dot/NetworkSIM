@@ -37,12 +37,12 @@ function utilColor(u) {
 }
 
 function matrixCellColor(val, max) {
-  if (val === 0) return "#0f172a";
+  if (val === 0) return "var(--bg-secondary)";
   const ratio = val / max;
   if (ratio > 0.75) return "#ef4444";
   if (ratio > 0.5)  return "#f97316";
   if (ratio > 0.25) return "#3b82f6";
-  return "#1e3a5f";
+  return "var(--bg-accent)";
 }
 
 const LANG_COLORS = {
@@ -63,7 +63,7 @@ function TeCopyButton({ text }) {
       }}
       style={{
         background: copied ? '#052e16' : '#0a1628',
-        border: `1px solid ${copied ? '#166534' : '#1e3a5f'}`,
+        border: `1px solid ${copied ? '#166534' : 'var(--bg-accent)'}`,
         color: copied ? '#4ade80' : '#64748b',
         borderRadius: 5,
         padding: '3px 10px',
@@ -106,20 +106,20 @@ export default function TrafficEngineeringTab() {
   const totalAvailable = RSVP_BW.reduce((s, r) => s + r.total, 0);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "auto", background: "#020817", padding: "12px 14px", gap: 14 }}>
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "auto", background: "var(--bg-root)", padding: "12px 14px", gap: 14 }}>
       {/* MPLS TE Tunnel Table */}
-      <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: 10, overflow: "hidden", flexShrink: 0 }}>
-        <div style={{ padding: "10px 14px", borderBottom: "1px solid #1e293b", display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#e2e8f0" }}>MPLS TE Tunnel Table</span>
+      <div style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-primary)", borderRadius: 10, overflow: "hidden", flexShrink: 0 }}>
+        <div style={{ padding: "10px 14px", borderBottom: "1px solid var(--border-primary)", display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>MPLS TE Tunnel Table</span>
           <span style={{ fontSize: 10, color: "#64748b" }}>RSVP-TE</span>
-          <span style={{ fontSize: 9, color: "#334155" }}>· click row for configs</span>
+          <span style={{ fontSize: 9, color: "var(--border-subtle)" }}>· click row for configs</span>
           <span style={{ marginLeft: "auto", fontSize: 9, color: "#22c55e" }}>● Live (updates 5s)</span>
         </div>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
           <thead>
             <tr style={{ background: "#0a1628" }}>
               {["Tunnel ID", "Source", "Destination", "BW (Gbps)", "Reserved", "Util %", "RSVP", "Path"].map(h => (
-                <th key={h} style={{ padding: "7px 12px", textAlign: "left", color: "#64748b", fontWeight: 600, fontSize: 10, borderBottom: "1px solid #1e293b" }}>{h}</th>
+                <th key={h} style={{ padding: "7px 12px", textAlign: "left", color: "#64748b", fontWeight: 600, fontSize: 10, borderBottom: "1px solid var(--border-primary)" }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -131,20 +131,20 @@ export default function TrafficEngineeringTab() {
                 key={t.id}
                 onClick={() => setSelectedTunnel(isSelected ? null : t)}
                 style={{
-                  background: isSelected ? "#0f3460" : i % 2 === 0 ? "#07111f" : "#020817",
-                  borderBottom: "1px solid #1e293b22",
+                  background: isSelected ? "#0f3460" : i % 2 === 0 ? "var(--bg-row-alt)" : "var(--bg-root)",
+                  borderBottom: "1px solid var(--border-primary)22",
                   cursor: "pointer",
                   outline: isSelected ? "1px solid #1e5f9f" : "none",
                 }}
               >
                 <td style={{ padding: "6px 12px", fontFamily: "monospace", color: isSelected ? "#7dd3fc" : "#60a5fa" }}>{t.id}</td>
-                <td style={{ padding: "6px 12px", color: "#e2e8f0" }}>{t.src}</td>
-                <td style={{ padding: "6px 12px", color: "#e2e8f0" }}>{t.dst}</td>
-                <td style={{ padding: "6px 12px", color: "#94a3b8" }}>{t.bw}</td>
-                <td style={{ padding: "6px 12px", color: "#94a3b8" }}>{t.reserved}</td>
+                <td style={{ padding: "6px 12px", color: "var(--text-primary)" }}>{t.src}</td>
+                <td style={{ padding: "6px 12px", color: "var(--text-primary)" }}>{t.dst}</td>
+                <td style={{ padding: "6px 12px", color: "var(--text-secondary)" }}>{t.bw}</td>
+                <td style={{ padding: "6px 12px", color: "var(--text-secondary)" }}>{t.reserved}</td>
                 <td style={{ padding: "6px 12px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div style={{ width: 48, background: "#1e293b", borderRadius: 3, height: 6 }}>
+                    <div style={{ width: 48, background: "var(--bg-elevated)", borderRadius: 3, height: 6 }}>
                       <div style={{ width: `${t.util}%`, height: "100%", background: utilColor(t.util), borderRadius: 3, transition: "width 1s" }} />
                     </div>
                     <span style={{ color: utilColor(t.util), fontWeight: 700 }}>{t.util}%</span>
@@ -153,7 +153,7 @@ export default function TrafficEngineeringTab() {
                 <td style={{ padding: "6px 12px" }}>
                   <span style={{ color: t.rsvp === "UP" ? "#22c55e" : "#ef4444", fontWeight: 700, fontSize: 10 }}>● {t.rsvp}</span>
                 </td>
-                <td style={{ padding: "6px 12px", color: "#475569", fontFamily: "monospace", fontSize: 10 }}>{t.path}</td>
+                <td style={{ padding: "6px 12px", color: "var(--text-muted)", fontFamily: "monospace", fontSize: 10 }}>{t.path}</td>
               </tr>
               );
             })}
@@ -166,10 +166,10 @@ export default function TrafficEngineeringTab() {
         const cfgTabs = getTunnelConfigs(selectedTunnel);
         const activeVendorTab = cfgTabs.find(t => t.key === cfgVendor) ?? cfgTabs[0];
         return (
-          <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: 10, overflow: "hidden", flexShrink: 0 }}>
+          <div style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-primary)", borderRadius: 10, overflow: "hidden", flexShrink: 0 }}>
             {/* Panel header */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 14px", borderBottom: "1px solid #1e293b", background: "#070d1a" }}>
-              <span style={{ fontSize: 12, fontWeight: 700, color: "#e2e8f0" }}>⚙️ Tunnel Config — {selectedTunnel.id}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 14px", borderBottom: "1px solid var(--border-primary)", background: "var(--bg-primary)" }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>⚙️ Tunnel Config — {selectedTunnel.id}</span>
               <div style={{ display: "flex", gap: 4, marginLeft: 12 }}>
                 {cfgTabs.map(tab => (
                   <button
@@ -177,8 +177,8 @@ export default function TrafficEngineeringTab() {
                     onClick={() => setCfgVendor(tab.key)}
                     style={{
                       background: cfgVendor === tab.key ? "#0f3460" : "transparent",
-                      border: cfgVendor === tab.key ? `1px solid ${LANG_COLORS[tab.lang]}44` : "1px solid #1e293b",
-                      color: cfgVendor === tab.key ? LANG_COLORS[tab.lang] : "#475569",
+                      border: cfgVendor === tab.key ? `1px solid ${LANG_COLORS[tab.lang]}44` : "1px solid var(--border-primary)",
+                      color: cfgVendor === tab.key ? LANG_COLORS[tab.lang] : "var(--text-muted)",
                       borderRadius: 5,
                       padding: "3px 10px",
                       fontSize: 10,
@@ -194,7 +194,7 @@ export default function TrafficEngineeringTab() {
                 <TeCopyButton text={activeVendorTab?.config ?? ""} />
                 <button
                   onClick={() => setSelectedTunnel(null)}
-                  style={{ background: "transparent", border: "none", color: "#475569", cursor: "pointer", fontSize: 16, lineHeight: 1, padding: "0 4px" }}
+                  style={{ background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: 16, lineHeight: 1, padding: "0 4px" }}
                 >
                   ×
                 </button>
@@ -208,7 +208,7 @@ export default function TrafficEngineeringTab() {
                 fontSize: 11,
                 lineHeight: 1.6,
                 fontFamily: '"JetBrains Mono", "Fira Code", "Consolas", monospace',
-                color: LANG_COLORS[activeVendorTab?.lang] ?? "#94a3b8",
+                color: LANG_COLORS[activeVendorTab?.lang] ?? "var(--text-secondary)",
                 background: "transparent",
                 whiteSpace: "pre",
               }}>
@@ -220,13 +220,13 @@ export default function TrafficEngineeringTab() {
       })()}
 
       {/* Traffic Matrix Heatmap */}
-      <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: 10, padding: "12px 14px", flexShrink: 0 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#e2e8f0", marginBottom: 12 }}>Inter-POP Traffic Matrix (Gbps)</div>
+      <div style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-primary)", borderRadius: 10, padding: "12px 14px", flexShrink: 0 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)", marginBottom: 12 }}>Inter-POP Traffic Matrix (Gbps)</div>
         <div style={{ overflowX: "auto" }}>
           <table style={{ borderCollapse: "separate", borderSpacing: 3 }}>
             <thead>
               <tr>
-                <th style={{ padding: "4px 10px", color: "#334155", fontSize: 10 }}>src \ dst</th>
+                <th style={{ padding: "4px 10px", color: "var(--border-subtle)", fontSize: 10 }}>src \ dst</th>
                 {POPS.map(p => (
                   <th key={p} style={{ padding: "4px 12px", color: "#60a5fa", fontWeight: 700, fontSize: 11 }}>{p}</th>
                 ))}
@@ -244,10 +244,10 @@ export default function TrafficEngineeringTab() {
                         key={dst}
                         style={{
                           padding: "8px 14px",
-                          background: isDiag ? "#1e293b" : matrixCellColor(val, matrixMax),
+                          background: isDiag ? "var(--bg-elevated)" : matrixCellColor(val, matrixMax),
                           borderRadius: 6,
                           textAlign: "center",
-                          color: isDiag ? "#334155" : val > matrixMax * 0.5 ? "#fff" : "#cbd5e1",
+                          color: isDiag ? "var(--border-subtle)" : val > matrixMax * 0.5 ? "#fff" : "#cbd5e1",
                           fontFamily: "monospace",
                           fontSize: 11,
                           fontWeight: isDiag ? 400 : 600,
@@ -263,22 +263,22 @@ export default function TrafficEngineeringTab() {
           </table>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
-          <span style={{ fontSize: 9, color: "#334155" }}>Low</span>
-          {["#1e3a5f", "#3b82f6", "#f97316", "#ef4444"].map(c => (
+          <span style={{ fontSize: 9, color: "var(--border-subtle)" }}>Low</span>
+          {["var(--bg-accent)", "#3b82f6", "#f97316", "#ef4444"].map(c => (
             <div key={c} style={{ width: 28, height: 10, background: c, borderRadius: 2 }} />
           ))}
-          <span style={{ fontSize: 9, color: "#334155" }}>High</span>
+          <span style={{ fontSize: 9, color: "var(--border-subtle)" }}>High</span>
         </div>
       </div>
 
       {/* RSVP Bandwidth Summary */}
-      <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: 10, padding: "12px 14px", flexShrink: 0 }}>
+      <div style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-primary)", borderRadius: 10, padding: "12px 14px", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: "#e2e8f0" }}>RSVP Bandwidth Summary</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>RSVP Bandwidth Summary</div>
           <div style={{ fontSize: 11, color: "#64748b" }}>
             Total Reserved: <span style={{ color: "#f59e0b", fontWeight: 700 }}>{totalReserved} Gbps</span>
             {" / "}
-            <span style={{ color: "#94a3b8" }}>{totalAvailable} Gbps Available</span>
+            <span style={{ color: "var(--text-secondary)" }}>{totalAvailable} Gbps Available</span>
           </div>
         </div>
         {RSVP_BW.map(r => {
@@ -290,9 +290,9 @@ export default function TrafficEngineeringTab() {
                 <span style={{ fontSize: 11, color: "#64748b" }}>{r.reserved} / {r.total} Gbps</span>
                 <span style={{ fontSize: 11, fontWeight: 700, color: utilColor(pct) }}>{pct}%</span>
               </div>
-              <div style={{ background: "#1e293b", borderRadius: 4, height: 12, position: "relative" }}>
+              <div style={{ background: "var(--bg-elevated)", borderRadius: 4, height: 12, position: "relative" }}>
                 <div style={{ width: `${pct}%`, height: "100%", background: utilColor(pct), borderRadius: 4, transition: "width 1s ease" }} />
-                <div style={{ position: "absolute", right: 0, top: 0, width: `${100 - pct}%`, height: "100%", background: "#1e3a5f44", borderRadius: "0 4px 4px 0" }} />
+                <div style={{ position: "absolute", right: 0, top: 0, width: `${100 - pct}%`, height: "100%", background: "var(--bg-accent)44", borderRadius: "0 4px 4px 0" }} />
               </div>
             </div>
           );

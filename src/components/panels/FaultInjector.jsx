@@ -7,7 +7,7 @@ export default function FaultInjector({ onRunFault, running, activeFaultId }) {
   const [expanded, setExpanded] = useState(true);
 
   return (
-    <div style={{ background: '#0f172a', border: '1px solid #450a0a', borderRadius: 10, overflow: 'hidden' }}>
+    <div style={{ background: 'var(--bg-secondary)', border: '1px solid #450a0a', borderRadius: 10, overflow: 'hidden' }}>
       <button
         onClick={() => setExpanded(e => !e)}
         style={{
@@ -17,7 +17,7 @@ export default function FaultInjector({ onRunFault, running, activeFaultId }) {
       >
         <span style={{ fontSize: 12 }}>⚡</span>
         <span style={{ fontSize: 11, fontWeight: 700, color: '#ef4444', flex: 1, textAlign: 'left', letterSpacing: 0.5 }}>FAULT INJECTION</span>
-        <span style={{ color: '#475569', fontSize: 12 }}>{expanded ? '▲' : '▼'}</span>
+        <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>{expanded ? '▲' : '▼'}</span>
       </button>
 
       {expanded && (
@@ -35,7 +35,7 @@ export default function FaultInjector({ onRunFault, running, activeFaultId }) {
                 disabled={running}
                 style={{
                   background: isActive ? '#1a0000' : '#0a0f1e',
-                  border: `1.5px solid ${isActive ? fault.color : '#1e293b'}`,
+                  border: `1.5px solid ${isActive ? fault.color : 'var(--bg-elevated)'}`,
                   borderRadius: 7,
                   padding: '7px 9px',
                   cursor: running ? 'not-allowed' : 'pointer',
@@ -53,13 +53,13 @@ export default function FaultInjector({ onRunFault, running, activeFaultId }) {
                   </span>
                 </div>
                 <div style={{ fontSize: 9, color: '#64748b' }}>{fault.description}</div>
-                <div style={{ fontSize: 9, color: '#334155', marginTop: 2 }}>
+                <div style={{ fontSize: 9, color: 'var(--border-subtle)', marginTop: 2 }}>
                   Recovery: {fault.recovery.description}
                 </div>
               </button>
             );
           })}
-          <div style={{ fontSize: 9, color: '#1e3a5f', borderTop: '1px solid #1e293b', paddingTop: 5, marginTop: 2, lineHeight: 1.5 }}>
+          <div style={{ fontSize: 9, color: 'var(--bg-accent)', borderTop: '1px solid var(--border-primary)', paddingTop: 5, marginTop: 2, lineHeight: 1.5 }}>
             Tip: Faults animate affected nodes red and show failover path in real-time.
           </div>
         </div>

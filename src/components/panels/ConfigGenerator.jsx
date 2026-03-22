@@ -78,7 +78,7 @@ export default function ConfigGenerator({ activeSimId, activeNodeId, events }) {
   const activeSystemLabel = nodeLabel(events);
 
   return (
-    <div style={{ background: '#0f172a', border: '1px solid #1e3a5f', borderRadius: 10, overflow: 'hidden' }}>
+    <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-accent)', borderRadius: 10, overflow: 'hidden' }}>
       <button
         onClick={() => setExpanded(e => !e)}
         style={{ width: '100%', background: '#0a1628', border: 'none', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
@@ -93,13 +93,13 @@ export default function ConfigGenerator({ activeSimId, activeNodeId, events }) {
         {hasEvents && !activeSystemLabel && (
           <span style={{ fontSize: 8, color: '#22c55e', background: '#052e16', borderRadius: 3, padding: '1px 5px' }}>READY</span>
         )}
-        <span style={{ color: '#475569', fontSize: 12 }}>{expanded ? '▲' : '▼'}</span>
+        <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>{expanded ? '▲' : '▼'}</span>
       </button>
 
       {expanded && (
         <div style={{ padding: '8px' }}>
           {!hasEvents ? (
-            <div style={{ fontSize: 10, color: '#334155', textAlign: 'center', padding: '12px 0' }}>
+            <div style={{ fontSize: 10, color: 'var(--border-subtle)', textAlign: 'center', padding: '12px 0' }}>
               Run a simulation to generate device configs
             </div>
           ) : (
@@ -121,8 +121,8 @@ export default function ConfigGenerator({ activeSimId, activeNodeId, events }) {
                 <div style={{ display: 'flex', gap: 3, marginBottom: 6, flexWrap: 'wrap' }}>
                   {tabs.map(t => (
                     <button key={t.key} onClick={() => setActiveTabKey(t.key)} style={{
-                      background: resolvedTabKey === t.key ? '#1e3a5f' : '#0a1628',
-                      border: `1px solid ${resolvedTabKey === t.key ? '#60a5fa' : '#1e293b'}`,
+                      background: resolvedTabKey === t.key ? 'var(--bg-accent)' : '#0a1628',
+                      border: `1px solid ${resolvedTabKey === t.key ? '#60a5fa' : 'var(--bg-elevated)'}`,
                       borderRadius: 4, padding: '3px 6px', cursor: 'pointer',
                       fontSize: 8, color: resolvedTabKey === t.key ? '#60a5fa' : '#64748b', fontWeight: 600,
                     }}>
@@ -135,7 +135,7 @@ export default function ConfigGenerator({ activeSimId, activeNodeId, events }) {
               {/* Config output */}
               <div style={{ position: 'relative' }}>
                 <pre style={{
-                  background: '#020817', border: '1px solid #1e293b', borderRadius: 6,
+                  background: 'var(--bg-root)', border: '1px solid var(--border-primary)', borderRadius: 6,
                   padding: '8px', fontSize: 8, color: textColor, fontFamily: 'monospace',
                   overflowX: 'auto', maxHeight: 220, overflowY: 'auto', margin: 0, lineHeight: 1.6,
                   whiteSpace: 'pre',
@@ -144,9 +144,9 @@ export default function ConfigGenerator({ activeSimId, activeNodeId, events }) {
                 </pre>
                 <button onClick={handleCopy} style={{
                   position: 'absolute', top: 4, right: 4,
-                  background: copied ? '#052e16' : '#1e293b', border: `1px solid ${copied ? '#22c55e' : '#334155'}`,
+                  background: copied ? '#052e16' : 'var(--bg-elevated)', border: `1px solid ${copied ? '#22c55e' : 'var(--border-subtle)'}`,
                   borderRadius: 4, padding: '2px 6px', cursor: 'pointer',
-                  fontSize: 8, color: copied ? '#22c55e' : '#94a3b8',
+                  fontSize: 8, color: copied ? '#22c55e' : 'var(--text-secondary)',
                 }}>
                   {copied ? '✅ Copied' : '📋 Copy'}
                 </button>
@@ -154,7 +154,7 @@ export default function ConfigGenerator({ activeSimId, activeNodeId, events }) {
 
               {/* Lang badge */}
               <div style={{ textAlign: 'right', marginTop: 3 }}>
-                <span style={{ fontSize: 7, color: '#475569', background: '#0f172a', borderRadius: 3, padding: '1px 4px' }}>
+                <span style={{ fontSize: 7, color: 'var(--text-muted)', background: 'var(--bg-secondary)', borderRadius: 3, padding: '1px 4px' }}>
                   {lang}
                 </span>
               </div>

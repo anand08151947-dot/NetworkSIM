@@ -32,7 +32,7 @@ function NodeDetailCard({ node, onClose }) {
   return (
     <div style={{
       position: 'absolute', bottom: 16, left: 16, zIndex: 1000,
-      background: '#0f172a', border: `1px solid ${capColor}55`,
+      background: 'var(--bg-secondary)', border: `1px solid ${capColor}55`,
       borderLeft: `3px solid ${capColor}`,
       borderRadius: 10, padding: '14px 16px', width: 280,
       boxShadow: `0 0 20px ${capColor}22`,
@@ -44,7 +44,7 @@ function NodeDetailCard({ node, onClose }) {
           <div style={{ fontSize: 12, fontWeight: 800, color: '#f1f5f9' }}>{node.label}</div>
           <div style={{ fontSize: 10, color: '#64748b' }}>{node.address}</div>
         </div>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 14, padding: 0 }}>✕</button>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 14, padding: 0 }}>✕</button>
       </div>
 
       {/* Capacity bar */}
@@ -53,7 +53,7 @@ function NodeDetailCard({ node, onClose }) {
           <span style={{ fontSize: 9, color: '#64748b' }}>CAPACITY</span>
           <span style={{ fontSize: 9, fontWeight: 700, color: capColor }}>{cap}% — {CAP_LABEL(cap)}</span>
         </div>
-        <div style={{ background: '#1e293b', borderRadius: 3, height: 5 }}>
+        <div style={{ background: 'var(--bg-elevated)', borderRadius: 3, height: 5 }}>
           <div style={{ width: `${cap}%`, height: '100%', background: capColor, borderRadius: 3, transition: 'width 0.5s' }} />
         </div>
       </div>
@@ -65,7 +65,7 @@ function NodeDetailCard({ node, onClose }) {
             <span style={{ fontSize: 9, color: '#64748b' }}>SUBSCRIBERS</span>
             <span style={{ fontSize: 9, fontWeight: 700, color: '#60a5fa' }}>{node.subscribers?.toLocaleString()} / {node.maxSubscribers?.toLocaleString()} ({utilPct}%)</span>
           </div>
-          <div style={{ background: '#1e293b', borderRadius: 3, height: 5 }}>
+          <div style={{ background: 'var(--bg-elevated)', borderRadius: 3, height: 5 }}>
             <div style={{ width: `${utilPct}%`, height: '100%', background: '#60a5fa', borderRadius: 3 }} />
           </div>
         </div>
@@ -83,9 +83,9 @@ function NodeDetailCard({ node, onClose }) {
           { k: 'Fiber In', v: node.fiberIn },
           { k: 'Power', v: node.power },
         ].filter(Boolean).map(({ k, v }) => (
-          <div key={k} style={{ background: '#020817', borderRadius: 5, padding: '5px 7px' }}>
-            <div style={{ fontSize: 8, color: '#475569' }}>{k}</div>
-            <div style={{ fontSize: 9, fontWeight: 600, color: '#94a3b8' }}>{v}</div>
+          <div key={k} style={{ background: 'var(--bg-root)', borderRadius: 5, padding: '5px 7px' }}>
+            <div style={{ fontSize: 8, color: 'var(--text-muted)' }}>{k}</div>
+            <div style={{ fontSize: 9, fontWeight: 600, color: 'var(--text-secondary)' }}>{v}</div>
           </div>
         ))}
       </div>
@@ -94,8 +94,8 @@ function NodeDetailCard({ node, onClose }) {
       <div style={{ fontSize: 9, fontWeight: 700, color: '#64748b', letterSpacing: 0.5, marginBottom: 4 }}>EQUIPMENT</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {node.equipment?.map(eq => (
-          <div key={eq} style={{ fontSize: 9, color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#334155', flexShrink: 0 }} />
+          <div key={eq} style={{ fontSize: 9, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--border-subtle)', flexShrink: 0 }} />
             {eq}
           </div>
         ))}
@@ -142,13 +142,13 @@ export default function GeoMapTab({ nodes: topoNodes }) {
   const maxSubs   = enrichedGeoNodes.reduce((s, n) => s + (n.maxSubscribers || 0), 0);
 
   return (
-    <div style={{ display: 'flex', flex: 1, overflow: 'hidden', background: '#020817', position: 'relative' }}>
+    <div style={{ display: 'flex', flex: 1, overflow: 'hidden', background: 'var(--bg-root)', position: 'relative' }}>
       <style>{`
         @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-        .leaflet-popup-content-wrapper { background: #0f172a !important; border: 1px solid #1e293b !important; border-radius: 8px !important; color: #e2e8f0 !important; }
-        .leaflet-popup-tip { background: #0f172a !important; }
+        .leaflet-popup-content-wrapper { background: var(--tooltip-bg) !important; border: 1px solid var(--border-primary) !important; border-radius: 8px !important; color: var(--text-primary) !important; }
+        .leaflet-popup-tip { background: var(--tooltip-bg) !important; }
         .leaflet-popup-content { margin: 10px 12px !important; }
-        .leaflet-tooltip { background: #0f172a !important; border: 1px solid #1e293b !important; color: #e2e8f0 !important; font-size: 11px; padding: 5px 8px; }
+        .leaflet-tooltip { background: var(--tooltip-bg) !important; border: 1px solid var(--border-primary) !important; color: var(--text-primary) !important; font-size: 11px; padding: 5px 8px; }
         .leaflet-tooltip-arrow { display: none; }
       `}</style>
 
@@ -156,7 +156,7 @@ export default function GeoMapTab({ nodes: topoNodes }) {
       <div style={{ flex: 1, position: 'relative' }}>
         <MapContainer
           center={PNW_CENTER} zoom={PNW_ZOOM} bounds={PNW_BOUNDS}
-          style={{ height: '100%', width: '100%', background: '#020817' }}
+          style={{ height: '100%', width: '100%', background: 'var(--bg-root)' }}
           zoomControl={true}
         >
           <TileLayer
@@ -222,7 +222,7 @@ export default function GeoMapTab({ nodes: topoNodes }) {
                 >
                   <span style={{ fontWeight: 700 }}>{node.icon} {node.label}</span>
                   {zoom >= 9 && node.subscribers > 0 && (
-                    <span style={{ color: '#94a3b8' }}> · {node.subscribers.toLocaleString()} subs</span>
+                    <span style={{ color: 'var(--text-secondary)' }}> · {node.subscribers.toLocaleString()} subs</span>
                   )}
                   {zoom >= 11 && (
                     <div style={{ color }}>Cap: {node.capacity}% · {node.sublabel}</div>
@@ -233,7 +233,7 @@ export default function GeoMapTab({ nodes: topoNodes }) {
                 <Popup maxWidth={280}>
                   <div style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
                     <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 4 }}>{node.icon} {node.label}</div>
-                    <div style={{ fontSize: 10, color: '#94a3b8', marginBottom: 6 }}>{node.sublabel}</div>
+                    <div style={{ fontSize: 10, color: 'var(--text-secondary)', marginBottom: 6 }}>{node.sublabel}</div>
                     {node.subscribers > 0 && (
                       <div style={{ marginBottom: 6 }}>
                         <div style={{ fontSize: 10, color: '#64748b', marginBottom: 2 }}>
@@ -250,7 +250,7 @@ export default function GeoMapTab({ nodes: topoNodes }) {
                     <div style={{ fontSize: 10, color: '#64748b', marginBottom: 4 }}>
                       <b>Equipment:</b> {node.equipment?.join(', ')}
                     </div>
-                    <div style={{ fontSize: 10, color: '#475569' }}>{node.address}</div>
+                    <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{node.address}</div>
                   </div>
                 </Popup>
               </CircleMarker>
@@ -285,10 +285,10 @@ export default function GeoMapTab({ nodes: topoNodes }) {
         {/* Map legend */}
         <div style={{
           position: 'absolute', top: 10, right: 10, zIndex: 1000,
-          background: '#0f172aee', border: '1px solid #1e293b', borderRadius: 8, padding: '10px 12px',
+          background: 'var(--bg-secondary)ee', border: '1px solid var(--border-primary)', borderRadius: 8, padding: '10px 12px',
           minWidth: 160,
         }}>
-          <div style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', marginBottom: 6, letterSpacing: 1 }}>CAPACITY STATUS</div>
+          <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6, letterSpacing: 1 }}>CAPACITY STATUS</div>
           {[
             { color: '#22c55e', label: '< 40% — Healthy' },
             { color: '#f59e0b', label: '40–79% — Warning' },
@@ -299,8 +299,8 @@ export default function GeoMapTab({ nodes: topoNodes }) {
               <span style={{ fontSize: 9, color: '#cbd5e1' }}>{l.label}</span>
             </div>
           ))}
-          <div style={{ borderTop: '1px solid #1e293b', marginTop: 6, paddingTop: 6 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: '#94a3b8', marginBottom: 4, letterSpacing: 1 }}>ROUTE TYPES</div>
+          <div style={{ borderTop: '1px solid var(--border-primary)', marginTop: 6, paddingTop: 6 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 4, letterSpacing: 1 }}>ROUTE TYPES</div>
             {[
               { label: '━━ Backbone (400G) — thicker = busier', color: '#6366f1' },
               { label: '━━ Metro (100G)', color: '#0ea5e9' },
@@ -309,8 +309,8 @@ export default function GeoMapTab({ nodes: topoNodes }) {
               <div key={l.label} style={{ fontSize: 9, color: l.color, marginBottom: 2 }}>{l.label}</div>
             ))}
           </div>
-          <div style={{ borderTop: '1px solid #1e293b', marginTop: 6, paddingTop: 5 }}>
-            <div style={{ fontSize: 9, color: '#475569' }}>
+          <div style={{ borderTop: '1px solid var(--border-primary)', marginTop: 6, paddingTop: 5 }}>
+            <div style={{ fontSize: 9, color: 'var(--text-muted)' }}>
               Zoom {zoom < 9 ? '<9: core POPs only' : zoom < 11 ? '9–11: all COs + subs' : '≥11: full detail'}
             </div>
           </div>
@@ -320,7 +320,7 @@ export default function GeoMapTab({ nodes: topoNodes }) {
         {zoom < 9 && (
           <div style={{
             position: 'absolute', bottom: 60, left: '50%', transform: 'translateX(-50%)',
-            zIndex: 1000, background: '#0f172aee', border: '1px solid #1e293b',
+            zIndex: 1000, background: 'var(--bg-secondary)ee', border: '1px solid var(--border-primary)',
             borderRadius: 6, padding: '5px 12px', fontSize: 10, color: '#64748b',
             pointerEvents: 'none',
           }}>
@@ -334,12 +334,12 @@ export default function GeoMapTab({ nodes: topoNodes }) {
 
       {/* Right panel — regional stats */}
       <div style={{
-        width: 250, background: '#070d1a', borderLeft: '1px solid #1e293b',
+        width: 250, background: 'var(--bg-primary)', borderLeft: '1px solid var(--border-primary)',
         padding: '10px 8px', overflowY: 'auto', flexShrink: 0,
         display: 'flex', flexDirection: 'column', gap: 10,
       }}>
         {/* Network totals */}
-        <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 8, padding: '10px 12px' }}>
+        <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 8, padding: '10px 12px' }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: '#60a5fa', letterSpacing: 1, marginBottom: 8 }}>NETWORK TOTALS</div>
           {[
             { label: 'Total Subscribers', value: totalSubs.toLocaleString(), color: '#60a5fa' },
@@ -356,70 +356,70 @@ export default function GeoMapTab({ nodes: topoNodes }) {
         </div>
 
         {/* Regional breakdown */}
-        <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: 1, padding: '0 2px' }}>REGIONAL BREAKDOWN</div>
+        <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: 1, padding: '0 2px' }}>REGIONAL BREAKDOWN</div>
         {regionSummary.map(reg => {
           const fillPct = reg.maxSubs ? Math.round(reg.totalSubs / reg.maxSubs * 100) : 0;
           const capColor = CAP_COLOR(reg.avgCap);
           return (
-            <div key={reg.id} style={{ background: '#0f172a', border: `1px solid ${reg.color}33`, borderLeft: `3px solid ${reg.color}`, borderRadius: 6, padding: '8px 10px' }}>
+            <div key={reg.id} style={{ background: 'var(--bg-secondary)', border: `1px solid ${reg.color}33`, borderLeft: `3px solid ${reg.color}`, borderRadius: 6, padding: '8px 10px' }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: reg.color, marginBottom: 4 }}>{reg.label}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
                 <span style={{ fontSize: 9, color: '#64748b' }}>Subscribers</span>
                 <span style={{ fontSize: 9, fontWeight: 700, color: '#60a5fa' }}>{reg.totalSubs.toLocaleString()}</span>
               </div>
-              <div style={{ background: '#1e293b', borderRadius: 3, height: 4, marginBottom: 4 }}>
+              <div style={{ background: 'var(--bg-elevated)', borderRadius: 3, height: 4, marginBottom: 4 }}>
                 <div style={{ width: `${fillPct}%`, height: '100%', background: '#60a5fa', borderRadius: 3 }} />
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 9, color: '#64748b' }}>Avg capacity</span>
                 <span style={{ fontSize: 9, fontWeight: 700, color: capColor }}>{reg.avgCap}%</span>
               </div>
-              <div style={{ fontSize: 9, color: '#334155', marginTop: 2 }}>{reg.coCount} CO{reg.coCount > 1 ? 's' : ''}</div>
+              <div style={{ fontSize: 9, color: 'var(--border-subtle)', marginTop: 2 }}>{reg.coCount} CO{reg.coCount > 1 ? 's' : ''}</div>
             </div>
           );
         })}
 
         {/* Route utilization table */}
-        <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 8, padding: '10px 12px' }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: 1, marginBottom: 8 }}>FIBER ROUTES</div>
+        <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 8, padding: '10px 12px' }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: 1, marginBottom: 8 }}>FIBER ROUTES</div>
           {enrichedRoutes.map(r => {
             const color = CAP_COLOR(r.utilization);
             const gbpsUsed = Math.round(r.capacity * r.utilization / 100);
             return (
               <div key={r.id} style={{ marginBottom: 6 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
-                  <span style={{ fontSize: 9, color: '#94a3b8', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.label}</span>
+                  <span style={{ fontSize: 9, color: 'var(--text-secondary)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.label}</span>
                   <span style={{ fontSize: 9, fontWeight: 700, color, marginLeft: 4, flexShrink: 0 }}>{r.utilization}%</span>
                 </div>
-                <div style={{ background: '#1e293b', borderRadius: 2, height: 3 }}>
+                <div style={{ background: 'var(--bg-elevated)', borderRadius: 2, height: 3 }}>
                   <div style={{ width: `${r.utilization}%`, height: '100%', background: color, borderRadius: 2 }} />
                 </div>
-                <div style={{ fontSize: 8, color: '#334155', marginTop: 1 }}>{gbpsUsed}G / {r.capacity}G · {r.wavelengths}λ</div>
+                <div style={{ fontSize: 8, color: 'var(--border-subtle)', marginTop: 1 }}>{gbpsUsed}G / {r.capacity}G · {r.wavelengths}λ</div>
               </div>
             );
           })}
         </div>
 
         {/* CO quick list */}
-        <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: 1, padding: '0 2px' }}>CENTRAL OFFICES</div>
+        <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: 1, padding: '0 2px' }}>CENTRAL OFFICES</div>
         {enrichedGeoNodes.filter(n => n.type === 'co').map(node => {
           const color = CAP_COLOR(node.capacity);
           return (
             <div key={node.id}
               onClick={() => setSelectedNode(node)}
               style={{
-                background: '#0f172a', border: `1px solid ${color}33`,
+                background: 'var(--bg-secondary)', border: `1px solid ${color}33`,
                 borderLeft: `3px solid ${color}`, borderRadius: 6,
                 padding: '6px 8px', marginBottom: 0, cursor: 'pointer',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 2 }}>
                 <span style={{ fontSize: 11 }}>{node.icon}</span>
-                <span style={{ fontSize: 9, fontWeight: 700, color: '#e2e8f0', flex: 1 }}>{node.label}</span>
+                <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-primary)', flex: 1 }}>{node.label}</span>
                 <span style={{ fontSize: 9, fontWeight: 700, color }}>{node.capacity}%</span>
               </div>
-              <div style={{ fontSize: 8, color: '#475569', marginBottom: 3 }}>{node.subscribers?.toLocaleString()} / {node.maxSubscribers?.toLocaleString()} subs · {node.region}</div>
-              <div style={{ background: '#1e293b', borderRadius: 2, height: 3 }}>
+              <div style={{ fontSize: 8, color: 'var(--text-muted)', marginBottom: 3 }}>{node.subscribers?.toLocaleString()} / {node.maxSubscribers?.toLocaleString()} subs · {node.region}</div>
+              <div style={{ background: 'var(--bg-elevated)', borderRadius: 2, height: 3 }}>
                 <div style={{ width: `${node.capacity}%`, height: '100%', background: color, borderRadius: 2, transition: 'width 1s' }} />
               </div>
             </div>

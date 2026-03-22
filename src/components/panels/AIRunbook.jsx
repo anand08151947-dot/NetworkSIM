@@ -64,8 +64,8 @@ export default function AIRunbook({ nodes }) {
         animation: active.severity === 'critical' ? 'pulse 2s infinite' : 'none',
       }}>
         <div style={{ fontSize: 9, fontWeight: 700, color: colors.text, marginBottom: 4 }}>{active.title}</div>
-        <div style={{ fontSize: 8, color: '#475569', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>RECOMMENDATION</div>
-        <div style={{ fontSize: 9, color: '#94a3b8', marginBottom: 8, lineHeight: 1.5 }}>{active.detail}</div>
+        <div style={{ fontSize: 8, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>RECOMMENDATION</div>
+        <div style={{ fontSize: 9, color: 'var(--text-secondary)', marginBottom: 8, lineHeight: 1.5 }}>{active.detail}</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {active.actions.map((action, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -75,7 +75,7 @@ export default function AIRunbook({ nodes }) {
           ))}
         </div>
         {recommendations.length > 1 && (
-          <div style={{ marginTop: 6, fontSize: 8, color: '#475569' }}>+{recommendations.length - 1} more recommendations</div>
+          <div style={{ marginTop: 6, fontSize: 8, color: 'var(--text-muted)' }}>+{recommendations.length - 1} more recommendations</div>
         )}
       </div>
     </CollapsiblePanel>

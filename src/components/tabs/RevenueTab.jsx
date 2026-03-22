@@ -35,13 +35,13 @@ function weeksToThreshold(currentCap, threshold = 80, weeklyGrowth = 0.7) {
 }
 
 const Section = ({ title, children }) => (
-  <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 10, padding: '14px', marginBottom: 10 }}>
-    <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', letterSpacing: 1, marginBottom: 12 }}>{title}</div>
+  <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 10, padding: '14px', marginBottom: 10 }}>
+    <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: 1, marginBottom: 12 }}>{title}</div>
     {children}
   </div>
 );
 
-const TOOLTIP_STYLE = { contentStyle: { background: '#0f172a', border: '1px solid #1e293b', borderRadius: 6, fontSize: 10 }, labelStyle: { color: '#94a3b8' } };
+const TOOLTIP_STYLE = { contentStyle: { background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 6, fontSize: 10 }, labelStyle: { color: 'var(--text-secondary)' } };
 
 export default function RevenueTab({ customers, nodes, events, setNodes }) {
   const [scenarioName, setScenarioName] = useState('');
@@ -108,7 +108,7 @@ export default function RevenueTab({ customers, nodes, events, setNodes }) {
   };
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', padding: '12px', background: '#020817', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, alignContent: 'start' }}>
+    <div style={{ flex: 1, overflowY: 'auto', padding: '12px', background: 'var(--bg-root)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, alignContent: 'start' }}>
 
       {/* Revenue KPIs */}
       <Section title="💰 REVENUE OVERVIEW">
@@ -119,15 +119,15 @@ export default function RevenueTab({ customers, nodes, events, setNodes }) {
             { label: 'Avg Rev/Sub', value: `$${avgRevPerSub}/mo`, color: '#60a5fa' },
             { label: 'Proj. Next MRR', value: `$${(totalMRR * 1.04).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`, color: '#a78bfa' },
           ].map(s => (
-            <div key={s.label} style={{ background: '#0a0f1e', borderRadius: 8, padding: '10px', textAlign: 'center', border: '1px solid #1e293b' }}>
+            <div key={s.label} style={{ background: '#0a0f1e', borderRadius: 8, padding: '10px', textAlign: 'center', border: '1px solid var(--border-primary)' }}>
               <div style={{ fontSize: 16, fontWeight: 800, color: s.color }}>{s.value}</div>
-              <div style={{ fontSize: 9, color: '#475569', marginTop: 2 }}>{s.label}</div>
+              <div style={{ fontSize: 9, color: 'var(--text-muted)', marginTop: 2 }}>{s.label}</div>
             </div>
           ))}
         </div>
         <ResponsiveContainer width="100%" height={160}>
           <BarChart data={mrrByTier} margin={{ top: 4, right: 4, left: -10, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-elevated)" />
             <XAxis dataKey="tier" tick={{ fontSize: 9, fill: '#64748b' }} />
             <YAxis tick={{ fontSize: 9, fill: '#64748b' }} tickFormatter={v => `$${(v / 1000).toFixed(0)}K`} />
             <Tooltip {...TOOLTIP_STYLE} formatter={v => [`$${v.toLocaleString()}`, 'MRR']} />
@@ -152,19 +152,19 @@ export default function RevenueTab({ customers, nodes, events, setNodes }) {
           {mrrByTier.map(t => (
             <div key={t.tier} style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: t.color }}>{t.count}</div>
-              <div style={{ fontSize: 8, color: '#475569' }}>{t.tier}</div>
+              <div style={{ fontSize: 8, color: 'var(--text-muted)' }}>{t.tier}</div>
             </div>
           ))}
         </div>
-        <div style={{ borderTop: '1px solid #1e293b', marginTop: 8, paddingTop: 8 }}>
-          <div style={{ fontSize: 10, color: '#94a3b8', marginBottom: 5 }}>Speed Mix</div>
+        <div style={{ borderTop: '1px solid var(--border-primary)', marginTop: 8, paddingTop: 8 }}>
+          <div style={{ fontSize: 10, color: 'var(--text-secondary)', marginBottom: 5 }}>Speed Mix</div>
           {speedMix.map(s => (
             <div key={s.speed} style={{ marginBottom: 4 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
                 <span style={{ fontSize: 9, color: '#60a5fa', fontWeight: 700 }}>{s.speed}</span>
-                <span style={{ fontSize: 9, color: '#94a3b8' }}>{s.count} ({s.pct}%)</span>
+                <span style={{ fontSize: 9, color: 'var(--text-secondary)' }}>{s.count} ({s.pct}%)</span>
               </div>
-              <div style={{ background: '#1e293b', borderRadius: 3, height: 4 }}>
+              <div style={{ background: 'var(--bg-elevated)', borderRadius: 3, height: 4 }}>
                 <div style={{ width: `${s.pct}%`, height: '100%', background: '#60a5fa', borderRadius: 3 }} />
               </div>
             </div>
@@ -184,9 +184,9 @@ export default function RevenueTab({ customers, nodes, events, setNodes }) {
         </div>
         <ResponsiveContainer width="100%" height={140}>
           <AreaChart data={projection} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-            <XAxis dataKey="month" tick={{ fontSize: 8, fill: '#475569' }} />
-            <YAxis tick={{ fontSize: 8, fill: '#475569' }} domain={[0, 100]} unit="%" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-elevated)" />
+            <XAxis dataKey="month" tick={{ fontSize: 8, fill: 'var(--text-muted)' }} />
+            <YAxis tick={{ fontSize: 8, fill: 'var(--text-muted)' }} domain={[0, 100]} unit="%" />
             <Tooltip {...TOOLTIP_STYLE} formatter={(v) => [`${v}%`, 'BNG Capacity']} />
             <ReferenceLine y={40} stroke="#f59e0b" strokeDasharray="4 4" />
             <ReferenceLine y={80} stroke="#ef4444" strokeDasharray="4 4" />
@@ -197,13 +197,13 @@ export default function RevenueTab({ customers, nodes, events, setNodes }) {
           {criticalNodeData.slice(0, 4).map(n => (
             <div key={n.name} style={{ marginBottom: 5 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 1 }}>
-                <span style={{ fontSize: 9, color: '#94a3b8' }}>{n.name}</span>
+                <span style={{ fontSize: 9, color: 'var(--text-secondary)' }}>{n.name}</span>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <span style={{ fontSize: 8, color: '#f59e0b' }}>40%: {n.weeks40 === 0 ? 'NOW' : `${n.weeks40}w`}</span>
                   <span style={{ fontSize: 8, color: '#ef4444' }}>80%: {n.weeks80 === 0 ? 'NOW' : `${n.weeks80}w`}</span>
                 </div>
               </div>
-              <div style={{ background: '#1e293b', borderRadius: 3, height: 4 }}>
+              <div style={{ background: 'var(--bg-elevated)', borderRadius: 3, height: 4 }}>
                 <div style={{ width: `${Math.min(n.capacity, 100)}%`, height: '100%', background: n.capacity >= 80 ? '#ef4444' : n.capacity >= 55 ? '#f59e0b' : '#22c55e', borderRadius: 3, transition: 'width 0.5s' }} />
               </div>
             </div>
@@ -215,7 +215,7 @@ export default function RevenueTab({ customers, nodes, events, setNodes }) {
       <Section title="📊 12-MONTH SUBSCRIBER GROWTH">
         <ResponsiveContainer width="100%" height={180}>
           <LineChart data={projection} margin={{ top: 4, right: 4, left: -10, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-elevated)" />
             <XAxis dataKey="month" tick={{ fontSize: 8, fill: '#64748b' }} />
             <YAxis tick={{ fontSize: 8, fill: '#64748b' }} />
             <Tooltip {...TOOLTIP_STYLE} formatter={(v, n) => [v, n === 'customers' ? 'Subscribers' : 'MRR']} />
@@ -253,20 +253,20 @@ export default function RevenueTab({ customers, nodes, events, setNodes }) {
             placeholder="Scenario name (e.g. Q1 Baseline)"
             value={scenarioName}
             onChange={e => setScenarioName(e.target.value)}
-            style={{ flex: 1, background: '#0a0f1e', border: '1px solid #1e293b', borderRadius: 5, padding: '5px 8px', color: '#e2e8f0', fontSize: 10 }}
+            style={{ flex: 1, background: '#0a0f1e', border: '1px solid var(--border-primary)', borderRadius: 5, padding: '5px 8px', color: 'var(--text-primary)', fontSize: 10 }}
           />
-          <button onClick={handleSaveScenario} style={{ background: saved ? '#052e16' : '#1e293b', border: `1px solid ${saved ? '#22c55e' : '#334155'}`, borderRadius: 5, padding: '5px 10px', cursor: 'pointer', color: saved ? '#22c55e' : '#94a3b8', fontSize: 10, fontWeight: 700 }}>
+          <button onClick={handleSaveScenario} style={{ background: saved ? '#052e16' : 'var(--bg-elevated)', border: `1px solid ${saved ? '#22c55e' : 'var(--border-subtle)'}`, borderRadius: 5, padding: '5px 10px', cursor: 'pointer', color: saved ? '#22c55e' : 'var(--text-secondary)', fontSize: 10, fontWeight: 700 }}>
             {saved ? '✅ Saved' : '💾 Save'}
           </button>
         </div>
-        {scenarios.length === 0 && <div style={{ fontSize: 9, color: '#334155', textAlign: 'center', padding: '10px 0' }}>No saved scenarios yet</div>}
+        {scenarios.length === 0 && <div style={{ fontSize: 9, color: 'var(--border-subtle)', textAlign: 'center', padding: '10px 0' }}>No saved scenarios yet</div>}
         {scenarios.map(s => (
-          <div key={s.id} style={{ background: '#0a0f1e', border: '1px solid #1e293b', borderRadius: 7, padding: '7px 9px', marginBottom: 5, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div key={s.id} style={{ background: '#0a0f1e', border: '1px solid var(--border-primary)', borderRadius: 7, padding: '7px 9px', marginBottom: 5, display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#e2e8f0' }}>{s.name}</div>
-              <div style={{ fontSize: 8, color: '#475569' }}>{s.savedAt.slice(0, 16)} | {s.customerCount} customers | ${s.totalMRR?.toLocaleString()}/mo | Avg cap: {s.summary?.avgCapacity}%</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-primary)' }}>{s.name}</div>
+              <div style={{ fontSize: 8, color: 'var(--text-muted)' }}>{s.savedAt.slice(0, 16)} | {s.customerCount} customers | ${s.totalMRR?.toLocaleString()}/mo | Avg cap: {s.summary?.avgCapacity}%</div>
             </div>
-            <button onClick={() => handleLoadScenario(s)} style={{ background: '#1e3a5f', border: '1px solid #60a5fa', borderRadius: 4, padding: '3px 7px', cursor: 'pointer', color: '#60a5fa', fontSize: 9 }}>Load</button>
+            <button onClick={() => handleLoadScenario(s)} style={{ background: 'var(--bg-accent)', border: '1px solid #60a5fa', borderRadius: 4, padding: '3px 7px', cursor: 'pointer', color: '#60a5fa', fontSize: 9 }}>Load</button>
             <button onClick={() => handleDeleteScenario(s.id)} style={{ background: '#1a0000', border: '1px solid #ef444466', borderRadius: 4, padding: '3px 7px', cursor: 'pointer', color: '#ef4444', fontSize: 9 }}>Del</button>
           </div>
         ))}

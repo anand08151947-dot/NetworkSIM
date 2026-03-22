@@ -105,24 +105,31 @@ export default function LayerFilter({ visibleLayers, setVisibleLayers, dimMode, 
   const visibleCount = visibleLayers.length;
 
   return (
-    <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 10, overflow: 'hidden' }}>
+    <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 10, overflow: 'hidden', flexShrink: 0 }}>
+      {/* WebKit scrollbar styling for the layer list */}
+      <style>{`
+        .layer-list-scroll::-webkit-scrollbar { width: 4px; }
+        .layer-list-scroll::-webkit-scrollbar-track { background: transparent; }
+        .layer-list-scroll::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 2px; }
+        .layer-list-scroll::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+      `}</style>
       {/* Header */}
       <button
         onClick={() => setExpanded(e => !e)}
         style={{ width: '100%', background: '#0a1628', border: 'none', padding: '7px 12px', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
       >
         <span style={{ fontSize: 11 }}>🎛️</span>
-        <span style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', flex: 1, textAlign: 'left', letterSpacing: 0.5 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', flex: 1, textAlign: 'left', letterSpacing: 0.5 }}>
           LAYER FILTER
         </span>
         <span style={{
-          fontSize: 9, fontWeight: 700, color: visibleCount === ALL_LAYERS.length ? '#475569' : '#60a5fa',
-          background: visibleCount === ALL_LAYERS.length ? 'transparent' : '#1e3a5f',
+          fontSize: 9, fontWeight: 700, color: visibleCount === ALL_LAYERS.length ? 'var(--text-muted)' : '#60a5fa',
+          background: visibleCount === ALL_LAYERS.length ? 'transparent' : 'var(--bg-accent)',
           borderRadius: 4, padding: '1px 5px',
         }}>
           {visibleCount}/{ALL_LAYERS.length}
         </span>
-        <span style={{ color: '#475569', fontSize: 11 }}>{expanded ? '▲' : '▼'}</span>
+        <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>{expanded ? '▲' : '▼'}</span>
       </button>
 
       {expanded && (
@@ -130,15 +137,15 @@ export default function LayerFilter({ visibleLayers, setVisibleLayers, dimMode, 
 
           {/* ── Dim Mode toggle ── */}
           {setDimMode && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 6px', background: '#070d1a', borderRadius: 5, marginBottom: 2 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 6px', background: 'var(--bg-primary)', borderRadius: 5, marginBottom: 2 }}>
               <span style={{ fontSize: 9, color: '#64748b', flex: 1 }}>Hidden layers:</span>
               <button
                 onClick={() => setDimMode(false)}
-                style={{ padding: '2px 7px', borderRadius: 4, fontSize: 9, fontWeight: 700, cursor: 'pointer', border: '1px solid', borderColor: !dimMode ? '#6366f1' : '#1e293b', background: !dimMode ? '#1e1b4b' : 'transparent', color: !dimMode ? '#a5b4fc' : '#475569' }}
+                style={{ padding: '2px 7px', borderRadius: 4, fontSize: 9, fontWeight: 700, cursor: 'pointer', border: '1px solid', borderColor: !dimMode ? '#6366f1' : 'var(--bg-elevated)', background: !dimMode ? '#1e1b4b' : 'transparent', color: !dimMode ? '#a5b4fc' : 'var(--text-muted)' }}
               >HIDE</button>
               <button
                 onClick={() => setDimMode(true)}
-                style={{ padding: '2px 7px', borderRadius: 4, fontSize: 9, fontWeight: 700, cursor: 'pointer', border: '1px solid', borderColor: dimMode ? '#f59e0b' : '#1e293b', background: dimMode ? '#1a1200' : 'transparent', color: dimMode ? '#fbbf24' : '#475569' }}
+                style={{ padding: '2px 7px', borderRadius: 4, fontSize: 9, fontWeight: 700, cursor: 'pointer', border: '1px solid', borderColor: dimMode ? '#f59e0b' : 'var(--bg-elevated)', background: dimMode ? '#1a1200' : 'transparent', color: dimMode ? '#fbbf24' : 'var(--text-muted)' }}
               >DIM</button>
             </div>
           )}
@@ -146,11 +153,11 @@ export default function LayerFilter({ visibleLayers, setVisibleLayers, dimMode, 
           {/* ── Show All / Hide All ── */}
           <div style={{ display: 'flex', gap: 5 }}>
             <button onClick={() => { setVisibleLayers(ALL_LAYERS.map(l => l.id)); setActivePreset(null); }}
-              style={{ flex: 1, background: allOn ? '#1e3a5f' : '#0a0f1e', border: '1px solid #1e293b', borderRadius: 4, padding: '3px', cursor: 'pointer', fontSize: 9, color: allOn ? '#60a5fa' : '#475569', fontWeight: 700 }}>
+              style={{ flex: 1, background: allOn ? 'var(--bg-accent)' : '#0a0f1e', border: '1px solid var(--border-primary)', borderRadius: 4, padding: '3px', cursor: 'pointer', fontSize: 9, color: allOn ? '#60a5fa' : 'var(--text-muted)', fontWeight: 700 }}>
               SHOW ALL
             </button>
             <button onClick={() => { setVisibleLayers([]); setActivePreset(null); }}
-              style={{ flex: 1, background: allOff ? '#1a0000' : '#0a0f1e', border: '1px solid #1e293b', borderRadius: 4, padding: '3px', cursor: 'pointer', fontSize: 9, color: allOff ? '#ef4444' : '#475569', fontWeight: 700 }}>
+              style={{ flex: 1, background: allOff ? '#1a0000' : '#0a0f1e', border: '1px solid var(--border-primary)', borderRadius: 4, padding: '3px', cursor: 'pointer', fontSize: 9, color: allOff ? '#ef4444' : 'var(--text-muted)', fontWeight: 700 }}>
               HIDE ALL
             </button>
           </div>
@@ -161,7 +168,7 @@ export default function LayerFilter({ visibleLayers, setVisibleLayers, dimMode, 
               onClick={() => setShowPresets(p => !p)}
               style={{ width: '100%', background: 'transparent', border: 'none', padding: '3px 2px', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
             >
-              <span style={{ fontSize: 9, color: '#475569', fontWeight: 700, flex: 1, textAlign: 'left', letterSpacing: 0.4 }}>
+              <span style={{ fontSize: 9, color: 'var(--text-muted)', fontWeight: 700, flex: 1, textAlign: 'left', letterSpacing: 0.4 }}>
                 ⚡ QUICK VIEWS {showPresets ? '▴' : '▾'}
               </span>
               {activePreset && (
@@ -186,15 +193,15 @@ export default function LayerFilter({ visibleLayers, setVisibleLayers, dimMode, 
                       style={{
                         display: 'flex', alignItems: 'center', gap: 6,
                         background: isActive ? '#0d2040' : isHovered ? '#0f1f3a' : 'transparent',
-                        border: `1px solid ${isActive ? '#3b82f6' : '#1e293b'}`,
+                        border: `1px solid ${isActive ? '#3b82f6' : 'var(--bg-elevated)'}`,
                         borderRadius: 5, padding: '4px 8px', cursor: 'pointer', textAlign: 'left',
                         transition: 'all 0.12s',
                       }}
                     >
-                      <span style={{ fontSize: 10, flex: 1, color: isActive ? '#93c5fd' : '#94a3b8', fontWeight: isActive ? 700 : 400 }}>
+                      <span style={{ fontSize: 10, flex: 1, color: isActive ? '#93c5fd' : 'var(--text-secondary)', fontWeight: isActive ? 700 : 400 }}>
                         {p.label}
                       </span>
-                      <span style={{ fontSize: 8, color: '#475569' }}>
+                      <span style={{ fontSize: 8, color: 'var(--text-muted)' }}>
                         {p.layers.length}L
                       </span>
                       {isActive && <span style={{ fontSize: 9, color: '#60a5fa' }}>✓</span>}
@@ -206,9 +213,23 @@ export default function LayerFilter({ visibleLayers, setVisibleLayers, dimMode, 
           </div>
 
           {/* ── Divider ── */}
-          <div style={{ borderTop: '1px solid #1e293b', margin: '2px 0' }} />
+          <div style={{ borderTop: '1px solid var(--border-primary)', margin: '2px 0' }} />
 
-          {/* ── Per-layer toggles ── */}
+          {/* ── Per-layer toggles — scrollable list ── */}
+          <div
+            className="layer-list-scroll"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 3,
+              maxHeight: 240,
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              scrollbarWidth: 'thin',
+              scrollbarColor: 'var(--border-subtle) transparent',
+              paddingRight: 2,
+            }}
+          >
           {ALL_LAYERS.map(layer => {
             const on = visibleLayers.includes(layer.id);
             const count = LAYER_NODE_COUNTS[layer.id] || 0;
@@ -219,35 +240,37 @@ export default function LayerFilter({ visibleLayers, setVisibleLayers, dimMode, 
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
                   background: on ? `${layer.color}11` : 'transparent',
-                  border: `1px solid ${on ? layer.color + '44' : '#1e293b'}`,
+                  border: `1px solid ${on ? layer.color + '44' : 'var(--bg-elevated)'}`,
                   borderRadius: 5, padding: '4px 7px', cursor: 'pointer', textAlign: 'left',
                   opacity: on ? 1 : 0.4, transition: 'all 0.15s',
+                  flexShrink: 0,
                 }}>
                 {/* Color swatch */}
-                <div style={{ width: 8, height: 8, borderRadius: 2, background: on ? layer.color : '#334155', flexShrink: 0 }} />
+                <div style={{ width: 8, height: 8, borderRadius: 2, background: on ? layer.color : 'var(--border-subtle)', flexShrink: 0 }} />
                 {/* Icon + label */}
-                <span style={{ fontSize: 9, color: on ? '#e2e8f0' : '#475569', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <span style={{ fontSize: 9, color: on ? 'var(--text-primary)' : 'var(--text-muted)', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {layer.icon} {layer.label}
                 </span>
                 {/* Node count */}
-                <span style={{ fontSize: 8, color: on ? '#475569' : '#334155', minWidth: 14, textAlign: 'right' }}>
+                <span style={{ fontSize: 8, color: on ? 'var(--text-muted)' : 'var(--border-subtle)', minWidth: 14, textAlign: 'right' }}>
                   {count}n
                 </span>
                 {/* Health dot */}
                 <div title={`Avg utilization: ${avgCap}%`} style={{
                   width: 6, height: 6, borderRadius: '50%',
-                  background: on ? hc : '#1e293b', flexShrink: 0,
+                  background: on ? hc : 'var(--bg-elevated)', flexShrink: 0,
                 }} />
               </button>
             );
           })}
+          </div>
 
           {/* ── Footer: health legend ── */}
           <div style={{ display: 'flex', gap: 8, padding: '3px 2px', marginTop: 1 }}>
             {[['#22c55e', '<40%'], ['#eab308', '40-60%'], ['#f59e0b', '60-80%'], ['#ef4444', '>80%']].map(([c, l]) => (
               <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: c }} />
-                <span style={{ fontSize: 8, color: '#475569' }}>{l}</span>
+                <span style={{ fontSize: 8, color: 'var(--text-muted)' }}>{l}</span>
               </div>
             ))}
           </div>

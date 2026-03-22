@@ -7,8 +7,8 @@ import { CollapsiblePanel } from '../UIComponents';
 
 const STATUS_COLOR = (c) => c >= 80 ? '#ef4444' : c >= 55 ? '#f59e0b' : '#22c55e';
 const TOOLTIP_STYLE = {
-  contentStyle: { background: '#0f172a', border: '1px solid #1e293b', borderRadius: 6, fontSize: 10 },
-  labelStyle: { color: '#94a3b8' },
+  contentStyle: { background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 6, fontSize: 10 },
+  labelStyle: { color: 'var(--text-secondary)' },
 };
 
 function generateProjection(currentCap, addedSubs, totalCap) {
@@ -76,9 +76,9 @@ export default function WhatIfPlanner({ nodes }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button onClick={() => setAugment(a => !a)} style={{
             background: augment ? '#0f1f3d' : '#0a0f1e',
-            border: `1px solid ${augment ? '#60a5fa' : '#334155'}`,
+            border: `1px solid ${augment ? '#60a5fa' : 'var(--border-subtle)'}`,
             borderRadius: 6, padding: '5px 10px', cursor: 'pointer',
-            fontSize: 10, color: augment ? '#60a5fa' : '#475569', fontWeight: augment ? 700 : 400,
+            fontSize: 10, color: augment ? '#60a5fa' : 'var(--text-muted)', fontWeight: augment ? 700 : 400,
           }}>
             {augment ? '✅' : '☐'} Simulate augmentation (+OLT, +BNG capacity)
           </button>
@@ -93,16 +93,16 @@ export default function WhatIfPlanner({ nodes }) {
           { label: 'Break-even', value: augment ? `${breakEvenMonths}mo` : '—', color: '#a78bfa' },
           { label: 'Weeks to 80%', value: weeksTo80 < 0 ? '>24w' : `${weeksTo80}w`, color: projectedCap >= 80 ? '#ef4444' : '#f59e0b' },
         ].map(s => (
-          <div key={s.label} style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
+          <div key={s.label} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
             <div style={{ fontSize: 16, fontWeight: 800, color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: 9, color: '#475569', marginTop: 2 }}>{s.label}</div>
+            <div style={{ fontSize: 9, color: 'var(--text-muted)', marginTop: 2 }}>{s.label}</div>
           </div>
         ))}
       </div>
 
       {/* Impact on nodes */}
-      <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 10, padding: '14px' }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', letterSpacing: 1, marginBottom: 10 }}>NODE IMPACT</div>
+      <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 10, padding: '14px' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: 1, marginBottom: 10 }}>NODE IMPACT</div>
         {impactedNodes.map(n => {
           const before = STATUS_COLOR(n.current);
           const after = STATUS_COLOR(augment ? n.projected * 0.6 : n.projected);
@@ -110,16 +110,16 @@ export default function WhatIfPlanner({ nodes }) {
           return (
             <div key={n.id} style={{ marginBottom: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                <span style={{ fontSize: 9, color: '#94a3b8' }}>{n.label}</span>
+                <span style={{ fontSize: 9, color: 'var(--text-secondary)' }}>{n.label}</span>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <span style={{ fontSize: 9, color: before }}>{n.current.toFixed(0)}%</span>
-                  <span style={{ fontSize: 9, color: '#334155' }}>→</span>
+                  <span style={{ fontSize: 9, color: 'var(--border-subtle)' }}>→</span>
                   <span style={{ fontSize: 9, fontWeight: 700, color: after }}>{proj.toFixed(0)}%</span>
                   {proj >= 80 && <span style={{ fontSize: 8, color: '#ef4444', background: '#1a0000', borderRadius: 3, padding: '1px 4px' }}>CRITICAL</span>}
                   {proj >= 55 && proj < 80 && <span style={{ fontSize: 8, color: '#f59e0b', background: '#1a1000', borderRadius: 3, padding: '1px 4px' }}>WARN</span>}
                 </div>
               </div>
-              <div style={{ background: '#1e293b', borderRadius: 3, height: 6, position: 'relative' }}>
+              <div style={{ background: 'var(--bg-elevated)', borderRadius: 3, height: 6, position: 'relative' }}>
                 <div style={{ position: 'absolute', height: '100%', background: before + '55', borderRadius: 3, width: `${n.current}%` }} />
                 <div style={{ position: 'absolute', height: '100%', background: after, borderRadius: 3, width: `${proj}%`, opacity: 0.85, transition: 'width 0.3s' }} />
                 {/* Threshold markers */}
@@ -132,13 +132,13 @@ export default function WhatIfPlanner({ nodes }) {
       </div>
 
       {/* Projection chart */}
-      <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 10, padding: '14px' }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', letterSpacing: 1, marginBottom: 10 }}>24-WEEK BNG CAPACITY PROJECTION</div>
+      <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 10, padding: '14px' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: 1, marginBottom: 10 }}>24-WEEK BNG CAPACITY PROJECTION</div>
         <ResponsiveContainer width="100%" height={160}>
           <AreaChart data={chartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-            <XAxis dataKey="week" tick={{ fontSize: 8, fill: '#475569' }} interval={3} />
-            <YAxis domain={[0, 100]} tick={{ fontSize: 8, fill: '#475569' }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--bg-elevated)" />
+            <XAxis dataKey="week" tick={{ fontSize: 8, fill: 'var(--text-muted)' }} interval={3} />
+            <YAxis domain={[0, 100]} tick={{ fontSize: 8, fill: 'var(--text-muted)' }} />
             <Tooltip {...TOOLTIP_STYLE} formatter={(v, n) => [`${v}%`, n === 'current' ? 'Projected' : 'With Augment']} />
             <ReferenceLine y={40} stroke="#f59e0b" strokeDasharray="4 4" />
             <ReferenceLine y={80} stroke="#ef4444" strokeDasharray="4 4" />

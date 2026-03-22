@@ -87,7 +87,7 @@ export default function SLATab({ customers }) {
         padding: '8px 10px', textAlign: 'left', fontSize: 9, fontWeight: 700,
         color: sortBy === col ? '#60a5fa' : '#64748b', letterSpacing: 0.5,
         cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap',
-        borderBottom: '1px solid #1e293b', background: '#070d1a', position: 'sticky', top: 0,
+        borderBottom: '1px solid var(--border-primary)', background: 'var(--bg-primary)', position: 'sticky', top: 0,
       }}
     >
       {label} {sortBy === col ? (sortDir === 'desc' ? '▼' : '▲') : ''}
@@ -95,33 +95,33 @@ export default function SLATab({ customers }) {
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#020817', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-root)', overflow: 'hidden' }}>
       {/* Summary KPIs */}
-      <div style={{ display: 'flex', gap: 12, padding: '12px 16px', borderBottom: '1px solid #1e293b', flexShrink: 0 }}>
+      <div style={{ display: 'flex', gap: 12, padding: '12px 16px', borderBottom: '1px solid var(--border-primary)', flexShrink: 0 }}>
         {[
-          { label: 'Total Customers', value: summary.total, color: '#e2e8f0' },
+          { label: 'Total Customers', value: summary.total, color: 'var(--text-primary)' },
           { label: 'SLA Breaches', value: summary.breached, color: summary.breached > 0 ? '#ef4444' : '#22c55e' },
           { label: 'At-Risk', value: summary.atRisk, color: summary.atRisk > 0 ? '#f59e0b' : '#22c55e' },
           { label: 'Credits Owed', value: `$${summary.totalCredits.toLocaleString()}`, color: summary.totalCredits > 0 ? '#f59e0b' : '#22c55e' },
           { label: 'Avg Network Uptime', value: `${summary.avgUptime}%`, color: '#22c55e' },
         ].map(k => (
           <div key={k.label} style={{
-            flex: 1, background: '#0f172a', border: '1px solid #1e293b', borderRadius: 10,
+            flex: 1, background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 10,
             padding: '12px 14px', textAlign: 'center',
           }}>
             <div style={{ fontSize: 20, fontWeight: 800, color: k.color }}>{k.value}</div>
-            <div style={{ fontSize: 9, color: '#475569', marginTop: 2 }}>{k.label}</div>
+            <div style={{ fontSize: 9, color: 'var(--text-muted)', marginTop: 2 }}>{k.label}</div>
           </div>
         ))}
       </div>
 
       {/* Filters */}
-      <div style={{ display: 'flex', gap: 8, padding: '8px 16px', borderBottom: '1px solid #1e293b', flexShrink: 0, alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 8, padding: '8px 16px', borderBottom: '1px solid var(--border-primary)', flexShrink: 0, alignItems: 'center' }}>
         <span style={{ fontSize: 10, color: '#64748b' }}>Tier:</span>
         {TIER_FILTER_OPTIONS.map(t => (
           <button key={t} onClick={() => setTierFilter(t)} style={{
             background: tierFilter === t ? '#0f1f3d' : 'transparent',
-            border: `1px solid ${tierFilter === t ? '#1e3a5f' : '#1e293b'}`,
+            border: `1px solid ${tierFilter === t ? 'var(--bg-accent)' : 'var(--bg-elevated)'}`,
             borderRadius: 5, padding: '3px 8px', cursor: 'pointer',
             fontSize: 10, color: tierFilter === t ? '#60a5fa' : '#64748b',
           }}>{t}</button>
@@ -130,7 +130,7 @@ export default function SLATab({ customers }) {
         {STATUS_FILTER_OPTIONS.map(s => (
           <button key={s} onClick={() => setStatusFilter(s)} style={{
             background: statusFilter === s ? '#0f1f3d' : 'transparent',
-            border: `1px solid ${statusFilter === s ? '#1e3a5f' : '#1e293b'}`,
+            border: `1px solid ${statusFilter === s ? 'var(--bg-accent)' : 'var(--bg-elevated)'}`,
             borderRadius: 5, padding: '3px 8px', cursor: 'pointer',
             fontSize: 10,
             color: s === 'BREACH' ? '#ef4444' : s === 'AT-RISK' ? '#f59e0b' : s === 'OK' ? '#22c55e'
@@ -138,7 +138,7 @@ export default function SLATab({ customers }) {
           }}>{s}</button>
         ))}
         <div style={{ flex: 1 }} />
-        <span style={{ fontSize: 10, color: '#334155' }}>{filtered.length} records</span>
+        <span style={{ fontSize: 10, color: 'var(--border-subtle)' }}>{filtered.length} records</span>
       </div>
 
       {/* Table */}
@@ -163,12 +163,12 @@ export default function SLATab({ customers }) {
             {filtered.map((r, i) => {
               const statusColor = r.status === 'BREACH' ? '#ef4444' : r.status === 'AT-RISK' ? '#f59e0b' : '#22c55e';
               return (
-                <tr key={r.id} style={{ background: i % 2 === 0 ? '#0f172a' : '#070d1a', transition: 'background 0.1s' }}>
-                  <td style={{ padding: '7px 10px', fontSize: 10, color: '#e2e8f0', fontWeight: 600 }}>{r.name}</td>
+                <tr key={r.id} style={{ background: i % 2 === 0 ? 'var(--bg-secondary)' : 'var(--bg-primary)', transition: 'background 0.1s' }}>
+                  <td style={{ padding: '7px 10px', fontSize: 10, color: 'var(--text-primary)', fontWeight: 600 }}>{r.name}</td>
                   <td style={{ padding: '7px 10px' }}>
                     <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: `${r.slaColor}22`, color: r.slaColor, fontWeight: 700 }}>{r.tier}</span>
                   </td>
-                  <td style={{ padding: '7px 10px', fontSize: 9, color: '#94a3b8' }}>{r.city}</td>
+                  <td style={{ padding: '7px 10px', fontSize: 9, color: 'var(--text-secondary)' }}>{r.city}</td>
                   <td style={{ padding: '7px 10px', fontSize: 9, color: '#60a5fa', fontWeight: 700 }}>{r.speed}</td>
                   <td style={{ padding: '7px 10px', fontSize: 9, color: r.slaColor, fontWeight: 700 }}>{r.slaTarget}%</td>
                   <td style={{ padding: '7px 10px' }}>
@@ -178,7 +178,7 @@ export default function SLATab({ customers }) {
                   </td>
                   <td style={{ padding: '7px 10px', fontSize: 9, color: '#64748b' }}>{r.maxDowntimeMin}</td>
                   <td style={{ padding: '7px 10px' }}>
-                    <span style={{ fontSize: 9, fontWeight: 700, color: r.actualDowntimeMin > r.maxDowntimeMin ? '#ef4444' : '#94a3b8' }}>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: r.actualDowntimeMin > r.maxDowntimeMin ? '#ef4444' : 'var(--text-secondary)' }}>
                       {r.actualDowntimeMin}
                     </span>
                   </td>
@@ -203,8 +203,8 @@ export default function SLATab({ customers }) {
       </div>
 
       {/* Footer note */}
-      <div style={{ padding: '6px 16px', borderTop: '1px solid #1e293b', flexShrink: 0 }}>
-        <span style={{ fontSize: 9, color: '#334155' }}>
+      <div style={{ padding: '6px 16px', borderTop: '1px solid var(--border-primary)', flexShrink: 0 }}>
+        <span style={{ fontSize: 9, color: 'var(--border-subtle)' }}>
           SLA data is simulated for the current billing cycle (30-day window). Credits calculated per service agreement.
           Enterprise = 99.99% | Mid-Market = 99.95% | SMB = 99.9% | Residential = 99.5%
         </span>

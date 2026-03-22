@@ -65,20 +65,20 @@ export default function IPAMTab() {
   const toggleExpand = (prefix) => setExpanded(e => ({ ...e, [prefix]: !e[prefix] }));
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden", background: "#020817" }}>
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden", background: "var(--bg-root)" }}>
       {/* Pool Summary Cards */}
-      <div style={{ display: "flex", gap: 10, padding: "10px 14px", background: "#070d1a", borderBottom: "1px solid #1e293b", flexShrink: 0, overflowX: "auto" }}>
+      <div style={{ display: "flex", gap: 10, padding: "10px 14px", background: "var(--bg-primary)", borderBottom: "1px solid var(--border-primary)", flexShrink: 0, overflowX: "auto" }}>
         {POOLS.map(p => {
           const pct = Math.round((p.used / p.total) * 100);
           return (
-            <div key={p.name} style={{ minWidth: 160, background: "#0f172a", border: `1px solid ${p.color}44`, borderRadius: 8, padding: "10px 12px", flexShrink: 0 }}>
+            <div key={p.name} style={{ minWidth: 160, background: "var(--bg-secondary)", border: `1px solid ${p.color}44`, borderRadius: 8, padding: "10px 12px", flexShrink: 0 }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: p.color, marginBottom: 2 }}>{p.name}</div>
               <div style={{ fontSize: 10, color: "#64748b", fontFamily: "monospace", marginBottom: 6 }}>{p.cidr}</div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ fontSize: 10, color: "#94a3b8" }}>{p.used.toLocaleString()} / {p.total.toLocaleString()}</span>
+                <span style={{ fontSize: 10, color: "var(--text-secondary)" }}>{p.used.toLocaleString()} / {p.total.toLocaleString()}</span>
                 <span style={{ fontSize: 10, fontWeight: 700, color: pct > 85 ? "#ef4444" : pct > 65 ? "#f59e0b" : "#22c55e" }}>{pct}%</span>
               </div>
-              <div style={{ background: "#1e293b", borderRadius: 3, height: 5 }}>
+              <div style={{ background: "var(--bg-elevated)", borderRadius: 3, height: 5 }}>
                 <div style={{ width: `${pct}%`, height: "100%", background: pct > 85 ? "#ef4444" : pct > 65 ? "#f59e0b" : p.color, borderRadius: 3, transition: "width 0.5s" }} />
               </div>
             </div>
@@ -89,17 +89,17 @@ export default function IPAMTab() {
       {/* Main content: Subnet Tree + Detail Panel */}
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
         {/* Subnet Tree */}
-        <div style={{ flex: "0 0 52%", overflow: "auto", borderRight: "1px solid #1e293b", padding: "10px 0" }}>
+        <div style={{ flex: "0 0 52%", overflow: "auto", borderRight: "1px solid var(--border-primary)", padding: "10px 0" }}>
           <div style={{ padding: "0 14px 8px", fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: 1 }}>SUBNET HIERARCHY</div>
           {SUBNET_TREE.map(group => (
             <div key={group.prefix}>
               <div
                 onClick={() => toggleExpand(group.prefix)}
-                style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 14px", cursor: "pointer", background: "#070d1a", borderBottom: "1px solid #1e293b22" }}
+                style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 14px", cursor: "pointer", background: "var(--bg-primary)", borderBottom: "1px solid var(--border-primary)22" }}
               >
                 <span style={{ color: "#64748b", fontSize: 11 }}>{expanded[group.prefix] ? "▼" : "▶"}</span>
                 <span style={{ fontSize: 11, fontFamily: "monospace", color: group.color, fontWeight: 700 }}>{group.prefix}</span>
-                <span style={{ fontSize: 11, color: "#94a3b8" }}>{group.name}</span>
+                <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>{group.name}</span>
               </div>
               {expanded[group.prefix] && group.children.map(child => (
                 <div
@@ -108,15 +108,15 @@ export default function IPAMTab() {
                   style={{
                     display: "flex", alignItems: "center", gap: 8, padding: "6px 14px 6px 32px", cursor: "pointer",
                     background: selected?.prefix === child.prefix ? "#0f1f3d" : "transparent",
-                    borderBottom: "1px solid #1e293b11",
+                    borderBottom: "1px solid var(--border-primary)11",
                   }}
                 >
-                  <span style={{ fontSize: 10, color: "#334155" }}>└─</span>
+                  <span style={{ fontSize: 10, color: "var(--border-subtle)" }}>└─</span>
                   <span style={{ fontSize: 11, fontFamily: "monospace", color: "#60a5fa" }}>{child.prefix}</span>
                   <span style={{ fontSize: 11, color: "#cbd5e1" }}>{child.name}</span>
                   <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
                     <span style={{ fontSize: 9, color: "#64748b" }}>{child.used}/{child.total}</span>
-                    <div style={{ width: 40, background: "#1e293b", borderRadius: 2, height: 4 }}>
+                    <div style={{ width: 40, background: "var(--bg-elevated)", borderRadius: 2, height: 4 }}>
                       <div style={{ width: `${Math.round(child.used / child.total * 100)}%`, height: "100%", background: group.color, borderRadius: 2 }} />
                     </div>
                   </div>
@@ -130,7 +130,7 @@ export default function IPAMTab() {
         <div style={{ flex: 1, overflow: "auto", padding: "14px" }}>
           {selected ? (
             <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#e2e8f0", marginBottom: 12 }}>{selected.prefix} — {selected.name}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", marginBottom: 12 }}>{selected.prefix} — {selected.name}</div>
               {[
                 ["VLAN", selected.vlan ?? "N/A"],
                 ["Gateway", selected.gw],
@@ -140,26 +140,26 @@ export default function IPAMTab() {
                 ["Available", `${(selected.total - selected.used).toLocaleString()} IPs`],
                 ["Utilization", `${Math.round(selected.used / selected.total * 100)}%`],
               ].map(([k, v]) => (
-                <div key={k} style={{ display: "flex", gap: 12, padding: "6px 0", borderBottom: "1px solid #1e293b", fontSize: 12 }}>
+                <div key={k} style={{ display: "flex", gap: 12, padding: "6px 0", borderBottom: "1px solid var(--border-primary)", fontSize: 12 }}>
                   <span style={{ color: "#64748b", minWidth: 90 }}>{k}</span>
-                  <span style={{ color: "#e2e8f0", fontFamily: "monospace" }}>{v}</span>
+                  <span style={{ color: "var(--text-primary)", fontFamily: "monospace" }}>{v}</span>
                 </div>
               ))}
-              <div style={{ marginTop: 14, padding: 12, background: "#0f172a", borderRadius: 8, border: "1px solid #1e293b" }}>
+              <div style={{ marginTop: 14, padding: 12, background: "var(--bg-secondary)", borderRadius: 8, border: "1px solid var(--border-primary)" }}>
                 <div style={{ fontSize: 10, color: "#64748b", marginBottom: 8, fontWeight: 700 }}>SAMPLE ALLOCATED IPs</div>
                 {Array.from({ length: 8 }, (_, i) => {
                   const base = selected.prefix.split(".").slice(0, 3).join(".");
                   return (
-                    <div key={i} style={{ display: "flex", gap: 12, fontSize: 10, color: "#94a3b8", padding: "3px 0", fontFamily: "monospace" }}>
+                    <div key={i} style={{ display: "flex", gap: 12, fontSize: 10, color: "var(--text-secondary)", padding: "3px 0", fontFamily: "monospace" }}>
                       <span>{base}.{i + 10}</span>
-                      <span style={{ color: "#475569" }}>CPE-{selected.name.split(" ")[0].toUpperCase()}-{String(i + 1).padStart(4, "0")}</span>
+                      <span style={{ color: "var(--text-muted)" }}>CPE-{selected.name.split(" ")[0].toUpperCase()}-{String(i + 1).padStart(4, "0")}</span>
                     </div>
                   );
                 })}
               </div>
             </div>
           ) : (
-            <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#334155", fontSize: 12 }}>
+            <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--border-subtle)", fontSize: 12 }}>
               ← Click a subnet to view allocation details
             </div>
           )}
@@ -167,22 +167,22 @@ export default function IPAMTab() {
       </div>
 
       {/* VLAN Table */}
-      <div style={{ flexShrink: 0, borderTop: "1px solid #1e293b", overflow: "auto", maxHeight: 200 }}>
-        <div style={{ padding: "8px 14px", fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: 1, background: "#070d1a" }}>VLAN TABLE</div>
+      <div style={{ flexShrink: 0, borderTop: "1px solid var(--border-primary)", overflow: "auto", maxHeight: 200 }}>
+        <div style={{ padding: "8px 14px", fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: 1, background: "var(--bg-primary)" }}>VLAN TABLE</div>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
           <thead>
             <tr style={{ background: "#0a1628" }}>
               {["VLAN ID", "Name", "Purpose", "Subnet", "Status"].map(h => (
-                <th key={h} style={{ padding: "6px 12px", textAlign: "left", color: "#64748b", fontWeight: 600, fontSize: 10, borderBottom: "1px solid #1e293b" }}>{h}</th>
+                <th key={h} style={{ padding: "6px 12px", textAlign: "left", color: "#64748b", fontWeight: 600, fontSize: 10, borderBottom: "1px solid var(--border-primary)" }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {VLANS.map((v, i) => (
-              <tr key={v.id} style={{ background: i % 2 === 0 ? "#07111f" : "#020817", borderBottom: "1px solid #1e293b22" }}>
+              <tr key={v.id} style={{ background: i % 2 === 0 ? "var(--bg-row-alt)" : "var(--bg-root)", borderBottom: "1px solid var(--border-primary)22" }}>
                 <td style={{ padding: "5px 12px", fontFamily: "monospace", color: "#60a5fa" }}>{v.id}</td>
-                <td style={{ padding: "5px 12px", color: "#e2e8f0" }}>{v.name}</td>
-                <td style={{ padding: "5px 12px", color: "#94a3b8" }}>{v.purpose}</td>
+                <td style={{ padding: "5px 12px", color: "var(--text-primary)" }}>{v.name}</td>
+                <td style={{ padding: "5px 12px", color: "var(--text-secondary)" }}>{v.purpose}</td>
                 <td style={{ padding: "5px 12px", fontFamily: "monospace", color: "#64748b" }}>{v.subnet}</td>
                 <td style={{ padding: "5px 12px" }}><span style={{ color: "#22c55e", fontSize: 10 }}>● {v.status}</span></td>
               </tr>

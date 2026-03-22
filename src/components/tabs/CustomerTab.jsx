@@ -44,7 +44,7 @@ export default function CustomerTab({ customers, setCustomers, onAddCustomer }) 
     columnHelper.accessor('ip', { header: 'IP Address', size: 120, cell: info => <span style={{ fontFamily: 'monospace', fontSize: 10 }}>{info.getValue()}</span> }),
     columnHelper.accessor('status', { header: 'Status', size: 80, cell: info => {
       const v = info.getValue();
-      return <span style={{ color: STATUS_COLOR[v] || '#94a3b8', fontWeight: 700, fontSize: 10, textTransform: 'uppercase' }}>{v}</span>;
+      return <span style={{ color: STATUS_COLOR[v] || 'var(--text-secondary)', fontWeight: 700, fontSize: 10, textTransform: 'uppercase' }}>{v}</span>;
     }}),
     columnHelper.accessor('uptime', { header: 'Uptime', size: 80 }),
     columnHelper.accessor('latency', { header: 'Latency', size: 70 }),
@@ -96,9 +96,9 @@ export default function CustomerTab({ customers, setCustomers, onAddCustomer }) 
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', background: '#020817' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', background: 'var(--bg-root)' }}>
       {/* Toolbar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderBottom: '1px solid #1e293b', background: '#070d1a', flexShrink: 0, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderBottom: '1px solid var(--border-primary)', background: 'var(--bg-primary)', flexShrink: 0, flexWrap: 'wrap' }}>
         {/* Stats */}
         {[
           { label: 'Total', value: customers.length, color: '#60a5fa' },
@@ -107,9 +107,9 @@ export default function CustomerTab({ customers, setCustomers, onAddCustomer }) 
           { label: 'Enterprise', value: customers.filter(c => c.tier === 'enterprise').length, color: '#f59e0b' },
           { label: 'MRR', value: `$${totalMRR.toLocaleString()}`, color: '#22c55e' },
         ].map(s => (
-          <div key={s.label} style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 6, padding: '3px 10px', textAlign: 'center' }}>
+          <div key={s.label} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 6, padding: '3px 10px', textAlign: 'center' }}>
             <div style={{ fontSize: 13, fontWeight: 800, color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: 8, color: '#475569' }}>{s.label}</div>
+            <div style={{ fontSize: 8, color: 'var(--text-muted)' }}>{s.label}</div>
           </div>
         ))}
 
@@ -120,12 +120,12 @@ export default function CustomerTab({ customers, setCustomers, onAddCustomer }) 
           value={globalFilter}
           onChange={e => setGlobalFilter(e.target.value)}
           placeholder="🔍 Search customers..."
-          style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 6, padding: '5px 10px', color: '#e2e8f0', fontSize: 11, width: 180 }}
+          style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 6, padding: '5px 10px', color: 'var(--text-primary)', fontSize: 11, width: 180 }}
         />
 
         {/* Tier filter */}
         <select value={tierFilter} onChange={e => setTierFilter(e.target.value)}
-          style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 6, padding: '5px 8px', color: '#e2e8f0', fontSize: 11 }}>
+          style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 6, padding: '5px 8px', color: 'var(--text-primary)', fontSize: 11 }}>
           <option value="all">All Tiers</option>
           <option value="residential">🏠 Residential</option>
           <option value="smb">🏢 SMB</option>
@@ -133,7 +133,7 @@ export default function CustomerTab({ customers, setCustomers, onAddCustomer }) 
         </select>
 
         {/* Action buttons */}
-        <button onClick={() => setShowAddForm(f => !f)} style={{ background: '#1e3a5f', border: '1px solid #60a5fa', borderRadius: 6, padding: '5px 10px', color: '#60a5fa', cursor: 'pointer', fontSize: 11, fontWeight: 700 }}>
+        <button onClick={() => setShowAddForm(f => !f)} style={{ background: 'var(--bg-accent)', border: '1px solid #60a5fa', borderRadius: 6, padding: '5px 10px', color: '#60a5fa', cursor: 'pointer', fontSize: 11, fontWeight: 700 }}>
           + Add Customer
         </button>
         <button onClick={() => exportCustomersToExcel(customers)} style={{ background: '#052e16', border: '1px solid #22c55e', borderRadius: 6, padding: '5px 10px', color: '#22c55e', cursor: 'pointer', fontSize: 11, fontWeight: 700 }}>
@@ -143,28 +143,28 @@ export default function CustomerTab({ customers, setCustomers, onAddCustomer }) 
 
       {/* Add customer form */}
       {showAddForm && (
-        <div style={{ padding: '10px 12px', background: '#0a1628', borderBottom: '1px solid #1e3a5f', display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div style={{ padding: '10px 12px', background: '#0a1628', borderBottom: '1px solid var(--border-accent)', display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <input placeholder="Name / Company" value={newCust.name} onChange={e => setNewCust(p => ({ ...p, name: e.target.value }))}
-            style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 5, padding: '4px 8px', color: '#e2e8f0', fontSize: 11, width: 180 }} />
+            style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 5, padding: '4px 8px', color: 'var(--text-primary)', fontSize: 11, width: 180 }} />
           <select value={newCust.tier} onChange={e => setNewCust(p => ({ ...p, tier: e.target.value, speed: '1G' }))}
-            style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 5, padding: '4px 8px', color: '#e2e8f0', fontSize: 11 }}>
+            style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 5, padding: '4px 8px', color: 'var(--text-primary)', fontSize: 11 }}>
             <option value="residential">🏠 Residential</option>
             <option value="smb">🏢 Small Business</option>
             <option value="enterprise">🏗️ Enterprise</option>
           </select>
           <select value={newCust.speed} onChange={e => setNewCust(p => ({ ...p, speed: e.target.value }))}
-            style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 5, padding: '4px 8px', color: '#e2e8f0', fontSize: 11 }}>
+            style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 5, padding: '4px 8px', color: 'var(--text-primary)', fontSize: 11 }}>
             {newCust.tier === 'enterprise' ? ['5G', '2G'] : newCust.tier === 'smb' ? ['1G', '2G'] : ['1G', '2G', '5G']}
             {(newCust.tier === 'enterprise' ? ['5G', '2G'] : newCust.tier === 'smb' ? ['1G', '2G'] : ['1G', '2G', '5G']).map(s => <option key={s} value={s}>{s}</option>)}
           </select>
           <select value={newCust.city} onChange={e => setNewCust(p => ({ ...p, city: e.target.value }))}
-            style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 5, padding: '4px 8px', color: '#e2e8f0', fontSize: 11 }}>
+            style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 5, padding: '4px 8px', color: 'var(--text-primary)', fontSize: 11 }}>
             {['Seattle', 'Bellevue', 'Spokane', 'Tacoma', 'Portland', 'Boise'].map(c => <option key={c}>{c}</option>)}
           </select>
-          <button onClick={handleAddCustomer} style={{ background: '#1e3a5f', border: '1px solid #60a5fa', borderRadius: 5, padding: '4px 12px', color: '#60a5fa', cursor: 'pointer', fontSize: 11, fontWeight: 700 }}>
+          <button onClick={handleAddCustomer} style={{ background: 'var(--bg-accent)', border: '1px solid #60a5fa', borderRadius: 5, padding: '4px 12px', color: '#60a5fa', cursor: 'pointer', fontSize: 11, fontWeight: 700 }}>
             ✅ Provision
           </button>
-          <button onClick={() => setShowAddForm(false)} style={{ background: 'none', border: '1px solid #334155', borderRadius: 5, padding: '4px 10px', color: '#64748b', cursor: 'pointer', fontSize: 11 }}>
+          <button onClick={() => setShowAddForm(false)} style={{ background: 'none', border: '1px solid var(--border-subtle)', borderRadius: 5, padding: '4px 10px', color: '#64748b', cursor: 'pointer', fontSize: 11 }}>
             Cancel
           </button>
         </div>
@@ -174,12 +174,12 @@ export default function CustomerTab({ customers, setCustomers, onAddCustomer }) 
         {/* Table */}
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
-            <thead style={{ position: 'sticky', top: 0, zIndex: 10, background: '#0f172a' }}>
+            <thead style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--bg-secondary)' }}>
               {table.getHeaderGroups().map(hg => (
                 <tr key={hg.id}>
                   {hg.headers.map(header => (
                     <th key={header.id} onClick={header.column.getToggleSortingHandler()}
-                      style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid #1e293b', color: '#64748b', fontSize: 9, fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase', cursor: 'pointer', whiteSpace: 'nowrap', userSelect: 'none' }}>
+                      style={{ padding: '8px 10px', textAlign: 'left', borderBottom: '1px solid var(--border-primary)', color: '#64748b', fontSize: 9, fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase', cursor: 'pointer', whiteSpace: 'nowrap', userSelect: 'none' }}>
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.getIsSorted() === 'asc' ? ' ↑' : header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
                     </th>
@@ -190,8 +190,8 @@ export default function CustomerTab({ customers, setCustomers, onAddCustomer }) 
             <tbody>
               {table.getRowModel().rows.map(row => (
                 <tr key={row.id} onClick={() => setSelectedCustomer(row.original)}
-                  style={{ borderBottom: '1px solid #0f172a', cursor: 'pointer', background: selectedCustomer?.id === row.original.id ? '#0f1f3d' : 'transparent', transition: 'background 0.15s' }}
-                  onMouseEnter={e => { if (selectedCustomer?.id !== row.original.id) e.currentTarget.style.background = '#0f172a'; }}
+                  style={{ borderBottom: '1px solid var(--bg-secondary)', cursor: 'pointer', background: selectedCustomer?.id === row.original.id ? '#0f1f3d' : 'transparent', transition: 'background 0.15s' }}
+                  onMouseEnter={e => { if (selectedCustomer?.id !== row.original.id) e.currentTarget.style.background = 'var(--bg-secondary)'; }}
                   onMouseLeave={e => { if (selectedCustomer?.id !== row.original.id) e.currentTarget.style.background = 'transparent'; }}
                 >
                   {row.getVisibleCells().map(cell => (
@@ -207,10 +207,10 @@ export default function CustomerTab({ customers, setCustomers, onAddCustomer }) 
 
         {/* Customer detail panel */}
         {selectedCustomer && (
-          <div style={{ width: 260, flexShrink: 0, background: '#070d1a', borderLeft: '1px solid #1e293b', padding: '12px', overflowY: 'auto' }}>
+          <div style={{ width: 260, flexShrink: 0, background: 'var(--bg-primary)', borderLeft: '1px solid var(--border-primary)', padding: '12px', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
               <TierBadge tier={selectedCustomer.tier} />
-              <button onClick={() => setSelectedCustomer(null)} style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 16 }}>×</button>
+              <button onClick={() => setSelectedCustomer(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 16 }}>×</button>
             </div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#f1f5f9', marginBottom: 2 }}>{selectedCustomer.name}</div>
             <div style={{ fontSize: 10, color: '#64748b', marginBottom: 10 }}>{selectedCustomer.city}</div>
@@ -227,9 +227,9 @@ export default function CustomerTab({ customers, setCustomers, onAddCustomer }) 
               ['DDoS Protection', selectedCustomer.ddosProtection ? 'Yes' : 'No'],
               ['MPLS VPN', selectedCustomer.mplsVpn ? 'Yes' : 'No'],
             ].filter(([, v]) => v !== undefined && v !== false).map(([k, v]) => (
-              <div key={k} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, borderBottom: '1px solid #0f172a', paddingBottom: 3 }}>
+              <div key={k} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, borderBottom: '1px solid var(--bg-secondary)', paddingBottom: 3 }}>
                 <span style={{ fontSize: 9, color: '#64748b' }}>{k}</span>
-                <span style={{ fontSize: 9, color: '#e2e8f0', fontWeight: 600, maxWidth: 140, textAlign: 'right', wordBreak: 'break-all' }}>{String(v)}</span>
+                <span style={{ fontSize: 9, color: 'var(--text-primary)', fontWeight: 600, maxWidth: 140, textAlign: 'right', wordBreak: 'break-all' }}>{String(v)}</span>
               </div>
             ))}
 

@@ -82,9 +82,9 @@ export default function BGPSecurityTab({ faultActive }) {
   return (
     <div style={{ display: "flex", flex: 1, overflow: "hidden", gap: 0 }}>
       {/* Left: BGP Route Table */}
-      <div style={{ flex: "0 0 58%", display: "flex", flexDirection: "column", overflow: "hidden", borderRight: "1px solid #1e293b" }}>
-        <div style={{ padding: "10px 14px", background: "#0f172a", borderBottom: "1px solid #1e293b", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#e2e8f0" }}>BGP Route Table — AS7029 (North Star Fiber)</span>
+      <div style={{ flex: "0 0 58%", display: "flex", flexDirection: "column", overflow: "hidden", borderRight: "1px solid var(--border-primary)" }}>
+        <div style={{ padding: "10px 14px", background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-primary)", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>BGP Route Table — AS7029 (North Star Fiber)</span>
           <div style={{ display: "flex", gap: 6, marginLeft: 8 }}>
             {[["4 Peers UP", "#22c55e"], ["1 Peer DOWN", "#ef4444"], ["15 Prefixes", "#60a5fa"]].map(([label, color]) => (
               <span key={label} style={{ fontSize: 9, fontWeight: 700, color, background: color + "22", border: `1px solid ${color}55`, borderRadius: 4, padding: "2px 7px" }}>{label}</span>
@@ -96,7 +96,7 @@ export default function BGPSecurityTab({ faultActive }) {
             <thead>
               <tr style={{ background: "#0a1628", position: "sticky", top: 0 }}>
                 {["Prefix", "Next Hop", "AS Path", "Communities", "RPKI", "Age", "Status"].map(h => (
-                  <th key={h} style={{ padding: "7px 10px", textAlign: "left", color: "#64748b", fontWeight: 600, fontSize: 10, borderBottom: "1px solid #1e293b", whiteSpace: "nowrap" }}>{h}</th>
+                  <th key={h} style={{ padding: "7px 10px", textAlign: "left", color: "#64748b", fontWeight: 600, fontSize: 10, borderBottom: "1px solid var(--border-primary)", whiteSpace: "nowrap" }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -109,14 +109,14 @@ export default function BGPSecurityTab({ faultActive }) {
                     key={r.prefix}
                     onClick={() => setSelectedRow(isSelected ? null : i)}
                     style={{
-                      background: isSelected ? "#0f1f3d" : withdrawn ? "#2d0a0a" : i % 2 === 0 ? "#07111f" : "#020817",
+                      background: isSelected ? "#0f1f3d" : withdrawn ? "#2d0a0a" : i % 2 === 0 ? "var(--bg-row-alt)" : "var(--bg-root)",
                       cursor: "pointer",
-                      borderBottom: "1px solid #1e293b22",
+                      borderBottom: "1px solid var(--border-primary)22",
                       opacity: withdrawn ? 0.7 : 1,
                     }}
                   >
                     <td style={{ padding: "6px 10px", color: "#60a5fa", fontFamily: "monospace" }}>{r.prefix}</td>
-                    <td style={{ padding: "6px 10px", color: "#94a3b8", fontFamily: "monospace" }}>{r.nextHop}</td>
+                    <td style={{ padding: "6px 10px", color: "var(--text-secondary)", fontFamily: "monospace" }}>{r.nextHop}</td>
                     <td style={{ padding: "6px 10px", color: "#cbd5e1", fontFamily: "monospace", maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.asPath}</td>
                     <td style={{ padding: "6px 10px", color: "#64748b", fontFamily: "monospace", fontSize: 10 }}>{r.communities}</td>
                     <td style={{ padding: "6px 10px" }}>
@@ -138,8 +138,8 @@ export default function BGPSecurityTab({ faultActive }) {
 
       {/* Right: Security Event Log */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-        <div style={{ padding: "10px 14px", background: "#0f172a", borderBottom: "1px solid #1e293b", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#e2e8f0" }}>Security Event Log</span>
+        <div style={{ padding: "10px 14px", background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-primary)", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>Security Event Log</span>
           {hasCritical && (
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#ef4444", display: "inline-block", animation: "pulse 1s infinite" }} />
           )}
@@ -147,7 +147,7 @@ export default function BGPSecurityTab({ faultActive }) {
         </div>
         <div style={{ flex: 1, overflow: "auto", padding: "8px" }}>
           {secEvents.map((e) => (
-            <div key={e.id} style={{ display: "flex", gap: 8, marginBottom: 6, padding: "8px 10px", background: "#0f172a", border: `1px solid ${TYPE_COLORS[e.type]}33`, borderLeft: `3px solid ${TYPE_COLORS[e.type]}`, borderRadius: 6, fontSize: 11 }}>
+            <div key={e.id} style={{ display: "flex", gap: 8, marginBottom: 6, padding: "8px 10px", background: "var(--bg-secondary)", border: `1px solid ${TYPE_COLORS[e.type]}33`, borderLeft: `3px solid ${TYPE_COLORS[e.type]}`, borderRadius: 6, fontSize: 11 }}>
               <div style={{ minWidth: 62, color: "#64748b", fontSize: 10, paddingTop: 1 }}>{e.time}</div>
               <div style={{ flex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
@@ -155,9 +155,9 @@ export default function BGPSecurityTab({ faultActive }) {
                   <span style={{ fontSize: 10, fontWeight: 600, color: TYPE_COLORS[e.type] }}>{e.type}</span>
                 </div>
                 <div style={{ color: "#cbd5e1", marginBottom: 2 }}>{e.desc}</div>
-                <div style={{ display: "flex", gap: 12, fontSize: 10, color: "#475569" }}>
+                <div style={{ display: "flex", gap: 12, fontSize: 10, color: "var(--text-muted)" }}>
                   <span>src: <span style={{ color: "#64748b", fontFamily: "monospace" }}>{e.src}</span></span>
-                  <span>action: <span style={{ color: "#94a3b8" }}>{e.action}</span></span>
+                  <span>action: <span style={{ color: "var(--text-secondary)" }}>{e.action}</span></span>
                 </div>
               </div>
             </div>
