@@ -2,7 +2,7 @@
   "name": "northstar-fiber-sim",
   "productName": "NorthStar Fiber Network Simulator",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "ISP network simulation platform for training engineers",
   "author": "NorthStar Fiber Training",
   "type": "module",
@@ -39,8 +39,18 @@
     },
     "win": {
       "target": [
-        { "target": "nsis",     "arch": ["x64"] },
-        { "target": "portable", "arch": ["x64"] }
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
       "icon": "build/icon.ico",
       "requestedExecutionLevel": "asInvoker"
@@ -60,9 +70,19 @@
     },
     "compression": "maximum",
     "asar": true,
-    "asarUnpack": ["**/*.node"]
+    "asarUnpack": [
+      "**/*.node"
+    ]
   },
   "dependencies": {
+    "@nivo/bar": "^0.99.0",
+    "@nivo/core": "^0.99.0",
+    "@nivo/heatmap": "^0.99.0",
+    "@nivo/line": "^0.99.0",
+    "@nivo/network": "^0.99.0",
+    "@nivo/sankey": "^0.99.0",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
     "@tanstack/react-table": "^8.21.3",
     "@xyflow/react": "^12.10.1",
     "d3": "^7.9.0",
@@ -72,8 +92,10 @@
     "lucide-react": "^0.577.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-is": "^18.3.1",
     "react-leaflet": "^5.0.0",
     "recharts": "^3.8.0",
+    "three": "^0.183.2",
     "xlsx": "^0.18.5",
     "zod": "^4.3.6"
   },

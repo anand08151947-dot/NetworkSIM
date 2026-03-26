@@ -923,12 +923,178 @@ function HandoverPanel() {
   );
 }
 
+// ─── KPI Trend Panel ──────────────────────────────────────────────────────────
+
+function KpiTrendPanel({ selectedZone }) {
+  if (!selectedZone) {
+    return (
+      <div style={{
+        margin: "10px 14px", padding: "10px", borderRadius: 6,
+        background: "#070e1c", border: "1px solid #1e3a5f",
+        color: "#3a4a5f", fontSize: 10, textAlign: "center",
+      }}>
+        📈 Select a zone to view KPI trend
+      </div>
+    );
+  }
+
+  const W = 260, H = 80, padL = 28, padR = 8, padT = 10, padB = 16;
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+  const hours = 24;
+  const now = new Date().getHours();
+
+  function genSeries(baseVal, maxVal, nightBump, peakDip, eveningDip) {
+    return Array.from({ length: hours }, (_, h) => {
+      let v = baseVal;
+      if (h >= 1 && h <= 5)       v = baseVal + nightBump;
+      else if (h >= 6 && h <= 9)  v = baseVal + nightBump * (1 - (h - 6) / 3);
+      else if (h >= 9 && h <= 18) v = baseVal + peakDip;
+      else if (h >= 18 && h <= 21) v = baseVal + eveningDip;
+      else if (h >= 22)           v = baseVal + nightBump * (h - 22) / 3;
+      return Math.max(0, Math.min(maxVal, v + (Math.random() - 0.5) * 2));
+    });
+  }
+
+  const sinrSeries = genSeries(selectedZone.sinr, 30, 3, -2, -3);
+  const loadSeries = genSeries(selectedZone.load, 100, -35, 20, 30);
+  const qoeSeries  = genSeries(selectedZone.qoe,  100, 5,  0,  -8);
+
+  function toPolyline(series, minV, maxV) {
+    return series.map((v, h) => {
+      const x = padL + (h / (hours - 1)) * innerW;
+      const y = padT + innerH - ((v - minV) / (maxV - minV)) * innerH;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(" ");
+  }
+
+  const sinrPoly = toPolyline(sinrSeries, 0, 30);
+  const loadPoly = toPolyline(loadSeries, 0, 100);
+  const qoePoly  = toPolyline(qoeSeries,  0, 100);
+  const nowX = padL + (now / (hours - 1)) * innerW;
+
+  const gridLines = [0, 25, 50, 75, 100];
+
+  return (
+    <div style={{
+      margin: "10px 14px 0", padding: "8px 10px", borderRadius: 6,
+      background: "#070e1c", border: "1px solid #1e3a5f",
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+        <span style={{ color: "#64748b", fontSize: 9, fontWeight: 700, letterSpacing: 1 }}>
+          📈 KPI TREND — LAST 24H (SIMULATED)
+        </span>
+        <div style={{ display: "flex", gap: 8 }}>
+          {[["SINR","#3b82f6"],["Load","#fbbf24"],["QoE","#22c55e"]].map(([l,c]) => (
+            <span key={l} style={{ display: "flex", alignItems: "center", gap: 3 }}>
+              <span style={{ width: 8, height: 3, borderRadius: 2, background: c, display: "inline-block" }} />
+              <span style={{ color: "#64748b", fontSize: 8 }}>{l}</span>
+            </span>
+          ))}
+        </div>
+      </div>
+      <svg width={W} height={H} style={{ display: "block" }}>
+        {/* Grid lines */}
+        {gridLines.map(g => {
+          const y = padT + innerH - (g / 100) * innerH;
+          return (
+            <g key={g}>
+              <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#1e3a5f" strokeWidth="0.5" />
+              <text x={padL - 3} y={y + 3} textAnchor="end" fill="#334155" fontSize="6">{g}</text>
+            </g>
+          );
+        })}
+        {/* SINR right axis labels */}
+        {[0, 15, 30].map(g => {
+          const y = padT + innerH - (g / 30) * innerH;
+          return (
+            <text key={`sinr-${g}`} x={W - padR + 2} y={y + 3} fill="#3b82f666" fontSize="6">{g}dB</text>
+          );
+        })}
+        {/* Hour labels */}
+        {[0, 4, 8, 12, 16, 20].map(h => {
+          const x = padL + (h / (hours - 1)) * innerW;
+          return (
+            <text key={h} x={x} y={H - 2} textAnchor="middle" fill="#334155" fontSize="6">
+              {String(h).padStart(2, "0")}
+            </text>
+          );
+        })}
+        {/* Series */}
+        <polyline points={loadPoly} fill="none" stroke="#fbbf24" strokeWidth="1.2" strokeLinejoin="round" />
+        <polyline points={qoePoly}  fill="none" stroke="#22c55e" strokeWidth="1.2" strokeLinejoin="round" />
+        <polyline points={sinrPoly} fill="none" stroke="#3b82f6" strokeWidth="1.2" strokeLinejoin="round" strokeDasharray="none" />
+        {/* NOW line */}
+        <line x1={nowX} y1={padT} x2={nowX} y2={padT + innerH} stroke="#ef4444" strokeWidth="1" strokeDasharray="3,2" />
+        <text x={nowX + 2} y={padT + 7} fill="#ef4444" fontSize="6">NOW</text>
+      </svg>
+    </div>
+  );
+}
+
+// ─── Compliance Deadlines ─────────────────────────────────────────────────────
+
+const DEADLINES = [
+  { label: "Close NW-047 anchor gap",       days: 45,  spec: "Internal SLA" },
+  { label: "B3 refarming — LTE→NR",         days: 186, spec: "Regulatory Q1 2027" },
+  { label: "CBRS PAL license renewal",       days: 92,  spec: "FCC Part 96" },
+  { label: "5G SA cutover — SE-023",         days: 28,  spec: "Rollout milestone" },
+  { label: "Drive test model recalibration", days: 14,  spec: "Internal KPI" },
+];
+
+function ComplianceDeadlines() {
+  return (
+    <div style={{
+      background: "#070e1c", border: "1px solid #1e3a5f", borderRadius: 6,
+      padding: 10, margin: "10px 14px 0",
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+        <span style={{ color: "#64748b", fontSize: 9, fontWeight: 700, letterSpacing: 1 }}>
+          📋 COMPLIANCE DEADLINES
+        </span>
+        <span style={{ color: "#3b82f6", fontSize: 9, cursor: "pointer" }}>View All →</span>
+      </div>
+      {DEADLINES.map((d, i) => {
+        const urgent = d.days < 30;
+        const mid    = d.days >= 30 && d.days <= 90;
+        const color  = urgent ? "#ef4444" : mid ? "#fbbf24" : "#22c55e";
+        return (
+          <div key={i} style={{
+            display: "flex", alignItems: "center", gap: 8,
+            padding: "4px 0",
+            borderBottom: i < DEADLINES.length - 1 ? "1px solid #0f1f3d" : "none",
+          }}>
+            <div style={{
+              width: 7, height: 7, borderRadius: "50%", flexShrink: 0,
+              background: color,
+            }} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ color: "#e2e8f0", fontSize: 9, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {d.label}
+              </div>
+              <div style={{ color: "#475569", fontSize: 8 }}>{d.spec}</div>
+            </div>
+            <div style={{
+              padding: "1px 6px", borderRadius: 3, fontSize: 9, fontWeight: 700,
+              background: color + "22", color, border: `1px solid ${color}44`,
+              flexShrink: 0,
+            }}>
+              {d.days}d
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ─── Zones Overview Panel ─────────────────────────────────────────────────────
 
-function ZonesPanel({ genMode }) {
+function ZonesPanel({ genMode, selectedZone }) {
   const healthColor = { excellent: "#22c55e", good: "#60a5fa", fair: "#fbbf24", gap: "#f97316", critical: "#ef4444" };
   return (
-    <div style={{ display: "flex", height: "100%" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
+      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
       <div style={{ flex: 1.5, padding: "10px 14px", borderRight: "1px solid #1e3a5f" }}>
         <div style={S.sectionLabel}>ZONE HEALTH SUMMARY</div>
         <div style={{ marginTop: 6 }}>
@@ -987,7 +1153,10 @@ function ZonesPanel({ genMode }) {
             </div>
           ))}
         </div>
+        <ComplianceDeadlines />
       </div>
+      </div>
+      <KpiTrendPanel selectedZone={selectedZone} />
     </div>
   );
 }
@@ -1921,8 +2090,8 @@ function DriveTestPanel() {
   );
 }
 
-function FunctionDetailPanel({ activeFunc, genMode }) {
-  if (activeFunc === "zones")        return <ZonesPanel genMode={genMode} />;
+function FunctionDetailPanel({ activeFunc, genMode, selectedZone }) {
+  if (activeFunc === "zones")        return <ZonesPanel genMode={genMode} selectedZone={selectedZone} />;
   if (activeFunc === "capacity")     return <CapacityPanel />;
   if (activeFunc === "interference") return <InterferencePanel />;
   if (activeFunc === "mimo")         return <MIMOPanel />;
@@ -2181,7 +2350,7 @@ export default function RANPlanningTab() {
       {detailOpen && (
         <div style={{ ...S.detailPanel, height: 200 }}>
           <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
-            <FunctionDetailPanel activeFunc={activeFunc} genMode={genMode} />
+            <FunctionDetailPanel activeFunc={activeFunc} genMode={genMode} selectedZone={selectedZone} />
           </div>
         </div>
       )}

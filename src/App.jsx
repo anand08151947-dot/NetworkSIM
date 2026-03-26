@@ -33,6 +33,7 @@ import AuditTimelineTab from "./components/tabs/AuditTimelineTab";
 import TrafficEngineeringTab from "./components/tabs/TrafficEngineeringTab";
 import CircuitPlannerTab from "./components/tabs/CircuitPlannerTab";
 import RANPlanningTab from "./components/tabs/RANPlanningTab";
+import ORANTab from "./components/tabs/ORANTab";
 import SimRecorder from "./components/SimRecorder";
 import { simEngine, SimEngine } from "./simulation/engine";
 import { SimEvents, SIM_EVENT } from "./simulation/events";
@@ -69,7 +70,8 @@ const TABS = [
   // { id: "audit", label: "📅 Audit Log" },               // hidden
   // { id: "te", label: "🚦 Traffic Engineering" },        // hidden
   { id: "circuit", label: "📡 Circuit Planner" },
-  { id: "ran", label: "📡 RAN Planning" },
+  { id: "ran",     label: "📡 RAN Planning" },
+  { id: "oran",    label: "🔭 O-RAN Planning" },
 ];
 
 export default function App() {
@@ -972,6 +974,13 @@ export default function App() {
       {activeTab === "ran" && (
         <div style={{ flex: 1, overflow: "hidden", display: "flex" }}>
           <RANPlanningTab />
+        </div>
+      )}
+
+      {/* ── O-RAN SIMULATIONS TAB ── */}
+      {activeTab === "oran" && (
+        <div style={{ flex: 1, overflow: "hidden", display: "flex" }}>
+          <ORANTab />
         </div>
       )}
 

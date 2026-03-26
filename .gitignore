@@ -76,3 +76,18 @@ coverage/
 # ── Copilot session state (local workspace only) ──────────────────
 .copilot/
 
+# ── Detached process temp logs (Copilot CLI) ──────────────────────
+copilot-detached-*.log
+
+# ── Three.js / R3F build artifacts ────────────────────────────────
+*.glb
+*.gltf
+*.hdr
+
+# ── Excel / report exports ────────────────────────────────────────
+*.xlsx
+*.csv
+
+# ── Vite dep pre-bundle cache ─────────────────────────────────────
+node_modules/.vite/
+

@@ -1691,6 +1691,268 @@ physical network looks completely different depending on which metric you're vie
       },
     ],
   },
+
+  oran: {
+    title: "🔭 O-RAN Planning",
+    subtitle: "Open RAN · 3GPP · ITU-T Simulation Suite (12 Scenarios)",
+    color: "#a78bfa",
+    sections: [
+      {
+        heading: "What Is This?",
+        icon: "📡",
+        body: `The O-RAN Planning tab is a 12-scenario Open RAN simulation suite covering the
+full O-RAN Alliance architecture stack — from the Non-RT RIC and SMO at the top, down through
+the Near-RT RIC, E2 nodes (O-CU/O-DU/O-RU), and the Open Fronthaul interface.
+
+Each simulation walks through a **multi-phase animated workflow** showing how real O-RAN
+components interact to solve a specific network engineering challenge. Visual panels update
+step-by-step as the simulation progresses: Nivo line/bar charts, 3D React Three Fiber scenes
+(MIMO, NTN orbit), and custom SVG sensor grids (ISAC heatmap).
+
+The tab uses the same CollapsiblePanel sidebar pattern as the Network Topology tab — the right
+panel holds simulation log, KPI metrics, specs references, CLI configs, and causal chains.
+The center panel is reserved for the live animated visualisation.`,
+      },
+      {
+        heading: "How to Run a Simulation",
+        icon: "▶️",
+        body: `1. **Select a scenario** from the left sidebar — each card shows its SIM-ID, title,
+   and difficulty badge (Beginner / Intermediate / Advanced).
+2. Press **▶ RUN** in the top control bar. The simulation advances step by step through
+   all phases, updating the chart and the right-panel log simultaneously.
+3. Use the **Speed** slider (0.5× – 3×) to slow down for study or fast-forward to the result.
+4. Right-panel tabs let you explore in depth:
+   • **📋 Sim Log** — timestamped event feed for every step
+   • **📊 Metrics** — before/after KPI table with colour-coded delta
+   • **📐 Specs** — 3GPP / O-RAN / ITU-T specification references
+   • **💻 CLI** — vendor-accurate NETCONF / gNMI / REST payloads per phase
+   • **🔗 Causal** — root-cause chain showing what triggered what
+5. Press **RESET** to start over. Use **What-If sliders** (when shown at the bottom of
+   the left sidebar) to change parameters before re-running.`,
+      },
+      {
+        heading: "SIM-01 · RIC Traffic Steering (MLB xApp)",
+        icon: "🔀",
+        body: `**Spec refs**: O-RAN.WG3.E2SM-RC, O-RAN.WG2.A1-AP
+**What it simulates**: A closed-loop Mobility Load Balancing (MLB) xApp running on the
+Near-RT RIC detects that Cell-3 (urban macro) is overloaded at 94% PRB utilisation.
+It issues an A1 Policy to the SMO, then sends an E2 RIC CONTROL to redistribute users
+to neighbouring cells (Cell-1 and Cell-5).
+
+**What to watch**: The bar chart shows PRB load across 5 cells updating in real time.
+Cell-3 drops from 94% → 48% as the steering policy takes effect. Cell-1 and Cell-5
+absorb ~23% each — watch those bars rise proportionally.
+
+**Why it matters**: Manual load balancing by NOC engineers is reactive and slow. xApps
+on the Near-RT RIC can close the loop in <10ms without human intervention, preventing
+call drops and improving spectral efficiency across the cluster.`,
+      },
+      {
+        heading: "SIM-02 · AI-Driven RRM Scheduler (GNN)",
+        icon: "🧠",
+        body: `**Spec refs**: O-RAN.WG2.AI-ML-v03, 3GPP TR 38.843
+**What it simulates**: A Graph Neural Network (GNN) RRM scheduler learns UE spatial
+patterns across 20 users and replaces the static Round-Robin baseline. Training runs
+for 150 epochs; the model learns to cluster nearby UEs and assign PRBs proportional
+to CQI — resulting in proportional-fair throughput distribution.
+
+**What to watch**: The training loss curve drops from 0.85 → 0.12. The throughput chart
+shows the scheduler outperforming Round-Robin by +38% average throughput and +67%
+for cell-edge UEs (those below CQI 6).
+
+**Why it matters**: AI schedulers optimise for spectral efficiency in a way static
+rules cannot — they adapt to traffic patterns, interference, and UE geometry in real time.`,
+      },
+      {
+        heading: "SIM-03 · DSS + CBRS SAS Dynamic Spectrum",
+        icon: "📡",
+        body: `**Spec refs**: FCC Part 96 (CBRS), 3GPP TS 36.300, O-RAN WG1
+**What it simulates**: Dynamic Spectrum Sharing (DSS) between LTE and NR on 700 MHz,
+combined with Spectrum Access System (SAS) coordination for CBRS (3.5 GHz) channel
+selection. The SAS validates incumbent protection before granting General Authorized
+Access (GAA) channels to the gNB.
+
+**What to watch**: The heatmap shows LTE/NR subband utilisation shifting as DSS
+ratio changes. CBRS channels are shown being granted, then reclaimed when an incumbent
+(naval radar) signal is detected in the protection zone.
+
+**Why it matters**: CBRS + DSS allows operators to deploy 5G NR on shared spectrum
+without purchasing licensed spectrum — critical for private networks and rural deployments.`,
+      },
+      {
+        heading: "SIM-04 · O-RU Energy Benchmarking",
+        icon: "⚡",
+        body: `**Spec refs**: O-RAN WG4 (M-Plane), ETSI ES 203 228, O-RAN.WG4.MP.0-v09
+**What it simulates**: The SMO sends NETCONF edit-config messages to O-RUs to activate
+deep-sleep symbol blanking during low-traffic hours (02:00–06:00). The O-RU's M-Plane
+agent confirms, and the PM collector records power draw dropping from 800W → 550W.
+
+**What to watch**: The power timeline shows a 32% reduction in site power draw during
+the sleep window. The NETCONF config panel shows the actual XML payload exchanged between
+SMO and O-RU, including the sleep-mode capability negotiation.
+
+**Why it matters**: O-RU energy costs represent 60–70% of total RAN OPEX. Automated
+M-Plane sleep control without hardware vendor lock-in is a core O-RAN value proposition.`,
+      },
+      {
+        heading: "SIM-05 · NTN LEO Handover + Doppler",
+        icon: "🛰️",
+        body: `**Spec refs**: 3GPP TR 38.821, TS 38.300 (NTN extensions)
+**What it simulates**: A LEO satellite at 550 km altitude serves UEs with a 600 km/s
+ground track velocity. The simulation shows Doppler pre-compensation (±23.4 kHz shift),
+then an 18ms conditional handover (N26 inter-satellite) triggered as the satellite
+passes the 40° elevation threshold.
+
+**What to watch**: The 3D scene shows the Earth sphere with the satellite arc orbiting.
+A beam cone narrows to the UE cluster. At handover, the beam switches to the next
+satellite — animated with a blue handover flash. The Doppler graph shows the frequency
+offset compensated in real time.
+
+**Why it matters**: NTN (Non-Terrestrial Networks) is the mechanism for 5G coverage
+in remote areas, maritime, and aviation. Doppler pre-comp and fast conditional handover
+are the two hardest engineering problems in NTN — this simulation makes them concrete.`,
+      },
+      {
+        heading: "SIM-06 · Zero-Touch Provisioning (SMO → gNB)",
+        icon: "🤖",
+        body: `**Spec refs**: O-RAN WG6 (SMO), IETF RFC 6241 (NETCONF), 3GPP TS 28.531
+**What it simulates**: An SMO receives a declarative intent ("deploy gNB site SITE-042
+with 5G NR n78, capacity tier Gold") and translates it into a sequence of NETCONF
+edit-config operations — first configuring the O-DU, then the O-CU-CP/UP, then
+registering with the Near-RT RIC E2 interface, and finally declaring IN-SERVICE.
+
+**What to watch**: The state machine diagram animates through stages: FACTORY →
+TRANSPORT_READY → CONFIGURED → E2_CONNECTED → IN-SERVICE. Each transition shows
+the NETCONF payload exchanged and the expected response. Total provisioning: ~4 minutes.
+
+**Why it matters**: ZTP eliminates manual CLI configuration — a site that once took
+a field engineer 4 hours can be activated remotely in minutes using intent-driven automation.`,
+      },
+      {
+        heading: "SIM-07 · Anomaly Detection & Bayesian RCA",
+        icon: "🔍",
+        body: `**Spec refs**: O-RAN.WG2.AI-ML, 3GPP TS 28.532
+**What it simulates**: The Near-RT RIC's xApp detects a SINR anomaly on Cell-7 (drops
+from 14 dB → 6 dB). A Bayesian root-cause inference engine evaluates 5 candidate causes
+(interference, hardware fault, configuration error, backhaul degradation, neighbour
+interference) and ranks them by posterior probability given the observed KPI pattern.
+
+**What to watch**: The causal chain panel (right sidebar "🔗 Causal" tab) shows the
+directed graph: anomaly → candidate causes → posterior probabilities. The highest-ranked
+cause drives an automated remediation suggestion — e.g., "increase tilt by 2° on Cell-6".
+
+**Why it matters**: Manual RCA in a dense network takes hours. Bayesian inference allows
+the Near-RT RIC to identify root cause and trigger corrective action in seconds.`,
+      },
+      {
+        heading: "SIM-08 · Digital Twin RAN (Shadow Mode + What-If)",
+        icon: "🪞",
+        body: `**Spec refs**: O-RAN.WG1.O-RAN-Architecture-Description, 3GPP TR 28.809
+**What it simulates**: A Digital Twin of the live RAN ingests real PM counters every
+15 minutes via the O1 interface. The twin runs in "shadow mode" — predicting network
+KPIs without affecting live traffic. A What-If engine allows operators to test parameter
+changes (tilt, azimuth, power) in the twin and preview the predicted SINR/throughput
+impact before applying to production.
+
+**What to watch**: The line chart shows live KPIs vs. twin-predicted KPIs converging
+over time (accuracy improves as the model trains). Use the What-If sliders to change
+tilt — the predicted SINR line updates immediately in the twin, letting you see the
+"what would happen" before committing the change.
+
+**Why it matters**: Digital Twins eliminate the risk of live parameter experiments.
+Changes that would degrade 10,000 users can be safely evaluated in the twin first.`,
+      },
+      {
+        heading: "SIM-09 · ISAC — Range-Doppler Sensing",
+        icon: "📡",
+        body: `**Spec refs**: 3GPP TR 22.837, TS 22.837 (ISAC use cases)
+**What it simulates**: Integrated Sensing and Communications (ISAC) repurposes a 5G NR
+FR2 waveform as a radar. The simulation shows a 32×32 range-Doppler grid being computed
+from reflected 5G signals. Three targets are detected: a pedestrian (2.1 m/s), a cyclist
+(7.4 m/s), and a vehicle (28.3 m/s) at ranges 48m, 112m, and 203m.
+
+**What to watch**: The ISAC heatmap (SVG grid using inferno colour scale) shows target
+blobs appearing at their correct range/Doppler coordinates as each detection phase
+completes. Hover cells to see exact power dBm values. Noise floor is dark maroon;
+targets appear as yellow/orange blobs.
+
+**Why it matters**: ISAC is a 6G candidate feature that allows base stations to provide
+both connectivity and environmental sensing (object detection, traffic monitoring, gesture
+recognition) from the same waveform and hardware.`,
+      },
+      {
+        heading: "SIM-10 · CAPEX/ROI Site Planner",
+        icon: "💰",
+        body: `**Spec refs**: 3GPP TR 38.913, internal financial modelling
+**What it simulates**: Five candidate cell sites are evaluated on NPV (Net Present Value),
+IRR (Internal Rate of Return), payback period, and coverage score. The model inputs
+include CAPEX (tower lease, equipment, install), OPEX (power, backhaul, maintenance),
+projected revenue ramp, and a 10-year DCF horizon.
+
+**What to watch**: The CAPEX bar chart shows total cost per site. The NPV/IRR waterfall
+animates the cashflow year by year for the winning site — showing the break-even point
+and the cumulative value creation to year 10. The feasibility gate panel shows which
+sites pass/fail on financial and coverage criteria.
+
+**Why it matters**: Network operators face capital allocation decisions worth billions.
+Systematic NPV/IRR analysis prevents gut-feel site selection and ensures the network
+is built where it creates the most financial and coverage return.`,
+      },
+      {
+        heading: "SIM-11 · IIoT/URLLC P99.999 Reliability",
+        icon: "🏭",
+        body: `**Spec refs**: 3GPP TS 22.261 (URLLC requirements), TS 38.824
+**What it simulates**: An industrial IoT deployment requires P99.999 packet delivery
+reliability with sub-1ms latency. The simulation compares a baseline 4G QPSK link
+against an optimised 5G NR URLLC configuration (mini-slot scheduling, HARQ,
+redundant paths). A CDF chart shows the latency distribution for 10,000 simulated packets.
+
+**What to watch**: The CDF line for URLLC stays below the 1ms threshold at P99.999,
+while the baseline fails at P99.9. The SLA badge panel shows PASS/FAIL per SLA tier
+(Bronze / Gold / Platinum / Mission-Critical). The reliability planner shows how many
+redundant paths are needed to achieve each tier.
+
+**Why it matters**: Manufacturing automation (robotic arms, AGVs, safety systems)
+requires deterministic latency guarantees that 4G cannot provide. 5G URLLC unlocks
+Industry 4.0 use cases — but only if the RAN is correctly configured.`,
+      },
+      {
+        heading: "SIM-12 · Microwave Backhaul Fade + ACM",
+        icon: "📶",
+        body: `**Spec refs**: ITU-R P.530 (propagation), ETSI EN 302 217
+**What it simulates**: A 38 GHz microwave backhaul link experiences a rain fade event.
+RSSL (Received Signal Strength Level) degrades from –62 dBm to –98 dBm over 4 minutes.
+The ACM (Adaptive Coding and Modulation) system automatically falls back through
+modulation profiles: 256QAM → 64QAM → QPSK → FEC_ONLY, maintaining link availability.
+When RSSL recovers, ACM ramps back up.
+
+**What to watch**: The RSSL timeline shows the fade curve. Below each ACM threshold,
+the modulation badge changes colour and the capacity bar drops to reflect reduced
+throughput. The link availability metric stays at 99.999% because ACM prevented a
+complete link failure.
+
+**Why it matters**: Microwave backhaul is the dominant connectivity method for rural
+macro cells. Understanding fade margins and ACM fallback is essential for link budget
+planning and availability SLA commitments.`,
+      },
+      {
+        heading: "Tips & Pro Techniques",
+        icon: "💡",
+        body: `• **Run at 0.5× speed** for the ISAC, Digital Twin, and RCA scenarios — there is a
+  lot happening in each step and slowing down lets you read all the log entries.
+• **What-If sliders** (SIM-08 Digital Twin, SIM-11 URLLC) change the model parameters
+  before you hit RUN — try extreme values to see cliff-edge effects.
+• **3D scenes** (SIM-05 NTN) support mouse orbit — drag to rotate the Earth and watch
+  the satellite arc from different angles. Scroll to zoom.
+• **Right panel CLI tab** shows real NETCONF XML, gNMI SetRequest, and REST payloads —
+  use these as templates for actual vendor integrations.
+• **Difficulty badges**: Beginner = focuses on concept; Intermediate = shows protocol
+  details; Advanced = includes maths (NPV/IRR, Bayesian posteriors, link budget dB).
+• **Reset between runs** — state carries over if you don't reset, so metrics from the
+  previous run may appear in the chart as a baseline comparison.`,
+      },
+    ],
+  },
 };
 
 // ─── Glossary (shared across all tabs) ──────────────────────────────────────
