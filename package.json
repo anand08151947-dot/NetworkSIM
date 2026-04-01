@@ -2,7 +2,7 @@
   "name": "northstar-fiber-sim",
   "productName": "NorthStar Fiber Network Simulator",
   "private": true,
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "ISP network simulation platform for training engineers",
   "author": "NorthStar Fiber Training",
   "type": "module",
@@ -122,3 +122,4 @@
     "wait-on": "^9.0.4"
   }
 }
+
